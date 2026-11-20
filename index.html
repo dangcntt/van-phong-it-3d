@@ -7,6 +7,8 @@
   <title>Mô Hình 3D Văn Phòng IT Tương Tác</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- MQTT.js over WebSockets for Serverless Realtime Online Multiplayer -->
+  <script src="https://cdn.jsdelivr.net/npm/mqtt@5.3.5/dist/mqtt.min.js"></script>
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -566,8 +568,40 @@
     <canvas id="minimap-canvas" width="190" height="135" class="w-full h-[135px] rounded-xl bg-slate-950/90 border border-white/10 cursor-crosshair"></canvas>
     <div class="flex items-center justify-between text-[9px] text-slate-400 px-0.5 whitespace-nowrap">
       <span>🟡 Hóa thân</span>
-      <span>🔵 14 Nhân sự</span>
+      <span>🟢 Online</span>
       <span>🐶 Corgi</span>
+    </div>
+  </div>
+
+  <!-- TOP-LEFT-ADJACENT: Realtime Online Multiplayer Status & Live Chat Widget (Zero Overlap) -->
+  <div id="online-multiplayer-widget" class="fixed top-3 left-3 sm:top-4 sm:left-[352px] z-20 flex flex-col gap-1.5 w-[245px] pointer-events-auto">
+    <div class="hud-glass rounded-2xl px-3 py-2 border border-emerald-400/45 shadow-xl flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <span id="online-status-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+        <div class="min-w-0">
+          <div class="text-[11px] font-extrabold text-emerald-300 leading-tight whitespace-nowrap" id="online-count-label">🟢 ONLINE: 1 người</div>
+          <div class="text-[9px] text-slate-400 truncate" id="online-broker-label">Đang kết nối Server Realtime...</div>
+        </div>
+      </div>
+      <button id="btn-toggle-online-chat" title="Mở / Thu gọn Kênh Chat Online" class="px-2 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white text-[10px] font-bold cursor-pointer transition whitespace-nowrap">
+        💬 Chat
+      </button>
+    </div>
+
+    <!-- Collapsible Live Online Chat Drawer -->
+    <div id="online-chat-drawer" class="hud-glass rounded-2xl p-2.5 border border-emerald-400/35 shadow-2xl flex flex-col gap-1.5">
+      <div id="online-peers-list" class="text-[10px] text-emerald-200 font-semibold px-1 pb-1 border-b border-white/10 truncate">
+        👑 Bạn đang trực tuyến
+      </div>
+      <div id="online-chat-messages" class="h-[88px] overflow-y-auto flex flex-col gap-1 pr-1 text-[10px] text-slate-200">
+        <div class="text-slate-400 italic">💡 Mở link web trên 2 máy/điện thoại rồi bấm "🕹️ Hóa Thân" để thấy nhau đi bộ & chat Realtime!</div>
+      </div>
+      <div class="flex items-center gap-1 pt-1 border-t border-white/10">
+        <input id="online-quick-chat-input" type="text" maxlength="90" placeholder="Nhắn tin cho mọi người..." class="flex-1 px-2 py-1 rounded-lg bg-slate-900/90 border border-white/15 text-white text-[10px] placeholder:text-slate-500 focus:outline-none focus:border-emerald-400" />
+        <button id="btn-online-quick-chat-send" class="px-2 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-[10px] font-extrabold cursor-pointer transition">
+          Gửi
+        </button>
+      </div>
     </div>
   </div>
 
@@ -677,6 +711,15 @@
     let nearestPeerChar = null;   // Closest colleague within 2.1m for Key E interaction
     const followerCharacters = new Set(); // Colleagues currently following the player
     let officeCorgi = null;       // 3D Office Pet Corgi ("Boss Corgi • Giám Đốc Tinh Thần")
+    // Realtime Online Multiplayer State
+    const myPeerId = 'peer_' + Math.random().toString(36).slice(2, 10) + '_' + (Date.now() % 10000);
+    const remotePeersMap = new Map(); // peerId -> { lastSeen, charIdx, name, role }
+    let mqttClient = null;
+    let localBroadcastChan = null;
+    let netSyncTimer = 0;
+    let presenceSyncTimer = 0;
+    let isHandlingRemotePacket = false;
+    const REALTIME_TOPIC = 'minhdang_it_office_3d/v1/room_live';
     const keysPressed = {};
     const bbqSmokeParticles = [];
     const steamParticles = [];
@@ -4025,6 +4068,9 @@
       serverPointLight.intensity = 3.2;
 
       if (!eventType) {
+        if (!isHandlingRemotePacket && typeof window.broadcastRealtimePacket === 'function') {
+          window.broadcastRealtimePacket({ type: 'office_event', eventType: null });
+        }
         banner.classList.add('opacity-0', 'pointer-events-none', '-translate-y-3');
         openKaraokeYouTubePanel(false);
         setLightingMode(false);
@@ -4046,6 +4092,9 @@
       }
 
       banner.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-3');
+      if (!isHandlingRemotePacket && typeof window.broadcastRealtimePacket === 'function') {
+        window.broadcastRealtimePacket({ type: 'office_event', eventType });
+      }
 
       if (eventType === 'crash') {
         playSynthTone(220, 0.25, 'sawtooth', 0.08);
@@ -4568,8 +4617,35 @@
           }
         }
 
-        // Follow waypoint taskQueue
-        if (c.taskQueue && c.queueIndex < c.taskQueue.length) {
+        // Check if this character is currently controlled by a REMOTE ONLINE PLAYER
+        const isRemoteControlled = (c !== embodiedCharacter) && c.remoteOwnerId && (performance.now() - (c.remoteLastSeen || 0) < 10000);
+        if (!isRemoteControlled && c.remoteOwnerId && (performance.now() - (c.remoteLastSeen || 0) >= 10000)) {
+          // Remote player timed out -> release character back to AI
+          c.remoteOwnerId = null;
+          if (c.tagEl) {
+            c.tagEl.className = 'char-tag px-2 py-0.5 rounded-full bg-slate-900/85 border border-white/15 text-[10px] font-semibold text-white whitespace-nowrap shadow-md';
+            c.tagEl.textContent = `${c.name} • ${c.role}`;
+          }
+        }
+
+        if (isRemoteControlled) {
+          // Smooth 60 FPS network interpolation for Remote Online Player
+          const pos = c.rig.root.position;
+          const lerpF = Math.min(1, 14 * simDt);
+          if (typeof c.remoteTargetX === 'number' && typeof c.remoteTargetZ === 'number') {
+            pos.x += (c.remoteTargetX - pos.x) * lerpF;
+            pos.z += (c.remoteTargetZ - pos.z) * lerpF;
+          }
+          if (typeof c.remoteTargetRotY === 'number') {
+            let diff = c.remoteTargetRotY - c.rig.root.rotation.y;
+            while (diff > Math.PI) diff -= Math.PI * 2;
+            while (diff < -Math.PI) diff += Math.PI * 2;
+            c.rig.root.rotation.y += diff * Math.min(1, 14 * simDt);
+          }
+          c.currentPose = c.remotePose || 'idle';
+          c.activity = '🟢 Đang điều khiển trực tuyến (Online Player)';
+        } else if (c.taskQueue && c.queueIndex < c.taskQueue.length) {
+          // Follow waypoint taskQueue
           const wp = c.taskQueue[c.queueIndex];
           const pos = c.rig.root.position;
           const dx = wp.x - pos.x;
@@ -5483,6 +5559,9 @@
         showCharacterSpeech(charObj, `Tôi là ${charObj.name} (${charObj.role})! Dùng 4 phím ⬆️⬇️⬅️➡️ để đi dạo nhé! 🕹️`, 4.5);
         showToast(`🕹️ Đã hóa thân thành ${charObj.name} (${charObj.role})! Bấm ⬆️⬇️⬅️➡️ để đi, phím V đổi góc nhìn FPS/TPS, phím Space tương tác!`);
         updateInspectorUI();
+        if (typeof window.syncLocalAvatarToNetwork === 'function') {
+          window.syncLocalAvatarToNetwork(true);
+        }
       };
 
       window.stopEmbodyCharacter = function() {
@@ -5490,6 +5569,13 @@
           embodiedCharacter.rig.headGroup.visible = true;
         }
         const prev = embodiedCharacter;
+        if (prev && typeof window.broadcastRealtimePacket === 'function') {
+          window.broadcastRealtimePacket({
+            type: 'leave_avatar',
+            peerId: myPeerId,
+            charIdx: officeCharacters.indexOf(prev)
+          });
+        }
         embodiedCharacter = null;
         wasdControlBoss = false;
         embodyCamMode = 'tps';
@@ -5694,15 +5780,252 @@
           embodiedCharacter.currentPose = pose;
           showCharacterSpeech(embodiedCharacter, msg, 5.0);
           playSynthTone(659.3, 0.1, 'triangle', 0.12);
+          if (typeof window.syncLocalAvatarToNetwork === 'function') {
+            window.syncLocalAvatarToNetwork(true);
+          }
+          if (typeof window.broadcastRealtimePacket === 'function') {
+            window.broadcastRealtimePacket({
+              type: 'chat',
+              peerId: myPeerId,
+              charIdx: officeCharacters.indexOf(embodiedCharacter),
+              senderName: embodiedCharacter.name,
+              role: embodiedCharacter.role,
+              text: msg
+            });
+          }
         });
       });
+
+      // =======================================================================
+      // SERVERLESS REALTIME ONLINE MULTIPLAYER (MQTT over WSS + BroadcastChannel)
+      // =======================================================================
+      const onlineCountLabel = document.getElementById('online-count-label');
+      const onlineBrokerLabel = document.getElementById('online-broker-label');
+      const onlinePeersList = document.getElementById('online-peers-list');
+      const onlineChatMessages = document.getElementById('online-chat-messages');
+      const onlineChatDrawer = document.getElementById('online-chat-drawer');
+      const btnToggleOnlineChat = document.getElementById('btn-toggle-online-chat');
+      const onlineQuickChatInput = document.getElementById('online-quick-chat-input');
+      const btnOnlineQuickChatSend = document.getElementById('btn-online-quick-chat-send');
+
+      if (btnToggleOnlineChat && onlineChatDrawer) {
+        btnToggleOnlineChat.addEventListener('click', () => {
+          onlineChatDrawer.classList.toggle('hidden');
+        });
+      }
+
+      function appendOnlineChatLog(senderName, role, text, isSelf = false) {
+        if (!onlineChatMessages) return;
+        const item = document.createElement('div');
+        item.className = 'leading-snug break-words';
+        const badgeColor = isSelf ? 'text-amber-300' : 'text-emerald-300';
+        const safeSender = senderName.replace(/[<>&]/g, '');
+        const safeText = text.replace(/[<>&]/g, '');
+        item.innerHTML = `<span class="font-bold ${badgeColor}">${safeSender}:</span> <span class="text-white">${safeText}</span>`;
+        onlineChatMessages.appendChild(item);
+        while (onlineChatMessages.children.length > 30) {
+          onlineChatMessages.removeChild(onlineChatMessages.firstChild);
+        }
+        onlineChatMessages.scrollTop = onlineChatMessages.scrollHeight;
+      }
+
+      window.broadcastRealtimePacket = function(payload) {
+        const pkt = { ...payload, peerId: myPeerId, ts: Date.now() };
+        const raw = JSON.stringify(pkt);
+        if (localBroadcastChan) {
+          try { localBroadcastChan.postMessage(raw); } catch (e) {}
+        }
+        if (mqttClient && mqttClient.connected) {
+          try { mqttClient.publish(REALTIME_TOPIC, raw, { qos: 0 }); } catch (e) {}
+        }
+      };
+
+      window.syncLocalAvatarToNetwork = function(force = false) {
+        const av = embodiedCharacter || (wasdControlBoss ? officeCharacters[0] : null);
+        if (!av) return;
+        const idx = officeCharacters.indexOf(av);
+        if (idx < 0) return;
+        const p = av.rig.root.position;
+        window.broadcastRealtimePacket({
+          type: 'avatar',
+          charIdx: idx,
+          name: av.name,
+          role: av.role,
+          x: Number(p.x.toFixed(3)),
+          z: Number(p.z.toFixed(3)),
+          rotY: Number(av.rig.root.rotation.y.toFixed(3)),
+          pose: av.currentPose || 'idle',
+          holdingCoffee: !!av.holdingCoffee
+        });
+      };
+
+      function refreshOnlinePeersUI() {
+        const now = performance.now();
+        for (const [pid, info] of remotePeersMap.entries()) {
+          if (now - info.lastSeen > 11000) {
+            remotePeersMap.delete(pid);
+          }
+        }
+        const totalOnline = 1 + remotePeersMap.size;
+        if (onlineCountLabel) {
+          onlineCountLabel.textContent = `🟢 ONLINE: ${totalOnline} người`;
+        }
+        if (onlinePeersList) {
+          const myLabel = embodiedCharacter ? `🟢 Bạn (${embodiedCharacter.name})` : '🟢 Bạn (Khách)';
+          const others = Array.from(remotePeersMap.values()).map(p => `🟢 ${p.name || 'Đồng nghiệp'}`);
+          onlinePeersList.textContent = [myLabel, ...others].join(' • ');
+        }
+      }
+
+      function handleIncomingRealtimeRaw(rawStr) {
+        let pkt = null;
+        try {
+          pkt = typeof rawStr === 'string' ? JSON.parse(rawStr) : rawStr;
+        } catch (e) {
+          return;
+        }
+        if (!pkt || !pkt.peerId || pkt.peerId === myPeerId) return;
+
+        const now = performance.now();
+        const prevInfo = remotePeersMap.get(pkt.peerId) || {};
+        remotePeersMap.set(pkt.peerId, {
+          lastSeen: now,
+          charIdx: typeof pkt.charIdx === 'number' ? pkt.charIdx : prevInfo.charIdx,
+          name: pkt.name || pkt.senderName || prevInfo.name || 'Đồng nghiệp Online',
+          role: pkt.role || prevInfo.role || 'IT Staff'
+        });
+        refreshOnlinePeersUI();
+
+        if (pkt.type === 'avatar' && typeof pkt.charIdx === 'number' && officeCharacters[pkt.charIdx]) {
+          const c = officeCharacters[pkt.charIdx];
+          if (c === embodiedCharacter) return; // Don't overwrite local player's own avatar
+          c.remoteOwnerId = pkt.peerId;
+          c.remoteLastSeen = now;
+          c.remoteTargetX = pkt.x;
+          c.remoteTargetZ = pkt.z;
+          c.remoteTargetRotY = pkt.rotY;
+          c.remotePose = pkt.pose || 'idle';
+          c.holdingCoffee = !!pkt.holdingCoffee;
+          c.taskQueue = [];
+          if (pkt.name && c.name !== pkt.name) {
+            c.name = pkt.name;
+          }
+          if (c.tagEl) {
+            c.tagEl.className = 'char-tag px-2.5 py-0.5 rounded-full bg-emerald-950/95 border border-emerald-400 text-[10px] font-extrabold text-emerald-200 whitespace-nowrap shadow-lg shadow-emerald-500/30';
+            c.tagEl.textContent = `🟢 [ONLINE] ${c.name} • ${c.role}`;
+          }
+        } else if (pkt.type === 'leave_avatar' && typeof pkt.charIdx === 'number' && officeCharacters[pkt.charIdx]) {
+          const c = officeCharacters[pkt.charIdx];
+          if (c.remoteOwnerId === pkt.peerId) {
+            c.remoteOwnerId = null;
+            if (c.tagEl) {
+              c.tagEl.className = 'char-tag px-2 py-0.5 rounded-full bg-slate-900/85 border border-white/15 text-[10px] font-semibold text-white whitespace-nowrap shadow-md';
+              c.tagEl.textContent = `${c.name} • ${c.role}`;
+            }
+          }
+        } else if (pkt.type === 'chat' && pkt.text) {
+          const c = (typeof pkt.charIdx === 'number' && officeCharacters[pkt.charIdx])
+            ? officeCharacters[pkt.charIdx]
+            : officeCharacters[0];
+          if (c) {
+            showCharacterSpeech(c, pkt.text, 6.5);
+          }
+          playSynthTone(880, 0.08, 'sine', 0.12);
+          appendOnlineChatLog(pkt.senderName || (c ? c.name : 'Online'), pkt.role || '', pkt.text, false);
+        } else if (pkt.type === 'office_event') {
+          isHandlingRemotePacket = true;
+          triggerOfficeEvent(pkt.eventType);
+          isHandlingRemotePacket = false;
+        }
+      }
+
+      function initRealtimeMultiplayer() {
+        // 1. Instant 0ms Local Multi-Tab Sync via BroadcastChannel
+        if (typeof BroadcastChannel !== 'undefined') {
+          localBroadcastChan = new BroadcastChannel('van_phong_it_3d_realtime_v1');
+          localBroadcastChan.onmessage = (ev) => handleIncomingRealtimeRaw(ev.data);
+        }
+
+        // 2. Global Internet Realtime Sync via MQTT over Secure WebSockets (WSS)
+        const brokers = [
+          'wss://broker.emqx.io:8084/mqtt',
+          'wss://broker.hivemq.com:8884/mqtt'
+        ];
+        let brokerIdx = 0;
+
+        const connectBroker = (url) => {
+          if (typeof window.mqtt === 'undefined') {
+            if (onlineBrokerLabel) onlineBrokerLabel.textContent = '🟢 Đồng bộ Đa Tab (Local Realtime)';
+            return;
+          }
+          try {
+            mqttClient = window.mqtt.connect(url, {
+              clientId: 'it3d_' + myPeerId,
+              clean: true,
+              connectTimeout: 5000,
+              reconnectPeriod: 4000
+            });
+            mqttClient.on('connect', () => {
+              if (onlineBrokerLabel) onlineBrokerLabel.textContent = '🌐 Server Cloud Realtime: Đã kết nối';
+              mqttClient.subscribe(REALTIME_TOPIC, { qos: 0 });
+              window.broadcastRealtimePacket({
+                type: 'presence',
+                charIdx: embodiedCharacter ? officeCharacters.indexOf(embodiedCharacter) : -1,
+                name: embodiedCharacter ? embodiedCharacter.name : 'Khách Online'
+              });
+            });
+            mqttClient.on('message', (topic, message) => {
+              if (topic === REALTIME_TOPIC && message) {
+                handleIncomingRealtimeRaw(message.toString());
+              }
+            });
+            mqttClient.on('error', () => {
+              if (brokerIdx === 0) {
+                brokerIdx = 1;
+                try { mqttClient.end(true); } catch (e) {}
+                connectBroker(brokers[1]);
+              }
+            });
+          } catch (err) {}
+        };
+        connectBroker(brokers[0]);
+
+        window.addEventListener('beforeunload', () => {
+          if (embodiedCharacter) {
+            window.broadcastRealtimePacket({
+              type: 'leave_avatar',
+              charIdx: officeCharacters.indexOf(embodiedCharacter)
+            });
+          }
+        });
+      }
+      initRealtimeMultiplayer();
+
+      const dispatchMultiplayerChat = (rawText) => {
+        const msg = (rawText || '').trim();
+        if (!msg) return;
+        if (!embodiedCharacter && officeCharacters[0]) {
+          startEmbodyCharacter(officeCharacters[0]);
+        }
+        const sender = embodiedCharacter || officeCharacters[0];
+        const charIdx = officeCharacters.indexOf(sender);
+        showCharacterSpeech(sender, msg, 6.5);
+        playSynthTone(784, 0.09, 'sine', 0.12);
+        appendOnlineChatLog(sender.name, sender.role, msg, true);
+        window.broadcastRealtimePacket({
+          type: 'chat',
+          charIdx,
+          senderName: sender.name,
+          role: sender.role,
+          text: msg
+        });
+      };
+
       if (btnEmbodyChatSend && embodyChatInput) {
         const sendLiveChat = () => {
-          if (!embodiedCharacter) return;
           const msg = embodyChatInput.value.trim();
           if (!msg) return;
-          showCharacterSpeech(embodiedCharacter, msg, 6.5);
-          playSynthTone(784, 0.09, 'sine', 0.12);
+          dispatchMultiplayerChat(msg);
           embodyChatInput.value = '';
           embodyChatInput.blur();
         };
@@ -5711,6 +6034,22 @@
           if (e.key === 'Enter') {
             e.preventDefault();
             sendLiveChat();
+          }
+        });
+      }
+      if (btnOnlineQuickChatSend && onlineQuickChatInput) {
+        const sendQuick = () => {
+          const msg = onlineQuickChatInput.value.trim();
+          if (!msg) return;
+          dispatchMultiplayerChat(msg);
+          onlineQuickChatInput.value = '';
+          onlineQuickChatInput.blur();
+        };
+        btnOnlineQuickChatSend.addEventListener('click', sendQuick);
+        onlineQuickChatInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            sendQuick();
           }
         });
       }
@@ -6467,6 +6806,26 @@
 
       // Update Characters & Floating Tags
       updateCharacters(simDt, simElapsed);
+
+      // Realtime Online Multiplayer Sync (14Hz while embodying/moving + 3s presence heartbeat)
+      netSyncTimer += rawDt;
+      if (netSyncTimer >= 0.075) {
+        netSyncTimer = 0;
+        if (embodiedCharacter && typeof window.syncLocalAvatarToNetwork === 'function') {
+          window.syncLocalAvatarToNetwork(false);
+        }
+      }
+      presenceSyncTimer += rawDt;
+      if (presenceSyncTimer >= 3.0) {
+        presenceSyncTimer = 0;
+        if (typeof window.broadcastRealtimePacket === 'function') {
+          window.broadcastRealtimePacket({
+            type: 'presence',
+            charIdx: embodiedCharacter ? officeCharacters.indexOf(embodiedCharacter) : -1,
+            name: embodiedCharacter ? embodiedCharacter.name : 'Khách Online'
+          });
+        }
+      }
 
       // True 3rd-Person Chase Camera & 1st-Person FPS Camera Sync (Runs AFTER movement so camera locks 1:1 with character)
       const trackedChar = embodiedCharacter || state.followCharacter || (wasdControlBoss ? officeCharacters[0] : null);
