@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="./css/styles.css?v=20261120_v6" />
+  <link rel="stylesheet" href="./css/styles.css?v=20261120_v7" />
 
   <!-- Three.js ES Modules Import Map -->
   <script type="importmap">
@@ -257,9 +257,16 @@
     <div id="inspector-actions" class="flex flex-wrap gap-2"></div>
   </div>
 
-  <!-- BOTTOM-CENTER: Quick Camera Views Bar -->
-  <div class="fixed bottom-3 sm:bottom-5 left-1/2 -translate-x-1/2 z-20 max-w-[96vw]">
-    <div class="hud-glass rounded-2xl p-1.5 flex items-center gap-1 overflow-x-auto no-scrollbar">
+  <!-- BOTTOM-CENTER: Quick Camera Views Bar (Collapsible & Expandable) -->
+  <div id="bottom-cam-bar" class="fixed bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 max-w-[96vw] flex flex-col items-center">
+    <!-- Compact Pill when Minimized -->
+    <button id="btn-expand-cam-bar" title="Mở thanh chọn 9 phòng / góc nhìn Camera" class="hidden hud-glass rounded-full px-3.5 py-1.5 border border-sky-400/50 shadow-xl flex items-center gap-2 text-xs font-extrabold text-sky-200 hover:bg-slate-800/90 transition cursor-pointer">
+      <span>🎥 Chọn Phòng (9)</span>
+      <span class="text-[10px] text-amber-300">🔼 Mở</span>
+    </button>
+
+    <!-- Full 9-Room Camera Preset Bar -->
+    <div id="bottom-cam-full" class="hud-glass rounded-2xl p-1.5 flex items-center gap-1 overflow-x-auto no-scrollbar">
       <button data-cam="overview" class="cam-btn px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap bg-sky-500 text-white shadow-md shadow-sky-500/25 transition cursor-pointer">
         🏢 Tổng thể
       </button>
@@ -286,6 +293,9 @@
       </button>
       <button data-cam="chua" class="cam-btn px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap text-slate-200 hover:bg-white/10 transition cursor-pointer">
         🛕 Viếng Chùa
+      </button>
+      <button id="btn-minimize-cam-bar" title="Thu gọn thanh chọn phòng xuống góc dưới" class="px-2.5 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap bg-white/10 hover:bg-rose-500/35 border border-white/15 text-slate-300 hover:text-white transition cursor-pointer ml-0.5">
+        ➖
       </button>
     </div>
   </div>
@@ -731,7 +741,7 @@
   </div>
 
   <!-- Main Three.js Application Script (Cache-Busted for Instant GitHub Pages Updates) -->
-  <script src="./js/webrtc-meeting.js?v=20261120_v6"></script>
-  <script type="module" src="./js/app.js?v=20261120_v6"></script>
+  <script src="./js/webrtc-meeting.js?v=20261120_v7"></script>
+  <script type="module" src="./js/app.js?v=20261120_v7"></script>
 </body>
 </html>

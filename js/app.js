@@ -369,7 +369,91 @@ import * as THREE from 'three';
       'Nam mô cầu cho gia đình bình an, vạn sự hanh thông, tâm an vạn sự an! 🪷',
       'Xin cho con rút được quẻ Thượng Thượng Đại Cát dưới gốc Đào Tiên! 🎋',
       'Cầu cho mỗi dòng code viết ra đều mang lại phước lành cho người dùng! 💻',
-      'Thành tâm kính lễ trước Đại Hùng Bảo Điện, nguyện một lòng viết Clean Code! 🙏'
+      'Thành tâm kính lễ trước Đại Hùng Bảo Điện, nguyện một lòng viết Clean Code! 🙏',
+      'Nam mô Đại Hùng Bảo Điện, cầu cho bản release tuần này mượt như lụa! ✨',
+      'Xin độ cho hệ thống HSCBCC không bao giờ bị treo session lúc cao điểm! 🏛️',
+      'Cầu cho phần mềm Đo Lường Chất Lượng xuất biên bản chuẩn từng con số! ⚖️',
+      'Nam mô cầu cho hệ thống Truy Xuất Nguồn Gốc quét mã QR phát nào ăn phát đó! 📱',
+      'Xin bề trên phù hộ cho Hồ Sơ Lưu Trữ 3in1 tra cứu triệu hồ sơ trong nháy mắt! 🗂️',
+      'Cầu cho Engine Xceed DocX và OpenXml thay thế thẻ tag không bao giờ sót! 📄',
+      'Xin độ cho bảng lương lặp ngang Mẫu 2C/TCTW-98 căn khung đẹp như in! 📊',
+      'Cầu cho ảnh thẻ 4x6 chèn vào lý lịch cán bộ không bao giờ bị méo khung! 🖼️',
+      'Nam mô cầu cho file Excel xuất bằng ClosedXML mở trên mọi máy đều nét! 📗',
+      'Xin cho script cắt trang PDF dấu đỏ lúc nào cũng căn chuẩn từng milimet! 📕',
+      'Cầu cho bộ nhớ đệm Redis Hash đồng bộ CR_DONVI và CR_USERS trong 0.5ms! ⚡',
+      'Xin bề trên độ cho cây đơn vị đệ quy 5 cấp không bao giờ bị vòng lặp vô tận! 🌳',
+      'Cầu cho JWT Token không bao giờ hết hạn đúng lúc lãnh đạo đang thuyết trình! 🔑',
+      'Nam mô cầu cho thuộc tính [DataAccess] lọc đúng quyền đơn vị không sai một ly! 🛡️',
+      'Xin phù hộ cho Pinia Store bên Vue 3 giữ state chuẩn chỉnh khi chuyển trang! 💚',
+      'Cầu cho Vite build bundle sản phẩm nhẹ tênh, tải trang dưới 0.3 giây! 🚀',
+      'Xin độ cho CSS Tailwind lên mọi màn hình từ điện thoại tới TV 120 inch đều đẹp! 🎨',
+      'Cầu cho WebRTC Call Video trong Phòng Họp kết nối 10 người vẫn nét căng! 📹',
+      'Nam mô cầu cho MQTT Broker đồng bộ nhân vật đi bộ không trễ một khung hình! 🌐',
+      'Xin cho mỗi lần khách hàng gọi điện đều là gọi khen phần mềm dễ dùng! 📞😊',
+      'Cầu cho đừng bao giờ có yêu cầu "Sửa gấp cho anh trước 5 giờ chiều nay"! 🕔',
+      'Xin bề trên hóa giải mọi xung đột giữa Developer và Tester thành tình đồng chí! 🤝',
+      'Cầu cho bàn phím cơ gõ trăm triệu lần không bị double-click phím nào! ⌨️',
+      'Nam mô cầu cho con chuột không bao giờ hết pin đúng lúc đang demo! 🖱️',
+      'Xin độ cho màn hình đôi ở bàn làm việc luôn dịu mắt, chống mỏi mắt! 🖥️',
+      'Cầu cho ly cà phê sáng nào pha ở Pantry cũng thơm ngon đúng điệu! ☕',
+      'Xin phù hộ cho tủ lạnh văn phòng lúc nào cũng đầy ắp trà sữa và hoa quả! 🧋🍉',
+      'Cầu cho đốt sống cổ và đốt sống lưng của anh em IT luôn dẻo dai khỏe mạnh! 🧘‍♂️',
+      'Nam mô cầu cho tối nay về nhà ngủ một mạch 8 tiếng sâu giấc không mơ thấy bug! 🌙',
+      'Xin cho năm nay anh em độc thân trong phòng đều tìm được ý trung nhân! 💑',
+      'Cầu cho người yêu của coder luôn thông cảm mỗi khi phải trực chiến deploy! ❤️',
+      'Xin bề trên ban lộc cho ví tiền anh em lúc nào cũng rủng rỉnh như quỹ công đức! 💰',
+      'Cầu cho cuối năm tổng kết ai cũng đạt Lao động tiên tiến, Chiến sĩ thi đua! 🏅',
+      'Nam mô cầu cho tiền thưởng Tết năm nay dày gấp ba năm ngoái! 🧧',
+      'Xin độ cho cổ phiếu công nghệ xanh bát ngát, đầu tư đâu thắng đó! 📈',
+      'Cầu cho mỗi lần mở ví điện tử đều thấy tin nhắn cộng tiền thưởng dự án! 💳',
+      'Xin phù hộ cho Sếp Minh Đăng luôn mạnh khỏe, dẫn dắt phòng IT lập kỷ lục mới! 👑',
+      'Cầu cho các anh chị đồng nghiệp luôn vui tươi, tương trợ nhau hết mình! 🌟',
+      'Nam mô cầu cho máy điều hòa văn phòng luôn mát mẻ 24 độ quanh năm! ❄️',
+      'Xin độ cho máy in văn phòng không bao giờ bị kẹt giấy lúc đang in gấp! 🖨️',
+      'Cầu cho chữ ký số USB Token cắm vào máy là nhận ngay không cần cài lại driver! 🔐',
+      'Xin bề trên phù hộ cho cổng thanh toán trực tuyến đối soát khớp 100% từng đồng! 💵',
+      'Cầu cho hệ thống thông báo Zalo OA gửi tin nhắn tới cán bộ trong 1 giây! 💬',
+      'Nam mô cầu cho App Mobile trên iOS và Android được duyệt lên Store ngay trong ngày! 📲',
+      'Xin độ cho cơ sở dữ liệu MongoDB không bao giờ bị phân mảnh index! 🍃',
+      'Cầu cho câu lệnh Lookup và Unwind chạy mượt trên hàng triệu document! ⚡',
+      'Xin phù hộ cho tiến trình Background Service chạy định kỳ chuẩn như đồng hồ Thụy Sĩ! ⏱️',
+      'Cầu cho log hệ thống lúc nào cũng sạch sẽ, chỉ toàn mức INFO không có ERROR! 📋',
+      'Nam mô cầu cho ổ cứng Server luôn xanh tươi, tốc độ đọc ghi 7000MB/s! 💽',
+      'Xin độ cho hệ thống cân bằng tải Load Balancer chia tải đều tăm tắp! ⚖️',
+      'Cầu cho tường lửa chặn đứng mọi đợt quét bot, giữ bình yên cho máy chủ! 🛡️',
+      'Xin bề trên ban phước cho cáp quang nội bộ và quốc tế luôn thông suốt! 🌐',
+      'Cầu cho mỗi dòng comment trong code đều rõ ràng như kinh văn chỉ lối! 📖',
+      'Nam mô cầu cho code cũ từ 3 năm trước đọc lại vẫn hiểu ngay trong 5 giây! 💡',
+      'Xin độ cho thư viện bên thứ ba không bao giờ ngừng hỗ trợ giữa chừng! 📦',
+      'Cầu cho Unit Test và Integration Test lúc nào cũng phủ kín 100% nghiệp vụ! ✅',
+      'Xin phù hộ cho buổi nghiệm thu tuần tới lãnh đạo vỗ tay khen ngợi nồng nhiệt! 👏',
+      'Cầu cho hồ sơ thanh quyết toán dự án đi qua các phòng ban thuận buồm xuôi gió! ⛵',
+      'Nam mô cầu cho hương trầm trước Đại Hùng Bảo Điện tỏa ngát mang lại bình an! 🕯️',
+      'Xin độ cho tiếng chuông Tháp Đại Hồng Chung ngân vang đánh thức mọi ý tưởng hay! 🔔',
+      'Cầu cho tiếng Trống Bát Nhã tiếp thêm hào khí để anh em chinh phục công nghệ mới! 🥁',
+      'Xin cho hoa sen trong hai hồ trước sân chùa luôn nở rộ thanh tịnh! 🪷',
+      'Cầu cho cá Koi trong Vườn Thiền bơi lội tung tăng mang lại đại cát đại lợi! 🐟',
+      'Nam mô cầu cho ai bước qua Cổng Tam Quan này tâm cũng sáng, trí cũng minh! ⛩️',
+      'Xin bề trên chứng giám lòng thành của anh em phòng IT, ban cho một năm 0 Bug! 🙏',
+      'Cầu cho con lắc ống xăm dưới gốc Đào Tiên rút được quẻ Thượng Thượng Cát! 🎋',
+      'Xin độ cho mọi lời ước nguyện trên thẻ đỏ treo cây Đào Tiên đều thành hiện thực! 🌸',
+      'Cầu cho cha mẹ và gia đình của toàn thể anh em trong phòng luôn mạnh khỏe, trường thọ! ❤️',
+      'Nam mô cầu cho mưa thuận gió hòa, quê hương Đồng Tháp Sen Hồng ngày càng phát triển! 🪷',
+      'Xin phù hộ cho công cuộc chuyển đổi số tỉnh nhà gặt hái nhiều thành tựu rực rỡ! 🏆',
+      'Cầu cho anh em đi làm mỗi ngày đều là một ngày vui, ngập tràn tiếng cười! 😊',
+      'Xin độ cho những buổi chiều tan tầm ngồi quán nhậu vỉa hè luôn rôm rả tình anh em! 🍻',
+      'Cầu cho mỗi lần vào phòng Karaoke VIP ca hát đều xả sạch 100% căng thẳng! 🎤',
+      'Nam mô cầu cho chú chó Boss Corgi của văn phòng luôn béo tròn, ngoan ngoãn! 🐶',
+      'Xin cho robot IT-Bot Mini chạy giao trà sữa quanh năm không bao giờ tuột pin! 🤖',
+      'Cầu cho mỗi khi gặp bài toán hóc búa đều có quý nhân chỉ điểm thuật toán tối ưu! 🧠',
+      'Xin bề trên độ cho trí nhớ minh mẫn, nhớ hết mọi phím tắt và câu lệnh CLI! ⌨️',
+      'Cầu cho tài khoản GitHub của anh em phủ kín một màu xanh lá cây chăm chỉ! 🟩',
+      'Nam mô cầu cho mọi nhánh code đều hội tụ bình an về nhánh main không chút gợn! 🌿',
+      'Xin phù hộ cho bản cập nhật đẩy lên GitHub Pages hiển thị tức thì không dính cache! ⚡',
+      'Cầu cho ai vào thăm Văn Phòng IT 3D này cũng nhận được thật nhiều niềm vui và may mắn! ✨',
+      'Xin độ cho phúc lộc thọ toàn, công danh thăng tiến, code mượt như nước chảy mây trôi! 🌊',
+      'Cầu cho tâm bất biến giữa dòng đời vạn biến, requirement có đổi vẫn mỉm cười xử đẹp! 😌',
+      'Nam mô A Di Đà Phật, cầu cho toàn thể anh em IT bình an, hạnh phúc và đại thành công! 🙏🪷'
     ];
 
     // =========================================================================
@@ -2741,7 +2825,22 @@ import * as THREE from 'three';
         'Quẻ Số 96 (PHÚ QUÝ): Cuối năm đạt danh hiệu Chiến sĩ thi đua, thưởng Tết ngập tràn! 🏆',
         'Quẻ Số 28 (BÌNH AN): Hôm nay không có cuộc gọi khẩn nào lúc nửa đêm, ngủ ngon tới sáng! 😴',
         'Quẻ Số 55 (TẤN TÀI): Dự án chính quyền số Đồng Tháp nghiệm thu xuất sắc 100 điểm! 🪷',
-        'Quẻ Số 98 (ĐẠI THẮNG): Đi hát Karaoke VIP bấm chấm điểm lên ngay 100 điểm tuyệt đối! 🎤'
+        'Quẻ Số 98 (ĐẠI THẮNG): Đi hát Karaoke VIP bấm chấm điểm lên ngay 100 điểm tuyệt đối! 🎤',
+        'Quẻ Số 16 (LỘC QUÝ): Sắp có quyết định nâng lương trước thời hạn và khen thưởng đột xuất! 🏅',
+        'Quẻ Số 26 (THUẬN LỢI): Mọi API tích hợp qua trục LGSP đều thông suốt ngay lần gọi đầu tiên! 🔗',
+        'Quẻ Số 36 (TÀI LỘC): Đầu tư đâu thắng đó, ví tiền rủng rỉnh suốt cả bốn mùa! 💵',
+        'Quẻ Số 38 (HỒNG PHÚC): Gia đạo bình an, sức khỏe dồi dào, lưng hết mỏi mắt hết cay! 🧘',
+        'Quẻ Số 56 (BỨT PHÁ): Thuật toán mới bạn viết giúp tăng tốc hệ thống lên gấp 10 lần! ⚡',
+        'Quẻ Số 69 (NHƯ Ý): Mọi yêu cầu chỉnh sửa từ khách hàng hôm nay đều cực kỳ đơn giản! 😊',
+        'Quẻ Số 78 (THẦN TỐC): Build Docker & triển khai CI/CD hoàn tất chỉ trong 15 giây! 🐳',
+        'Quẻ Số 81 (ĐẠI LỢI): Hồ sơ nghiệm thu được ký duyệt thần tốc, tiền dự án về ngay trong tuần! 🖊️',
+        'Quẻ Số 83 (PHÁT ĐẠT): Cây phân quyền CR_UNIT_ROLE và Redis Hash vận hành hoàn hảo 100%! 🔑',
+        'Quẻ Số 90 (THƯỢNG PHẨM): Giao diện Vue 3 bạn thiết kế được chọn làm mẫu chuẩn toàn đơn vị! 🎨',
+        'Quẻ Số 92 (HỶ TÍN): Người độc thân sắp gặp ý trung nhân, người có đôi càng thêm gắn kết! ❤️',
+        'Quẻ Số 95 (CHÍ TÔN): Uy tín chuyên môn vang xa, đồng nghiệp và lãnh đạo hết lời tin tưởng! 👑',
+        'Quẻ Số 108 (VẠN SỰ AN): Tâm tịnh như nước hồ sen, mọi bug lớn nhỏ đều tự động tiêu tan! 🪷',
+        'Quẻ Số 168 (NHẤT LỘ PHÁT): Con đường sự nghiệp rộng mở thênh thang, thăng tiến vượt bậc! 🌟',
+        'Quẻ Số 999 (CỬU ĐỈNH HOÀNG KIM): Đại cát đại lợi, phúc lộc song toàn, cả năm 0 Bug! 🏆💰'
       ];
 
       const shakeFortuneTubeAction = () => {
@@ -2770,7 +2869,7 @@ import * as THREE from 'three';
           { label: '🎋 Lắc Ống Xăm Xin Quẻ Đại Cát!', primary: false, run: shakeFortuneTubeAction },
           { label: '🔔 Thỉnh Đại Hồng Chung (Gõ Chuông)', primary: false, run: () => playTempleBellSound(false) },
           { label: '👑 Sếp Minh Đăng Công đức 10 Triệu', primary: false, run: () => spawnDonationMoney(10000000, 'Trưởng phòng Minh Đăng') },
-          { label: '💬 Đồng thanh khấn nguyện (60+ câu khấn)', primary: false, run: () => triggerMassTemplePrayers() },
+          { label: '💬 Đồng thanh khấn nguyện (150+ câu khấn)', primary: false, run: () => triggerMassTemplePrayers() },
           {
             label: '🕯️ Thắp thêm nhang trầm cầu Uptime',
             primary: false,
@@ -2831,7 +2930,7 @@ import * as THREE from 'three';
         title: 'Cây Đào Tiên Cổ Thụ & Đài Xin Xăm Tử Vi IT',
         desc: 'Cây đào tiên cổ thụ treo thẻ đỏ cầu may & bàn đặt Ống Xăm Vàng trong sân Đại Hùng Bảo Điện! Bấm lắc ống xăm để rút quẻ Đại Cát.',
         getMetrics: () => `
-          <div class="flex justify-between"><span class="text-slate-400">Linh ứng:</span><span class="text-pink-400 font-bold">15 Quẻ Đại Cát 🌸</span></div>
+          <div class="flex justify-between"><span class="text-slate-400">Linh ứng:</span><span class="text-pink-400 font-bold">30 Quẻ Đại Cát 🌸</span></div>
         `,
         getActions: () => [
           {
@@ -5325,7 +5424,7 @@ import * as THREE from 'three';
       }
       window.updateBossAuthUI();
 
-      // Bottom Camera Preset Bar
+      // Bottom Camera Preset Bar & Minimize / Expand Toggle
       document.querySelectorAll('.cam-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           const camKey = btn.dataset.cam;
@@ -5335,6 +5434,19 @@ import * as THREE from 'three';
           }
         });
       });
+      const btnMinCamBar = document.getElementById('btn-minimize-cam-bar');
+      const btnExpCamBar = document.getElementById('btn-expand-cam-bar');
+      const bottomCamFull = document.getElementById('bottom-cam-full');
+      if (btnMinCamBar && btnExpCamBar && bottomCamFull) {
+        btnMinCamBar.addEventListener('click', () => {
+          bottomCamFull.classList.add('hidden');
+          btnExpCamBar.classList.remove('hidden');
+        });
+        btnExpCamBar.addEventListener('click', () => {
+          btnExpCamBar.classList.add('hidden');
+          bottomCamFull.classList.remove('hidden');
+        });
+      }
 
       // Close Inspector
       const closeInsp = document.getElementById('close-inspector');
@@ -7048,14 +7160,20 @@ import * as THREE from 'three';
         }
       });
 
-      // Temple Queue Auto-Rotation, Periodic Bell Tolling & Random Prayers
+      // Temple Queue Auto-Rotation, Periodic Bell Tolling & Multi-Character Prayers (150+ Non-Repeating Prayers)
       if (state.activeEvent === 'chua' && !state.isPaused && templeQueueOrder.length > 0) {
         templeSpeechTimer += simDt;
-        if (templeSpeechTimer >= 1.8) {
+        if (templeSpeechTimer >= 1.5) {
           templeSpeechTimer = 0;
-          const lucky = templeQueueOrder[Math.floor(Math.random() * templeQueueOrder.length)];
-          const line = pickNextQuote(TEMPLE_PRAYERS, 'temple');
-          showCharacterSpeech(lucky, line, 4.8);
+          // Have 2 distinct temple worshippers pray non-repeating lines from the 150+ TEMPLE_PRAYERS bank
+          const n = templeQueueOrder.length;
+          const i1 = Math.floor(Math.random() * n);
+          const i2 = (i1 + 2 + Math.floor(Math.random() * Math.max(1, n - 2))) % n;
+          [templeQueueOrder[i1], templeQueueOrder[i2]].forEach(w => {
+            if (w && w.speechTimer <= 0.4) {
+              showCharacterSpeech(w, pickNextQuote(TEMPLE_PRAYERS, 'zone_chua'), 4.6);
+            }
+          });
         }
         templeAutoBellTimer += simDt;
         if (templeAutoBellTimer >= 7.5) {
