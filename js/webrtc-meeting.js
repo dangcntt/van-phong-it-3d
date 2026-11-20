@@ -546,6 +546,8 @@
     const btnShare = document.getElementById('btn-mcall-share-screen');
     const btnLeave = document.getElementById('btn-mcall-leave');
     const btnCloseDock = document.getElementById('btn-mcall-close-dock');
+    const btnMinimizeDock = document.getElementById('btn-mcall-minimize-dock');
+    const mcallBodyContent = document.getElementById('mcall-body-content');
     const btnOpenCallHeader = document.getElementById('btn-open-meeting-call');
 
     if (btnJoinVideo) btnJoinVideo.addEventListener('click', () => joinMeetingCall(true));
@@ -554,6 +556,12 @@
     if (btnCam) btnCam.addEventListener('click', toggleCam);
     if (btnShare) btnShare.addEventListener('click', toggleMeetingScreenShare);
     if (btnLeave) btnLeave.addEventListener('click', leaveMeetingCall);
+    if (btnMinimizeDock && mcallBodyContent) {
+      btnMinimizeDock.addEventListener('click', () => {
+        const isMin = mcallBodyContent.classList.toggle('hidden');
+        btnMinimizeDock.textContent = isMin ? '🔲' : '➖';
+      });
+    }
     if (btnCloseDock) {
       btnCloseDock.addEventListener('click', () => {
         ensureDockVisible(false);
@@ -562,10 +570,12 @@
     if (btnOpenCallHeader) {
       btnOpenCallHeader.addEventListener('click', () => {
         const dock = document.getElementById('meeting-call-dock');
-        if (dock && !dock.classList.contains('hidden') && !isInCall) {
+        if (dock && !dock.classList.contains('hidden')) {
           ensureDockVisible(false);
         } else {
           ensureDockVisible(true);
+          if (mcallBodyContent) mcallBodyContent.classList.remove('hidden');
+          if (btnMinimizeDock) btnMinimizeDock.textContent = '➖';
           updateCallUI();
         }
       });

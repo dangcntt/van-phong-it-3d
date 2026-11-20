@@ -5231,12 +5231,41 @@ import * as THREE from 'three';
       const onlineChatMessages = document.getElementById('online-chat-messages');
       const onlineChatDrawer = document.getElementById('online-chat-drawer');
       const btnToggleOnlineChat = document.getElementById('btn-toggle-online-chat');
+      const btnCloseOnlineChat = document.getElementById('btn-close-online-chat');
+      const btnMinimizeOnlineWidget = document.getElementById('btn-minimize-online-widget');
+      const btnExpandOnlineWidget = document.getElementById('btn-expand-online-widget');
+      const onlineFullHeader = document.getElementById('online-full-header');
+      const onlineMiniCount = document.getElementById('online-mini-count');
+      const btnEmbodyMinimize = document.getElementById('btn-embody-minimize');
+      const embodyHudBody = document.getElementById('embody-hud-body');
       const onlineQuickChatInput = document.getElementById('online-quick-chat-input');
       const btnOnlineQuickChatSend = document.getElementById('btn-online-quick-chat-send');
 
       if (btnToggleOnlineChat && onlineChatDrawer) {
         btnToggleOnlineChat.addEventListener('click', () => {
           onlineChatDrawer.classList.toggle('hidden');
+        });
+      }
+      if (btnCloseOnlineChat && onlineChatDrawer) {
+        btnCloseOnlineChat.addEventListener('click', () => {
+          onlineChatDrawer.classList.add('hidden');
+        });
+      }
+      if (btnMinimizeOnlineWidget && btnExpandOnlineWidget && onlineFullHeader) {
+        btnMinimizeOnlineWidget.addEventListener('click', () => {
+          onlineFullHeader.classList.add('hidden');
+          if (onlineChatDrawer) onlineChatDrawer.classList.add('hidden');
+          btnExpandOnlineWidget.classList.remove('hidden');
+        });
+        btnExpandOnlineWidget.addEventListener('click', () => {
+          btnExpandOnlineWidget.classList.add('hidden');
+          onlineFullHeader.classList.remove('hidden');
+        });
+      }
+      if (btnEmbodyMinimize && embodyHudBody) {
+        btnEmbodyMinimize.addEventListener('click', () => {
+          const isMin = embodyHudBody.classList.toggle('hidden');
+          btnEmbodyMinimize.textContent = isMin ? '🔼' : '➖';
         });
       }
 
@@ -5297,6 +5326,9 @@ import * as THREE from 'three';
         const totalOnline = 1 + remotePeersMap.size;
         if (onlineCountLabel) {
           onlineCountLabel.textContent = `🟢 ONLINE: ${totalOnline} người`;
+        }
+        if (onlineMiniCount) {
+          onlineMiniCount.textContent = `🟢 ${totalOnline} Online`;
         }
         if (onlinePeersList) {
           const myLabel = embodiedCharacter ? `🟢 Bạn (${embodiedCharacter.name})` : '🟢 Bạn (Khách)';
