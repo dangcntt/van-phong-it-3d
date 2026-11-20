@@ -3771,7 +3771,7 @@
         path.push({ x: 13.2, z: -3.3, act: 'Bước vào Phòng Karaoke VIP 🎤' });
         path.push({ x: sp.x, z: sp.z, finalPose: sp.pose, faceX: 18.8, faceZ: -4.0, act: sp.act, emoji: '🎤' });
       } else if (destType === 'nhau') {
-        // 8 vị trí ghế nhựa chính xác quanh 2 bàn nhậu (tx = -4.2 và tx = -0.8, z = 11.8)
+        // 14 vị trí độc lập tại Quán Nhậu (8 ghế chính quanh 2 bàn + 6 ghế đầu bàn & cạnh lò BBQ để đủ cho cả 14 nhân sự, tuyệt đối không trùng ghế)
         const nhauSpots = [
           { x: -4.75, z: 10.92, rotY: 0, side: 'north' },
           { x: -3.65, z: 10.92, rotY: 0, side: 'north' },
@@ -3780,19 +3780,30 @@
           { x: -1.35, z: 10.92, rotY: 0, side: 'north' },
           { x: -0.25, z: 10.92, rotY: 0, side: 'north' },
           { x: -1.35, z: 12.68, rotY: Math.PI, side: 'south' },
-          { x: -0.25, z: 12.68, rotY: Math.PI, side: 'south' }
+          { x: -0.25, z: 12.68, rotY: Math.PI, side: 'south' },
+          // 6 vị trí mở rộng đầu bàn & quanh Lò Nướng BBQ (cho người thứ 9 -> 14)
+          { x: -5.38, z: 11.80, rotY: Math.PI / 2, side: 'north' },
+          { x: -3.02, z: 11.80, rotY: -Math.PI / 2, side: 'north' },
+          { x: -1.98, z: 11.80, rotY: Math.PI / 2, side: 'north' },
+          { x: 0.38,  z: 11.80, rotY: -Math.PI / 2, side: 'north' },
+          { x: 0.75,  z: 10.92, rotY: 0, side: 'north' },
+          { x: 0.75,  z: 12.68, rotY: Math.PI, side: 'south' }
         ];
-        // Đảm bảo luôn chọn ghế trống ngẫu nhiên, không bao giờ ngồi chồng lên nhau
-        if (typeof charObj.nhauSeatIdx !== 'number') {
-          const usedSeats = new Set(
-            officeCharacters
-              .filter(other => other !== charObj && other.manualTask === 'nhau' && typeof other.nhauSeatIdx === 'number')
-              .map(other => other.nhauSeatIdx)
-          );
-          const freeSeats = nhauSpots.map((_, i) => i).filter(i => !usedSeats.has(i));
+        // Kiểm tra ghế đã có người theo CẢ nhauSeatIdx LẪN tọa độ đứng/ngồi thực tế (< 0.55m) của mọi nhân vật (kể cả nhân vật đang Hóa Thân)
+        const isSeatOccupied = (seatIdx) => {
+          const seat = nhauSpots[seatIdx];
+          return officeCharacters.some(other => {
+            if (other === charObj) return false;
+            if (typeof other.nhauSeatIdx === 'number' && other.nhauSeatIdx === seatIdx) return true;
+            const d = Math.hypot(other.rig.root.position.x - seat.x, other.rig.root.position.z - seat.z);
+            return d < 0.55;
+          });
+        };
+        if (typeof charObj.nhauSeatIdx !== 'number' || isSeatOccupied(charObj.nhauSeatIdx)) {
+          const freeSeats = nhauSpots.map((_, i) => i).filter(i => !isSeatOccupied(i));
           charObj.nhauSeatIdx = freeSeats.length > 0
-            ? freeSeats[Math.floor(Math.random() * freeSeats.length)]
-            : Math.floor(Math.random() * nhauSpots.length);
+            ? freeSeats[0]
+            : (officeCharacters.indexOf(charObj) % nhauSpots.length);
         }
         const sp = nhauSpots[charObj.nhauSeatIdx % nhauSpots.length];
         path.push({ x: 2.5, z: 7.2, act: 'Ra cửa trước đi nhậu thôi! 🍻' });
@@ -3969,27 +3980,38 @@
           'Uống đi mai fix bug sau! 😂',
           'Mồi bén quá sếp ơi! 🍢'
         ];
-        // Xáo trộn ngẫu nhiên 8 ghế nhựa và 8 nhân viên để mỗi lần đi nhậu ngồi một vị trí khác nhau
-        const seatOrder = [0, 1, 2, 3, 4, 5, 6, 7];
-        for (let i = seatOrder.length - 1; i > 0; i--) {
+        // Reset ghế cũ trước khi chia lại ghế mới, ưu tiên giữ nguyên ghế của nhân vật đang Hóa Thân (nếu đang ngồi ở quán nhậu)
+        const reservedSeats = new Set();
+        officeCharacters.forEach(c => {
+          if (c === embodiedCharacter && typeof c.nhauSeatIdx === 'number') {
+            reservedSeats.add(c.nhauSeatIdx);
+          } else {
+            c.nhauSeatIdx = null;
+          }
+        });
+        const availableSeats = [0, 1, 2, 3, 4, 5, 6, 7].filter(s => !reservedSeats.has(s));
+        for (let i = availableSeats.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
-          [seatOrder[i], seatOrder[j]] = [seatOrder[j], seatOrder[i]];
+          [availableSeats[i], availableSeats[j]] = [availableSeats[j], availableSeats[i]];
         }
-        const shuffledStaff = [...officeCharacters];
-        for (let i = shuffledStaff.length - 1; i > 0; i--) {
+        const npcCandidates = officeCharacters.filter(c => c !== embodiedCharacter);
+        for (let i = npcCandidates.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
-          [shuffledStaff[i], shuffledStaff[j]] = [shuffledStaff[j], shuffledStaff[i]];
+          [npcCandidates[i], npcCandidates[j]] = [npcCandidates[j], npcCandidates[i]];
         }
-        shuffledStaff.forEach((c, idx) => {
+        npcCandidates.forEach((c, idx) => {
           c.mood = 100;
           c.energy = Math.min(100, c.energy + 20);
-          if (idx < 8) {
-            c.nhauSeatIdx = seatOrder[idx];
+          if (idx < availableSeats.length) {
+            c.nhauSeatIdx = availableSeats[idx];
             commandCharacter(c, 'nhau');
             showCharacterSpeech(c, nhauLines[idx % nhauLines.length], 5.5);
           } else {
-            c.nhauSeatIdx = null;
-            showCharacterSpeech(c, 'Hết ghế rồi, đợi tui commit xong tui kê thêm ghế! 🏃', 4.5);
+            // Những người còn lại nếu đang ngồi ở ghế nhậu cũ thì quay về văn phòng làm việc để nhường ghế, tuyệt đối không ngồi đè
+            if (getRoomZone(c.rig.root.position.x, c.rig.root.position.z) === 'nhau' && c.homeSeat) {
+              commandCharacter(c, 'work', true);
+            }
+            showCharacterSpeech(c, 'Anh em ra nhậu trước đi, tui commit nốt dòng code rồi ra! 🏃', 4.5);
           }
         });
       } else if (eventType === 'karaoke') {
@@ -4467,6 +4489,32 @@
             const pos = c.rig.root.position;
             c.taskQueue = buildSmartRoute(pos.x, pos.z, nextDest, c);
             c.queueIndex = 0;
+          }
+        }
+
+        // Global Anti-Overlap Separation: prevent any two stationary characters from sitting/standing on the exact same spot
+        if (c !== embodiedCharacter && c.currentPose !== 'walking') {
+          const pos = c.rig.root.position;
+          for (let j = 0; j < officeCharacters.length; j++) {
+            const other = officeCharacters[j];
+            if (other === c) continue;
+            // Embodied character or earlier-indexed stationary character has priority
+            const otherHasPriority = (other === embodiedCharacter) || (j < officeCharacters.indexOf(c) && other.currentPose !== 'walking');
+            if (!otherHasPriority) continue;
+            const d = Math.hypot(pos.x - other.rig.root.position.x, pos.z - other.rig.root.position.z);
+            if (d < 0.48) {
+              if (getRoomZone(pos.x, pos.z) === 'nhau') {
+                // Re-route to a free Nhau seat immediately
+                c.nhauSeatIdx = null;
+                c.taskQueue = buildSmartRoute(pos.x, pos.z, 'nhau', c);
+                c.queueIndex = 0;
+              } else {
+                // Nudge character slightly aside
+                const ang = (officeCharacters.indexOf(c) * 1.1) % (Math.PI * 2);
+                moveBossWithCollision(pos, Math.cos(ang) * 0.65, Math.sin(ang) * 0.65);
+              }
+              break;
+            }
           }
         }
 
