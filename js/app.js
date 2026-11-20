@@ -5610,6 +5610,8 @@ import * as THREE from 'three';
         }
 
         if (embodyHud) embodyHud.classList.remove('hidden');
+        const embodyPillName = document.getElementById('embody-pill-name');
+        if (embodyPillName) embodyPillName.textContent = `Hóa thân: ${charObj.name}`;
         populateEmbodySelect();
         updateEmbodyCamButton();
         showCharacterSpeech(charObj, `Tôi là ${charObj.name} (${charObj.role})! Dùng 4 phím ⬆️⬇️⬅️➡️ để đi dạo nhé! 🕹️`, 4.5);
@@ -5647,11 +5649,11 @@ import * as THREE from 'three';
       function updateEmbodyCamButton() {
         if (!btnEmbodyCamMode) return;
         if (embodyCamMode === 'fps') {
-          btnEmbodyCamMode.textContent = '👁️ Góc nhìn: Thứ 1 (FPS Mắt Thật) [Phím V]';
-          btnEmbodyCamMode.className = 'px-2.5 py-1 rounded-xl bg-amber-500/30 hover:bg-amber-500/45 border border-amber-400/70 text-amber-200 text-[11px] font-bold cursor-pointer transition';
+          btnEmbodyCamMode.textContent = '👁️ Góc nhìn: Thứ 1 (FPS) [Phím V]';
+          btnEmbodyCamMode.className = 'px-2.5 py-1 rounded-xl bg-amber-500/30 hover:bg-amber-500/45 border border-amber-400/70 text-amber-200 text-[10px] font-bold cursor-pointer transition whitespace-nowrap shrink-0';
         } else {
-          btnEmbodyCamMode.textContent = '🎥 Góc nhìn: Thứ 3 (TPS Sau Lưng) [Phím V]';
-          btnEmbodyCamMode.className = 'px-2.5 py-1 rounded-xl bg-sky-500/25 hover:bg-sky-500/40 border border-sky-400/50 text-sky-200 text-[11px] font-bold cursor-pointer transition';
+          btnEmbodyCamMode.textContent = '🎥 Góc nhìn: Thứ 3 (TPS) [Phím V]';
+          btnEmbodyCamMode.className = 'px-2.5 py-1 rounded-xl bg-sky-500/25 hover:bg-sky-500/40 border border-sky-400/50 text-sky-200 text-[10px] font-bold cursor-pointer transition whitespace-nowrap shrink-0';
         }
       }
 
@@ -5894,6 +5896,8 @@ import * as THREE from 'three';
       const onlineFullHeader = document.getElementById('online-full-header');
       const onlineMiniCount = document.getElementById('online-mini-count');
       const btnEmbodyMinimize = document.getElementById('btn-embody-minimize');
+      const btnEmbodyExpandPill = document.getElementById('btn-embody-expand-pill');
+      const embodyFullCard = document.getElementById('embody-full-card');
       const embodyHudBody = document.getElementById('embody-hud-body');
       const onlineQuickChatInput = document.getElementById('online-quick-chat-input');
       const btnOnlineQuickChatSend = document.getElementById('btn-online-quick-chat-send');
@@ -5919,10 +5923,18 @@ import * as THREE from 'three';
           onlineFullHeader.classList.remove('hidden');
         });
       }
-      if (btnEmbodyMinimize && embodyHudBody) {
+      if (btnEmbodyMinimize && embodyFullCard && btnEmbodyExpandPill) {
         btnEmbodyMinimize.addEventListener('click', () => {
-          const isMin = embodyHudBody.classList.toggle('hidden');
-          btnEmbodyMinimize.textContent = isMin ? '🔼' : '➖';
+          embodyFullCard.classList.add('hidden');
+          btnEmbodyExpandPill.classList.remove('hidden');
+          const pillName = document.getElementById('embody-pill-name');
+          if (pillName && embodiedCharacter) {
+            pillName.textContent = `Hóa thân: ${embodiedCharacter.name}`;
+          }
+        });
+        btnEmbodyExpandPill.addEventListener('click', () => {
+          btnEmbodyExpandPill.classList.add('hidden');
+          embodyFullCard.classList.remove('hidden');
         });
       }
 

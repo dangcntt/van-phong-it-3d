@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="./css/styles.css?v=20261120_v7" />
+  <link rel="stylesheet" href="./css/styles.css?v=20261120_v8" />
 
   <!-- Three.js ES Modules Import Map -->
   <script type="importmap">
@@ -400,32 +400,38 @@
     </div>
   </div>
 
-  <!-- BOTTOM-CENTER (Positioned cleanly ABOVE the bottom camera preset bar so they never overlap) -->
-  <div id="embodiment-hud" class="hidden fixed bottom-16 left-1/2 -translate-x-1/2 z-30 w-[calc(100vw-24px)] max-w-xl">
-    <div class="hud-glass rounded-2xl p-2.5 border border-amber-400/50 shadow-2xl flex flex-col gap-1.5">
-      <!-- Top Row: Character Switcher, Rename, Camera Mode (TPS / FPS), Exit -->
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <div class="flex items-center gap-1.5">
-          <span class="px-2 py-0.5 rounded-lg bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[10px] font-bold whitespace-nowrap">🕹️ HÓA THÂN:</span>
-          <select id="embody-char-select" class="px-2 py-1 rounded-xl bg-slate-900/90 border border-white/20 text-white text-[11px] font-bold focus:outline-none focus:border-amber-400 cursor-pointer"></select>
+  <!-- BOTTOM-CENTER: Embodiment HUD (Clean 3-Row Layout, Zero Overflow, Full Pill Minimize/Expand) -->
+  <div id="embodiment-hud" class="hidden fixed bottom-16 left-1/2 -translate-x-1/2 z-30 w-[calc(100vw-24px)] max-w-[580px] flex flex-col items-center">
+    <!-- Compact Pill when Minimized (Hides the entire big panel!) -->
+    <button id="btn-embody-expand-pill" title="Mở lại bảng điều khiển Hóa Thân" class="hidden hud-glass rounded-full px-3.5 py-1.5 border border-amber-400/60 shadow-2xl flex items-center gap-2 text-xs font-extrabold text-amber-200 hover:bg-slate-800/95 transition cursor-pointer">
+      <span>🕹️</span>
+      <span id="embody-pill-name" class="truncate max-w-[200px]">Đang hóa thân: Minh Đăng 👑</span>
+      <span class="text-[10px] text-slate-300 hidden sm:inline">• ⬆️⬇️⬅️➡️</span>
+      <span class="px-1.5 py-0.5 rounded-full bg-amber-500/25 text-[10px] text-amber-300">🔼 Mở</span>
+    </button>
+
+    <!-- Full Embodiment Card (3 Balanced Rows - Never overflows right border) -->
+    <div id="embody-full-card" class="w-full hud-glass rounded-2xl p-2.5 border border-amber-400/50 shadow-2xl flex flex-col gap-1.5 overflow-hidden">
+      <!-- Row 1: Character Switcher + Compact Action Buttons (Fits 100% inside width) -->
+      <div class="flex items-center justify-between gap-1.5 w-full">
+        <div class="flex items-center gap-1.5 min-w-0 flex-1">
+          <span class="px-2 py-0.5 rounded-lg bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[10px] font-extrabold whitespace-nowrap shrink-0">🕹️ HÓA THÂN</span>
+          <select id="embody-char-select" class="min-w-0 flex-1 max-w-[215px] px-2 py-1 rounded-xl bg-slate-900/95 border border-white/20 text-white text-[11px] font-bold truncate focus:outline-none focus:border-amber-400 cursor-pointer"></select>
+        </div>
+        <div class="flex items-center gap-1 shrink-0">
           <button id="btn-embody-create-new" title="Tự tạo nhân vật 3D mới để đi chùa / dạo văn phòng" class="px-2 py-1 rounded-lg bg-emerald-500/25 hover:bg-emerald-500/40 border border-emerald-400/50 text-emerald-200 text-[10px] font-bold cursor-pointer transition whitespace-nowrap">
-            ➕ Tạo Nhân Vật
+            ➕ Tạo NV
           </button>
           <button id="btn-embody-rename" title="Đổi tên nhân vật đang hóa thân" class="px-2 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200 text-[10px] font-semibold cursor-pointer transition whitespace-nowrap">
-            ✏️ Đổi tên
+            ✏️ Tên
           </button>
           <button id="btn-reset-save" title="Xóa tiến trình đã lưu và khôi phục mặc định" class="px-2 py-1 rounded-lg bg-white/10 hover:bg-rose-500/30 text-slate-300 text-[10px] font-semibold cursor-pointer transition whitespace-nowrap">
-            🔄 Reset Lưu
+            🔄 Reset
           </button>
-        </div>
-        <div class="flex items-center gap-1">
-          <button id="btn-embody-cam-mode" title="Phím tắt: V để đổi góc nhìn Thứ 1 (FPS) / Thứ 3 (TPS)" class="px-2 py-1 rounded-xl bg-sky-500/25 hover:bg-sky-500/40 border border-sky-400/50 text-sky-200 text-[10px] font-bold cursor-pointer transition whitespace-nowrap">
-            🎥 Góc nhìn: Thứ 3 (TPS) [Phím V]
-          </button>
-          <button id="btn-embody-minimize" title="Thu nhỏ / Mở rộng bảng Hóa Thân" class="px-2 py-1 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 text-[10px] font-bold cursor-pointer transition">
+          <button id="btn-embody-minimize" title="Thu gọn toàn bộ bảng Hóa Thân thành nút nhỏ" class="px-2 py-1 rounded-lg bg-white/10 hover:bg-amber-500/30 border border-white/15 text-amber-200 text-[10px] font-extrabold cursor-pointer transition">
             ➖
           </button>
-          <button id="btn-embody-exit" class="px-2 py-1 rounded-xl bg-rose-500/25 hover:bg-rose-500/45 border border-rose-400/40 text-rose-200 text-[10px] font-bold cursor-pointer transition whitespace-nowrap">
+          <button id="btn-embody-exit" title="Thoát chế độ Hóa Thân" class="px-2 py-1 rounded-lg bg-rose-500/25 hover:bg-rose-500/45 border border-rose-400/40 text-rose-200 text-[10px] font-bold cursor-pointer transition whitespace-nowrap">
             ✕ Thoát
           </button>
         </div>
@@ -433,15 +439,22 @@
 
       <!-- Collapsible Body of Embodiment HUD -->
       <div id="embody-hud-body" class="flex flex-col gap-1.5">
-        <!-- Middle Row: Contextual Action Button (Spacebar) + Peer Social Action (Key E) + 4 Quick Emote Buttons (Keys 1-4) -->
-        <div class="flex flex-wrap items-center justify-between gap-1.5">
-          <button id="btn-embody-context-action" class="flex-1 min-w-[170px] px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 text-[11px] font-extrabold shadow-md cursor-pointer transition text-center truncate">
+        <!-- Row 2: Camera Mode (Phím V) + Spacebar Context Action + Key E Peer Action -->
+        <div class="flex flex-wrap items-center gap-1.5 w-full">
+          <button id="btn-embody-cam-mode" title="Phím tắt: V để đổi góc nhìn Thứ 1 (FPS) / Thứ 3 (TPS)" class="px-2.5 py-1 rounded-xl bg-sky-500/25 hover:bg-sky-500/40 border border-sky-400/50 text-sky-200 text-[10px] font-bold cursor-pointer transition whitespace-nowrap shrink-0">
+            🎥 Góc nhìn: Thứ 3 (TPS) [Phím V]
+          </button>
+          <button id="btn-embody-context-action" class="flex-1 min-w-[155px] px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 text-[11px] font-extrabold shadow-md cursor-pointer transition text-center truncate">
             ⚡ [Phím Space] Tương tác tại chỗ
           </button>
-          <button id="btn-embody-peer-action" class="hidden px-2.5 py-1 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-slate-950 text-[11px] font-extrabold shadow-md cursor-pointer transition text-center whitespace-nowrap">
+          <button id="btn-embody-peer-action" class="hidden flex-1 min-w-[155px] px-2.5 py-1 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-slate-950 text-[11px] font-extrabold shadow-md cursor-pointer transition text-center truncate">
             🤝 [Phím E] Tương tác đồng nghiệp
           </button>
-          <div class="flex items-center gap-1">
+        </div>
+
+        <!-- Row 3: 4 Quick Emote Buttons (Keys 1-4) + Live 3D Speech Bubble Input -->
+        <div class="flex flex-wrap sm:flex-nowrap items-center gap-1.5 w-full">
+          <div class="flex items-center gap-1 shrink-0">
             <button data-emote-pose="dance" data-emote-msg="Quẩy lên anh em IT ơi!! 🕺🔥" class="embody-emote-btn px-2 py-1 rounded-xl bg-white/10 hover:bg-fuchsia-500/30 border border-white/10 text-white text-[10px] font-semibold cursor-pointer transition whitespace-nowrap">
               1: 🕺 Quẩy
             </button>
@@ -449,21 +462,18 @@
               2: 🙏 Khấn
             </button>
             <button data-emote-pose="nhau" data-emote-msg="1... 2... 3... DZÔ 100% anh em ơi!! 🍻" class="embody-emote-btn px-2 py-1 rounded-xl bg-white/10 hover:bg-emerald-500/30 border border-white/10 text-white text-[10px] font-semibold cursor-pointer transition whitespace-nowrap">
-              3: 🍻 Cụng bia
+              3: 🍻 Bia
             </button>
             <button data-emote-pose="sing" data-emote-msg="Cắt đôi nỗi sầu, cắt luôn bug Prod đêm nay!! 🎤🎶" class="embody-emote-btn px-2 py-1 rounded-xl bg-white/10 hover:bg-purple-500/30 border border-white/10 text-white text-[10px] font-semibold cursor-pointer transition whitespace-nowrap">
-              4: 🎤 Cầm mic
+              4: 🎤 Hát
             </button>
           </div>
-        </div>
-
-        <!-- Bottom Row: Live 3D Speech Bubble Chat Input + Controls Hint -->
-        <div class="flex items-center gap-1.5">
-          <input id="embody-chat-input" type="text" maxlength="90" placeholder="💬 Gõ câu nói bất kỳ rồi nhấn Enter để bật bong bóng thoại 3D trên đầu..." class="flex-1 px-2.5 py-1 rounded-xl bg-slate-900/90 border border-white/15 text-white text-[11px] placeholder:text-slate-400 focus:outline-none focus:border-amber-400" />
-          <button id="btn-embody-chat-send" class="px-2.5 py-1 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-[11px] font-bold cursor-pointer transition whitespace-nowrap">
-            Nói 💬
-          </button>
-          <span class="hidden sm:inline text-[10px] text-slate-300 font-medium whitespace-nowrap">Đi bộ: ⬆️⬇️⬅️➡️</span>
+          <div class="flex items-center gap-1 min-w-0 flex-1">
+            <input id="embody-chat-input" type="text" maxlength="90" placeholder="💬 Gõ lời thoại rồi nhấn Enter..." class="min-w-0 flex-1 px-2.5 py-1 rounded-xl bg-slate-900/90 border border-white/15 text-white text-[11px] placeholder:text-slate-400 focus:outline-none focus:border-amber-400" />
+            <button id="btn-embody-chat-send" class="px-2.5 py-1 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-[11px] font-bold cursor-pointer transition whitespace-nowrap shrink-0">
+              Nói 💬
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -741,7 +751,7 @@
   </div>
 
   <!-- Main Three.js Application Script (Cache-Busted for Instant GitHub Pages Updates) -->
-  <script src="./js/webrtc-meeting.js?v=20261120_v7"></script>
-  <script type="module" src="./js/app.js?v=20261120_v7"></script>
+  <script src="./js/webrtc-meeting.js?v=20261120_v8"></script>
+  <script type="module" src="./js/app.js?v=20261120_v8"></script>
 </body>
 </html>
