@@ -45,16 +45,16 @@ import * as THREE from 'three';
     };
 
     const CAMERA_PRESETS = {
-      overview: { pos: new THREE.Vector3(21.5, 19.5, 25.0), target: new THREE.Vector3(2.8, 0.5, 1.8) },
+      overview: { pos: new THREE.Vector3(24.5, 22.5, 29.0), target: new THREE.Vector3(6.5, 0.5, 2.0) },
       boss:     { pos: new THREE.Vector3(-10.8, 5.2, 4.6),  target: new THREE.Vector3(-15.8, 1.1, -0.8) },
       dev:      { pos: new THREE.Vector3(-1.5, 6.2, 10.5),  target: new THREE.Vector3(-7.2, 1.0, 3.2) },
-      meeting:  { pos: new THREE.Vector3(-1.8, 5.2, 1.2),   target: new THREE.Vector3(-7.5, 1.2, -5.2) },
+      meeting:  { pos: new THREE.Vector3(-1.6, 4.85, 1.2),  target: new THREE.Vector3(-7.2, 1.45, -5.8) },
       server:   { pos: new THREE.Vector3(3.2, 4.8, 10.5),   target: new THREE.Vector3(8.8, 1.3, 5.8) },
       pantry:   { pos: new THREE.Vector3(2.2, 5.6, 2.5),    target: new THREE.Vector3(7.4, 1.1, -5.2) },
       reception:{ pos: new THREE.Vector3(6.8, 5.8, 11.8),   target: new THREE.Vector3(1.2, 0.9, 3.5) },
       karaoke:  { pos: new THREE.Vector3(13.4, 2.05, -4.0), target: new THREE.Vector3(18.81, 2.05, -4.0) },
       nhau:     { pos: new THREE.Vector3(-1.2, 5.6, 18.2),  target: new THREE.Vector3(-2.5, 0.8, 11.8) },
-      chua:     { pos: new THREE.Vector3(14.5, 6.4, 13.8),  target: new THREE.Vector3(15.8, 1.3, 5.0) }
+      chua:     { pos: new THREE.Vector3(24.0, 8.8, 16.8),  target: new THREE.Vector3(30.5, 1.8, 3.8) }
     };
 
     const camTransition = {
@@ -237,7 +237,7 @@ import * as THREE from 'three';
       'Xin bề trên độ cho CORS không bao giờ chặn FE! 🌐',
       'Cầu Sếp Minh Đăng chiều nay bao cả phòng đi nhậu! 🍻',
       'Nam mô cầu chữ ký số ký phát ăn liền! ✍️',
-      'Xin cho серver Đồng Tháp chạy mượt xuyên năm! 🪷',
+      'Xin cho hệ thống Đồng Tháp chạy mượt xuyên năm! 🪷',
       'Cầu Tester hôm nay hiền dịu không bắt bug giao diện! 😇',
       'Xin độ cho kết nối LGSP/NGSP thông suốt 24/7! 🔗',
       'Cầu tối nay ngủ ngon không bị gọi dậy hotfix! 😴',
@@ -249,20 +249,124 @@ import * as THREE from 'three';
       'Nam mô cầu Postman test toàn màu xanh Pass 100%! ✅',
       'Xin cho anh em phòng IT luôn đoàn kết, giàu sang! 💎',
       'Cầu Sếp Minh Đăng trúng mánh dự án lớn thưởng to! 👑',
-      'Thành tâm thỉnh tiếng Đại Hồng Chung giải trừ tà bug! 🔔'
+      'Thành tâm thỉnh tiếng Đại Hồng Chung giải trừ tà bug! 🔔',
+      'Nam mô Zero-Bug Đại Vương độ cho sprint này về đích sớm! 🏁',
+      'Xin bề trên phù hộ 26.000 user đăng nhập cùng lúc vẫn mượt! ⚡',
+      'Cầu cho file Excel xuất ra không bao giờ bị lỗi font! 📊',
+      'Xin độ cho máy chủ không bao giờ báo Full Disk 100%! 💽',
+      'Cầu cho khách hàng nghiệm thu ký biên bản cái rẹt! 🖊️',
+      'Nam mô cầu đừng ai lỡ tay chạy lệnh DELETE không có WHERE! 😱',
+      'Xin cho RAM máy dev luôn dư dả khi mở 50 tab Chrome! 🧠',
+      'Cầu cho cuộc họp chiều nay kết thúc trong 15 phút! ⏱️',
+      'Xin phù hộ anh em code đâu thắng đó, bug tự tiêu tan! 🌟',
+      'Cầu cho Wi-Fi văn phòng căng đét 5 vạch mọi góc phòng! 📶',
+      'Nam mô cầu cho thư viện npm update không bị breaking change! 📦',
+      'Xin độ cho câu lệnh Aggregate MongoDB chạy nhanh như gió! 🌪️',
+      'Cầu cho năm nay cả phòng IT ai cũng mua được nhà, tậu được xe! 🚗',
+      'Xin bề trên ban cho trí tuệ sáng suốt, nhìn log là biết bug ở đâu! 👁️',
+      'Cầu cho Sếp luôn vui vẻ, duyệt phép nhanh như chớp! 🌴',
+      'Nam mô cầu cho hệ thống Thi Đua Khen Thưởng chạy êm ru! 🏅',
+      'Xin phù hộ cho phần mềm Quản lý Điều Xe định vị chuẩn từng mét! 🚐',
+      'Cầu cho Kho Giấy Tờ Số Hóa đồng bộ 100% không rớt gói tin nào! 📁',
+      'Xin độ cho anh em tối nay đi hát Karaoke ai cũng được 100 điểm! 🎤',
+      'Cầu cho bia lúc nào cũng lạnh, mồi nướng BBQ lúc nào cũng thơm! 🍢',
+      'Nam mô cầu cho gia đình bình an, vạn sự hanh thông, tâm an vạn sự an! 🪷',
+      'Xin cho con rút được quẻ Thượng Thượng Đại Cát dưới gốc Đào Tiên! 🎋',
+      'Cầu cho mỗi dòng code viết ra đều mang lại phước lành cho người dùng! 💻',
+      'Thành tâm kính lễ trước Đại Hùng Bảo Điện, nguyện một lòng viết Clean Code! 🙏'
     ];
 
     const IT_QUOTES = [
-      'Code chạy trên máy tui mà! 😅',
-      'Fix 1 bug đẻ thêm 3 bug... 😭',
-      'Deploy thứ 6 là dở rồi anh em ơi!',
-      'Chiều nay làm kèo bia hơi nhé! 🍻',
-      'Ai review PR giùm tui với 🙏',
-      'Cà phê chưa đủ đô để debug ☕',
-      'Uptime 99.99% nhờ đi chùa cầu đó!',
-      'Tối nay tăng 2 Karaoke VIP nha 🎤',
-      'Đừng hỏi deadline, hãy hỏi lương 😂'
+      'Code chạy trên máy tui ngon lành mà! 😅',
+      'Fix 1 bug xong tự nhiên đẻ thêm 3 bug mới... 😭',
+      'Deploy chiều thứ 6 là môn thể thao mạo hiểm anh em ơi! 🎢',
+      'Chiều nay tan làm ghé Quán Nhậu vỉa hè làm vài vại nhé! 🍻',
+      'Ai rảnh vào review PR giùm tui với,300 dòng thôi! 🙏',
+      'Cà phê Espresso hôm nay đậm đấy, đủ đô để debug tới chiều! ☕',
+      'Uptime 99.99% tháng này chắc chắn là nhờ anh em chăm đi chùa cầu đó! 🛕',
+      'Tối nay tăng 1 Bia hơi, tăng 2 vào Phòng Hát Karaoke VIP nha! 🎤',
+      'Đừng hỏi khi nào xong deadline, hãy hỏi tháng này thưởng bao nhiêu! 😂',
+      'Sếp Minh Đăng vừa nâng cấp dàn màn hình 100 inch nhìn chiến thực sự! 👑',
+      'Cấu trúc .NET 9 kết hợp MongoDB với Redis Hash chạy nhanh xé gió! ⚡',
+      'Mới tối ưu lại cái index MongoDB, tốc độ query giảm từ 2 giây xuống 3ms! 🍃',
+      'Ai vừa xóa key trên Redis làm tui tưởng mất phân quyền CR_UNIT_ROLE vậy?! 🔑',
+      'Xuất báo cáo Word Mẫu 2C bằng OpenXml mượt rồi, không lệch 1 milimet! 📄',
+      'Giao diện Vue 3 mới lên màu Glassmorphism nhìn sang xịn mịn quá! ✨',
+      'Chú chó Boss Corgi hôm nay chạy lon ton quanh phòng nhìn cưng xỉu! 🐶',
+      'Vào Phòng Họp bật Call Video WebRTC nói chuyện trực tiếp luôn anh em ơi! 📹',
+      'Ủa ai đặt tên biến là temp1, temp2, tempFinal_v3_reallyFinal vậy?! 🤔',
+      'Đừng sửa trực tiếp trên nhánh main nha, tạo branch đàng hoàng đi! 🌿',
+      'Tester vừa nhắn chữ "Anh ơi..." là thấy tim đập chân run rồi! 💓',
+      'Hôm nay Postman chạy một mạch xanh lè 100% Pass, sướng rơn người! ✅',
+      'Có ai đặt trà sữa full topping không, IT-Bot Mini đang đi giao kìa! 🧋',
+      'Mới bấm chuông Đại Hồng Chung ngoài chùa, nghe tiếng chuông xong tỉnh cả người! 🔔',
+      'Ra Cây Đào Tiên lắc ống xăm thử đi, nay tui rút được quẻ Số 99 Đại Cát đó! 🎋',
+      'Lò nướng BBQ ngoài vỉa hè đang bốc khói thơm phức mùi mực nướng kìa! 🦑',
+      'Hôm nay quyết tâm viết Clean Code, không dùng try-catch nuốt lỗi nữa! 🛡️',
+      'Khách hàng bảo "Sửa giúp anh cái nút này nhỏ thôi", sửa xong đổi cả DB! 🤣',
+      'Màn hình phòng Sếp Đăng chiếu trực tiếp màn hình máy tính thật lên 3D đỉnh ghê! 🖥️',
+      'Tối qua nằm mơ cũng thấy đang viết câu truy vấn Aggregation Pipeline! 😴',
+      'Anh em nhớ Clear Cache trình duyệt Ctrl+F5 trước khi báo bug nha! 🔄',
+      'Docker container lên xanh hết rồi, chuẩn bị bàn giao bản Staging thôi! 🐳',
+      'Làm ngụm nước rồi vào Phòng Họp bàn kiến trúc Microservices nào! 📊',
+      'Chiều nay trời mát thế này mà ngồi vỉa hè cụng ly 1-2-3 DZÔ thì hết nước chấm! 🍺',
+      'Nhớ lưu lại Postman Collection trước khi push code lên Git nha anh em! 📮',
+      'Từ ngày có hệ thống Realtime Online, anh em vào văn phòng 3D đi dạo vui hẳn! 🌐',
+      'Bấm nút Tạo Nhân Vật tự chọn áo lam đi lễ chùa nhìn thành tâm chưa kìa! 🙏',
+      'Lưng hơi mỏi rồi, ra ghế Sofa khu Lounge nằm chill 5 phút lấy sức đã! 🛋️',
+      'Ai đang giữ khóa phòng Server mở cửa cho tui vào kiểm tra nhiệt độ tủ Rack với! ❄️',
+      'Code viết lúc 2 giờ sáng lúc nào nhìn lại cũng như người ngoài hành tinh viết! 👽',
+      'Sếp Minh Đăng bảo dự án này nghiệm thu xong thưởng nóng cả phòng đi du lịch! ✈️',
+      'Tài liệu HDSD xuất theo chuẩn Nghị định 30 Times New Roman 14pt đẹp chuẩn chỉ! 📘',
+      'Đừng quên kiểm tra Dependency Injection trong Program.cs kẻo chạy lên báo lỗi 500! ⚙️',
+      'Mỗi lần nghe tiếng còi hơi DJ trong phòng Karaoke là chân tay lại muốn quẩy! 🕺',
+      'Hôm nay tâm trạng 100%, năng lượng 100%, bug nào vào đây cũng xử đẹp hết! 🔥',
+      'Anh em nào đang Online bấm phím E đi nối đuôi nhau thành đoàn rồng rắn lên mây nào! 🤝'
     ];
+
+    const NHAU_QUOTES = [
+      '1... 2... 3... DZÔ!! Không say không về anh em ơi! 🍻',
+      'Trưởng phòng Minh Đăng bao hết tăng này nha!! 100% nào! 👑🍺',
+      'Mực nướng BBQ than hồng thơm nức mũi, làm miếng mồi bén đi! 🦑🔥',
+      'Uống cốc bia lạnh cho trôi hết mọi bug Production tuần qua! 😂',
+      'Chủ quán ơi cho thêm 1 tháp bia lạnh và 2 đĩa bò tảng nướng nữa! 🥩',
+      'Code có thể bug nhưng cụng ly là không được long đền nha! 🥂',
+      'Chúc mừng hệ thống Go-Live mượt mà, nâng ly chúc sức khỏe cả phòng! 🎉',
+      'Tăng 1 bia hơi vỉa hè sương sương, lát kéo nhau vào Phòng Hát Karaoke tăng 2! 🎤',
+      'Ai chưa hết ly thì tự giác trăm phần trăm đi nhé! 🍺',
+      'Bia hôm nay ngọt thế, đúng là bia Sếp khao có khác! 😋',
+      'Nướng khéo kẻo cháy xiên ba chỉ bò kìa anh em ơi! 🍢',
+      'Ngồi ghế nhựa vỉa hè gió mát rượi, bao nhiêu áp lực deadline bay sạch! 🌬️',
+      'KENG!! Chúc anh em phòng IT năm nay lương thưởng gấp đôi năm ngoái! 💰',
+      'Tình anh em Frontend - Backend gắn kết bên bàn bia hơi! 🤝'
+    ];
+
+    const KARAOKE_QUOTES = [
+      'Cho tui xin bài Cắt Đôi Nỗi Sầu, cắt luôn nỗi đau fix bug! 🎤',
+      'Giọng ca vàng làng lập trình lên sân khấu lĩnh xướng đây! 🎶',
+      'Bấm ưu tiên bài Đắp Mộ Cuộc Tình nhạc sống giùm tui với! 🎵',
+      'Quẩy nhiệt lên anh em ơi, bật đèn Strobe chớp chớp cho cháy! 🔥',
+      'Bấm chấm điểm 100đ và bắn pháo giấy cổ vũ ca sĩ đi! 💯🎉',
+      'Hát cho quên hết mọi ưu phiền, mai lên văn phòng code tiếp! 🍻',
+      'Ai bấm còi hơi DJ Pờ Rèn Pờ Rèn nghe sung quá vậy! 📢',
+      'Lên sân khấu song ca bài Nối Vòng Tay Lớn nào anh em ơi! 🤝🎶',
+      'Dàn loa KTV VIP 999 này đập bass căng đét, hát nhẹ cả hơi! 🔊',
+      'Share màn hình YouTube lên TV 3D hát nhạc trẻ cực mượt luôn! 📺'
+    ];
+
+    const quoteShuffleBags = {};
+    function pickNextQuote(list, bagKey = 'default') {
+      if (!list || list.length === 0) return '';
+      if (!quoteShuffleBags[bagKey] || quoteShuffleBags[bagKey].length === 0) {
+        const indices = list.map((_, i) => i);
+        for (let i = indices.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [indices[i], indices[j]] = [indices[j], indices[i]];
+        }
+        quoteShuffleBags[bagKey] = indices;
+      }
+      return list[quoteShuffleBags[bagKey].pop()];
+    }
 
     // =========================================================================
     // 2. AUDIO SYNTHESIS & PROCEDURAL CANVAS TEXTURES
@@ -350,12 +454,12 @@ import * as THREE from 'three';
 
       for (let i = 0; i < 2; i++) {
         const ring = new THREE.Mesh(
-          new THREE.TorusGeometry(0.35, 0.025, 8, 28),
-          new THREE.MeshBasicMaterial({ color: 0xfacc15, transparent: true, opacity: 0.85 })
+          new THREE.TorusGeometry(0.42, 0.03, 8, 32),
+          new THREE.MeshBasicMaterial({ color: 0xfacc15, transparent: true, opacity: 0.88 })
         );
         ring.rotation.x = Math.PI / 2;
-        ring.position.set(13.45, 1.85, 4.3);
-        ring.userData = { age: -i * 0.22, maxAge: 1.5 };
+        ring.position.set(25.2, 2.25, 3.8);
+        ring.userData = { age: -i * 0.22, maxAge: 1.6 };
         scene.add(ring);
         bellWaveRings.push(ring);
       }
@@ -469,8 +573,8 @@ import * as THREE from 'three';
             roughness: isGoldBar ? 0.2 : 0.6
           })
         );
-        const spread = amount >= 5000000 ? 0.55 : 0.22;
-        note.position.set(17.85 + (Math.random() - 0.5) * spread, 1.55 + i * 0.11, 5.2 + (Math.random() - 0.5) * spread);
+        const spread = amount >= 5000000 ? 0.65 : 0.25;
+        note.position.set(33.6 + (Math.random() - 0.5) * spread, 1.65 + i * 0.11, 5.2 + (Math.random() - 0.5) * spread);
         note.rotation.set(Math.random() * 0.4, Math.random() * Math.PI, Math.random() * 0.3);
         note.userData = { vy: 0.75 + Math.random() * 0.45, life: 1.8 };
         scene.add(note);
@@ -1509,37 +1613,41 @@ import * as THREE from 'three';
         ]
       });
 
-      // Conference Table
-      const mTable = new THREE.Mesh(new THREE.BoxGeometry(4.8, 0.1, 1.8), mats.woodDesk);
-      mTable.position.set(-7.2, 0.75, -5.5);
-      const leg1 = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.72, 1.2), mats.darkMetal);
-      leg1.position.set(-8.9, 0.36, -5.5);
+      // Grand Executive Conference Table (5.4m x 1.95m) & 8 Chairs
+      const mTable = new THREE.Mesh(new THREE.BoxGeometry(5.4, 0.1, 1.95), mats.woodDesk);
+      mTable.position.set(-7.1, 0.75, -5.5);
+      const tableInlay = new THREE.Mesh(new THREE.BoxGeometry(4.4, 0.11, 0.45), mats.darkMetal);
+      tableInlay.position.set(-7.1, 0.755, -5.5);
+      const leg1 = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.72, 1.3), mats.darkMetal);
+      leg1.position.set(-9.1, 0.36, -5.5);
       const leg2 = leg1.clone();
-      leg2.position.x = -5.5;
-      mGroup.add(mTable, leg1, leg2);
+      leg2.position.x = -5.1;
+      mGroup.add(mTable, tableInlay, leg1, leg2);
 
-      // 6 Chairs & Laptops around Conference Table
+      // 6 Side Chairs + 2 Head-of-Table Chairs & Laptops around Conference Table
       [-8.6, -7.2, -5.8].forEach(cx => {
-        mGroup.add(createOfficeChair(cx, -4.3, Math.PI));
-        mGroup.add(createOfficeChair(cx, -6.7, 0));
-        const laptop = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.02, 0.25), mats.chrome);
-        laptop.position.set(cx, 0.81, -4.95);
+        mGroup.add(createOfficeChair(cx, -4.25, Math.PI));
+        mGroup.add(createOfficeChair(cx, -6.75, 0));
+        const laptop = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.02, 0.26), mats.chrome);
+        laptop.position.set(cx, 0.81, -4.92);
         mGroup.add(laptop);
       });
+      mGroup.add(createOfficeChair(-10.15, -5.5, Math.PI / 2));
+      mGroup.add(createOfficeChair(-4.05, -5.5, -Math.PI / 2));
 
-      // 98" Presentation Screen on Back Wall
+      // 120" Ultra-Wide Presentation & Live WebRTC Video Call Screen on Back Wall (Unobstructed by ceiling light!)
       const sCanvas = document.createElement('canvas');
       sCanvas.width = 512; sCanvas.height = 256;
       const sCtx = sCanvas.getContext('2d');
       const sTex = new THREE.CanvasTexture(sCanvas);
       const sMat = new THREE.MeshStandardMaterial({
-        map: sTex, emissiveMap: sTex, emissive: new THREE.Color(0xffffff), emissiveIntensity: 0.75
+        map: sTex, emissiveMap: sTex, emissive: new THREE.Color(0xffffff), emissiveIntensity: 0.85
       });
 
       const screenGroup = new THREE.Group();
-      screenGroup.position.set(-7.2, 2.15, -8.78);
-      const sBezel = new THREE.Mesh(new THREE.BoxGeometry(3.8, 1.95, 0.1), mats.matteBlack);
-      const sFace = new THREE.Mesh(new THREE.PlaneGeometry(3.62, 1.8), sMat);
+      screenGroup.position.set(-7.1, 2.18, -8.78);
+      const sBezel = new THREE.Mesh(new THREE.BoxGeometry(4.55, 2.24, 0.1), mats.matteBlack);
+      const sFace = new THREE.Mesh(new THREE.PlaneGeometry(4.36, 2.08), sMat);
       sFace.position.z = 0.06;
       screenGroup.add(sBezel, sFace);
       mGroup.add(screenGroup);
@@ -2095,111 +2203,222 @@ import * as THREE from 'three';
       const tGroup = new THREE.Group();
 
       const grassMat = new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.92 });
-      const stoneMat = new THREE.MeshStandardMaterial({ color: 0xd6d3d1, roughness: 0.82 });
-      const redWoodMat = new THREE.MeshStandardMaterial({ color: 0x991b1b, roughness: 0.55 });
-      const goldMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.3, metalness: 0.65 });
-      const roofTileMat = new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness: 0.5 });
+      const stoneMat = new THREE.MeshStandardMaterial({ color: 0xd6d3d1, roughness: 0.78 });
+      const marbleMat = new THREE.MeshStandardMaterial({ color: 0xf5f5f4, roughness: 0.45 });
+      const redWoodMat = new THREE.MeshStandardMaterial({ color: 0x991b1b, roughness: 0.5 });
+      const goldMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.25, metalness: 0.75 });
+      const roofTileMat = new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness: 0.48 });
       const cushionMat = new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness: 0.85 });
       const velvetRopeMat = new THREE.MeshStandardMaterial({ color: 0xdc2626, roughness: 0.6 });
+      const waterMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.18, metalness: 0.15 });
+      const lotusLeafMat = new THREE.MeshStandardMaterial({ color: 0x16a34a, roughness: 0.7 });
+      const lotusPinkMat = new THREE.MeshStandardMaterial({ color: 0xf472b6, emissive: 0xdb2777, emissiveIntensity: 0.5 });
 
-      // Extended Temple Courtyard (X: 12.1 -> 19.3, Z: 1.5 -> 10.2)
-      const grass = new THREE.Mesh(new THREE.BoxGeometry(7.4, 0.28, 8.8), grassMat);
-      grass.position.set(15.7, -0.14, 5.8);
-      const stoneCourt = new THREE.Mesh(new THREE.BoxGeometry(6.0, 0.06, 7.2), stoneMat);
-      stoneCourt.position.set(15.7, 0.03, 6.2);
-      tGroup.add(grass, stoneCourt);
+      // 1. IT Office Outdoor Zen Garden & Koi Pond (Between Office and Temple at X: 12.2 -> 21.0, Z: 0.8 -> 10.5)
+      const gardenLawn = new THREE.Mesh(new THREE.BoxGeometry(9.2, 0.28, 9.8), grassMat);
+      gardenLawn.position.set(16.6, -0.14, 5.6);
+      const koiPondRim = new THREE.Mesh(new THREE.CylinderGeometry(2.35, 2.45, 0.22, 24), stoneMat);
+      koiPondRim.position.set(16.5, 0.11, 4.6);
+      const koiWater = new THREE.Mesh(new THREE.CylinderGeometry(2.1, 2.1, 0.24, 24), waterMat);
+      koiWater.position.set(16.5, 0.12, 4.6);
+      tGroup.add(gardenLawn, koiPondRim, koiWater);
+      for (let i = 0; i < 7; i++) {
+        const ang = (i / 7) * Math.PI * 2;
+        const pad = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.02, 12), lotusLeafMat);
+        pad.position.set(16.5 + Math.cos(ang) * 1.25, 0.25, 4.6 + Math.sin(ang) * 1.25);
+        tGroup.add(pad);
+        if (i % 2 === 0) {
+          const fl = new THREE.Mesh(new THREE.ConeGeometry(0.14, 0.18, 8), lotusPinkMat);
+          fl.position.set(pad.position.x, 0.33, pad.position.z);
+          tGroup.add(fl);
+        }
+      }
 
-      for (let i = 0; i < 6; i++) {
-        const step = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.48, 0.06, 12), stoneMat);
-        step.position.set(7.5 + i * 1.45, 0.03, 9.8);
+      // Grand Stone Avenue connecting Main Office Entrance (X=4.5, Z=9.8) to the Separated Grand Temple Complex (X=30.5, Z=9.8)
+      for (let i = 0; i < 16; i++) {
+        const step = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.58, 0.07, 14), stoneMat);
+        step.position.set(6.0 + i * 1.45, 0.035, 9.8);
         tGroup.add(step);
       }
 
-      // Main Shrine Pavilion (X: 15.7, Z: 3.1)
-      const shrineGroup = new THREE.Group();
-      shrineGroup.position.set(15.7, 0, 3.1);
+      // 2. GRAND SEPARATED TEMPLE COMPLEX (X: 21.5 -> 39.5, Z: -4.5 -> 13.5, Center X = 30.5)
+      const templeLawn = new THREE.Mesh(new THREE.BoxGeometry(18.6, 0.28, 18.2), grassMat);
+      templeLawn.position.set(30.5, -0.14, 4.4);
+      const grandCourtyard = new THREE.Mesh(new THREE.BoxGeometry(15.6, 0.08, 15.2), stoneMat);
+      grandCourtyard.position.set(30.5, 0.04, 4.4);
+      const imperialCarpetPath = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.09, 10.5), marbleMat);
+      imperialCarpetPath.position.set(30.5, 0.045, 6.2);
+      tGroup.add(templeLawn, grandCourtyard, imperialCarpetPath);
 
-      const podium = new THREE.Mesh(new THREE.BoxGeometry(4.4, 0.36, 3.0), stoneMat);
-      podium.position.y = 0.18;
-      shrineGroup.add(podium);
+      // 3. GRAND TAM QUAN GATE (Cổng Tam Quan 3 Mái Đao Cong tại X = 22.2, Z = 9.8 đón khách từ Văn Phòng sang)
+      const gateGroup = new THREE.Group();
+      gateGroup.position.set(22.2, 0, 9.8);
+      gateGroup.rotation.y = -Math.PI / 2;
+      [-2.4, -0.95, 0.95, 2.4].forEach((gx, gIdx) => {
+        const h = (gIdx === 1 || gIdx === 2) ? 4.2 : 3.3;
+        const base = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.28, 0.45, 12), stoneMat);
+        base.position.set(gx, 0.225, 0);
+        const col = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.18, h, 14), redWoodMat);
+        col.position.set(gx, h / 2 + 0.2, 0);
+        gateGroup.add(base, col);
+      });
+      const gateMainRoof = new THREE.Mesh(new THREE.ConeGeometry(2.2, 0.95, 4), roofTileMat);
+      gateMainRoof.rotation.y = Math.PI / 4;
+      gateMainRoof.position.set(0, 4.75, 0);
+      const gateLeftRoof = new THREE.Mesh(new THREE.ConeGeometry(1.35, 0.72, 4), roofTileMat);
+      gateLeftRoof.rotation.y = Math.PI / 4;
+      gateLeftRoof.position.set(-1.75, 3.8, 0);
+      const gateRightRoof = gateLeftRoof.clone();
+      gateRightRoof.position.x = 1.75;
+      const gatePlaque = new THREE.Mesh(
+        new THREE.BoxGeometry(2.3, 0.58, 0.1),
+        new THREE.MeshStandardMaterial({ map: createSignTexture('CHÙA LINH ỨNG ZERO-BUG', 'CỔNG TAM QUAN • TÂM TỊNH CODE MƯỢT', '#7f1d1d', '#fde047', '#fef3c7') })
+      );
+      gatePlaque.position.set(0, 3.78, 0);
+      gateGroup.add(gateMainRoof, gateLeftRoof, gateRightRoof, gatePlaque);
+      tGroup.add(gateGroup);
 
-      [[-1.85, -1.2], [1.85, -1.2], [-1.85, 1.2], [1.85, 1.2]].forEach(([px, pz]) => {
-        const pil = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.13, 2.7, 12), redWoodMat);
-        pil.position.set(px, 1.7, pz);
-        shrineGroup.add(pil);
+      // Pair of Twin Lotus Ponds flanking the Grand Courtyard (X = 25.2 and X = 35.8, Z = 10.2)
+      [25.2, 35.8].forEach(px => {
+        const pRim = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.25, 2.4), marbleMat);
+        pRim.position.set(px, 0.125, 10.4);
+        const pWat = new THREE.Mesh(new THREE.BoxGeometry(2.85, 0.27, 2.05), waterMat);
+        pWat.position.set(px, 0.13, 10.4);
+        const fl = new THREE.Mesh(new THREE.ConeGeometry(0.22, 0.26, 8), lotusPinkMat);
+        fl.position.set(px, 0.34, 10.4);
+        tGroup.add(pRim, pWat, fl);
       });
 
-      const roof1 = new THREE.Mesh(new THREE.ConeGeometry(3.4, 1.05, 4), roofTileMat);
+      // 4. ĐẠI HÙNG BẢO ĐIỆN 3 TẦNG MÁI HOÀNG KIM (Main Grand Sanctuary at X: 30.5, Z: 0.2 — 2.2x Larger!)
+      const shrineGroup = new THREE.Group();
+      shrineGroup.position.set(30.5, 0, 0.2);
+
+      // 3-Tiered Imperial Stone Podium
+      const pod1 = new THREE.Mesh(new THREE.BoxGeometry(8.4, 0.26, 5.6), stoneMat);
+      pod1.position.y = 0.13;
+      const pod2 = new THREE.Mesh(new THREE.BoxGeometry(7.8, 0.26, 5.0), marbleMat);
+      pod2.position.y = 0.39;
+      const pod3 = new THREE.Mesh(new THREE.BoxGeometry(7.2, 0.22, 4.4), stoneMat);
+      pod3.position.y = 0.61;
+      shrineGroup.add(pod1, pod2, pod3);
+
+      // 8 Grand Red-Gold Pillars
+      [-3.1, -1.1, 1.1, 3.1].forEach(px => {
+        [-1.8, 1.8].forEach(pz => {
+          const pBase = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.28, 0.3, 12), goldMat);
+          pBase.position.set(px, 0.85, pz);
+          const pil = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.19, 3.4, 14), redWoodMat);
+          pil.position.set(px, 2.55, pz);
+          shrineGroup.add(pBase, pil);
+        });
+      });
+
+      // 3-Tiered Sweeping Pagoda Roofs reaching 7.2m height!
+      const roof1 = new THREE.Mesh(new THREE.ConeGeometry(6.2, 1.35, 4), roofTileMat);
       roof1.rotation.y = Math.PI / 4;
-      roof1.position.y = 3.45;
-      const roof2 = new THREE.Mesh(new THREE.ConeGeometry(2.1, 0.85, 4), roofTileMat);
+      roof1.position.y = 4.65;
+      const roof2 = new THREE.Mesh(new THREE.ConeGeometry(4.5, 1.15, 4), roofTileMat);
       roof2.rotation.y = Math.PI / 4;
-      roof2.position.y = 4.25;
-      const finial = new THREE.Mesh(new THREE.SphereGeometry(0.18, 12, 12), goldMat);
-      finial.position.y = 4.75;
-      shrineGroup.add(roof1, roof2, finial);
+      roof2.position.y = 5.75;
+      const roof3 = new THREE.Mesh(new THREE.ConeGeometry(2.8, 0.95, 4), roofTileMat);
+      roof3.rotation.y = Math.PI / 4;
+      roof3.position.y = 6.65;
+      const finial = new THREE.Mesh(new THREE.SphereGeometry(0.28, 14, 14), goldMat);
+      finial.position.y = 7.28;
+      shrineGroup.add(roof1, roof2, roof3, finial);
 
       const plaque = new THREE.Mesh(
-        new THREE.BoxGeometry(2.7, 0.62, 0.08),
-        new THREE.MeshStandardMaterial({ map: createSignTexture('CHÙA CẦU KHÔNG BUG', 'THẮP NHANG • QUỲ LẠY • XẾP HÀNG', '#7f1d1d', '#fde047', '#fef3c7') })
+        new THREE.BoxGeometry(4.4, 0.85, 0.12),
+        new THREE.MeshStandardMaterial({ map: createSignTexture('ĐẠI HÙNG BẢO ĐIỆN • CHÙA CẦU KHÔNG BUG', 'THẮP NHANG • QUỲ LẠY • THỈNH CHUÔNG • XIN XĂM', '#7f1d1d', '#fde047', '#fef3c7') })
       );
-      plaque.position.set(0, 2.75, 1.28);
+      plaque.position.set(0, 3.72, 1.92);
       shrineGroup.add(plaque);
 
-      const altar = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.95, 0.88), redWoodMat);
-      altar.position.set(0, 0.84, -0.35);
-      const goldenIdol = new THREE.Mesh(new THREE.DodecahedronGeometry(0.32, 1), goldMat);
-      goldenIdol.position.set(0, 1.68, -0.45);
-      const lotusBase = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.45, 0.18, 12), goldMat);
-      lotusBase.position.set(0, 1.4, -0.45);
+      // Grand Golden Buddha Statue with Glowing Halo + 2 Guardian Statues
+      const altar = new THREE.Mesh(new THREE.BoxGeometry(4.2, 1.15, 1.3), redWoodMat);
+      altar.position.set(0, 1.28, -0.55);
+      const lotusBase = new THREE.Mesh(new THREE.CylinderGeometry(0.68, 0.82, 0.28, 16), goldMat);
+      lotusBase.position.set(0, 1.98, -0.65);
+      const goldenIdol = new THREE.Mesh(new THREE.DodecahedronGeometry(0.58, 1), goldMat);
+      goldenIdol.position.set(0, 2.48, -0.65);
+      const halo = new THREE.Mesh(
+        new THREE.TorusGeometry(0.82, 0.05, 10, 28),
+        new THREE.MeshStandardMaterial({ color: 0xfde047, emissive: 0xf59e0b, emissiveIntensity: 1.8 })
+      );
+      halo.position.set(0, 2.52, -0.95);
+      [-1.45, 1.45].forEach(gx => {
+        const guardBase = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.36, 0.2, 12), goldMat);
+        guardBase.position.set(gx, 1.92, -0.5);
+        const guardStatue = new THREE.Mesh(new THREE.CapsuleGeometry(0.22, 0.42, 6, 12), goldMat);
+        guardStatue.position.set(gx, 2.28, -0.5);
+        shrineGroup.add(guardBase, guardStatue);
+      });
 
       // Golden Ingots & Stacks of Offerings on the Main Altar
-      [-0.75, 0.75].forEach(ox => {
-        const tray = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.22, 0.04, 14), goldMat);
-        tray.position.set(ox, 1.34, -0.25);
-        for (let k = 0; k < 4; k++) {
-          const ingot = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.055, 0.08), goldMat);
-          ingot.position.set(ox + (k % 2 - 0.5) * 0.12, 1.39 + Math.floor(k / 2) * 0.06, -0.25);
+      [-1.1, 1.1].forEach(ox => {
+        const tray = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.3, 0.05, 14), goldMat);
+        tray.position.set(ox, 1.88, -0.2);
+        for (let k = 0; k < 6; k++) {
+          const ingot = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.06, 0.09), goldMat);
+          ingot.position.set(ox + (k % 2 - 0.5) * 0.14, 1.94 + Math.floor(k / 2) * 0.065, -0.2);
           shrineGroup.add(ingot);
         }
         shrineGroup.add(tray);
       });
-      shrineGroup.add(altar, goldenIdol, lotusBase);
+      shrineGroup.add(altar, goldenIdol, lotusBase, halo);
 
-      // Grand Bronze Bell Tower (Tháp Đại Hồng Chung tại X=13.45, Z=4.3)
+      [-2.8, -1.1, 1.1, 2.8].forEach(lx => {
+        const lanMat = new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0xdc2626, emissiveIntensity: 1.6 });
+        const lan = new THREE.Mesh(new THREE.SphereGeometry(0.26, 12, 10), lanMat);
+        lan.scale.set(0.9, 1.28, 0.9);
+        lan.position.set(lx, 3.35, 1.88);
+        shrineGroup.add(lan);
+      });
+
+      const templeLight = new THREE.PointLight(0xfbbf24, 6.5, 18, 1.4);
+      templeLight.position.set(0, 3.6, 2.2);
+      shrineGroup.add(templeLight);
+      tGroup.add(shrineGroup);
+
+      // 5. GRAND BRONZE BELL TOWER (Tháp Đại Hồng Chung 2 Tầng Mái bên trái tại X=25.2, Z=3.8)
       const bellTowerGroup = new THREE.Group();
-      bellTowerGroup.position.set(13.45, 0, 4.3);
-      [-0.55, 0.55].forEach(bx => {
-        const bPost = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.09, 2.55, 10), redWoodMat);
-        bPost.position.set(bx, 1.28, 0);
+      bellTowerGroup.position.set(25.2, 0, 3.8);
+      const bellPod = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.25, 2.3), stoneMat);
+      bellPod.position.y = 0.125;
+      bellTowerGroup.add(bellPod);
+      [[-0.82, -0.82], [0.82, -0.82], [-0.82, 0.82], [0.82, 0.82]].forEach(([bx, bz]) => {
+        const bPost = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.12, 3.2, 12), redWoodMat);
+        bPost.position.set(bx, 1.72, bz);
         bellTowerGroup.add(bPost);
       });
-      const bBeam = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 1.45, 10), goldMat);
+      const bBeam = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 1.85, 10), goldMat);
       bBeam.rotation.z = Math.PI / 2;
-      bBeam.position.set(0, 2.38, 0);
-      const bRoof = new THREE.Mesh(new THREE.ConeGeometry(1.15, 0.55, 4), roofTileMat);
-      bRoof.rotation.y = Math.PI / 4;
-      bRoof.position.set(0, 2.75, 0);
+      bBeam.position.set(0, 3.05, 0);
+      const bRoof1 = new THREE.Mesh(new THREE.ConeGeometry(1.85, 0.72, 4), roofTileMat);
+      bRoof1.rotation.y = Math.PI / 4;
+      bRoof1.position.set(0, 3.55, 0);
+      const bRoof2 = new THREE.Mesh(new THREE.ConeGeometry(1.2, 0.58, 4), roofTileMat);
+      bRoof2.rotation.y = Math.PI / 4;
+      bRoof2.position.set(0, 4.15, 0);
 
-      // Swinging Bronze Bell Pivot
       const bellPivot = new THREE.Group();
-      bellPivot.position.set(0, 2.35, 0);
-      const bellBody = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.36, 0.65, 18), goldMat);
-      bellBody.position.y = -0.45;
-      const bellRim = new THREE.Mesh(new THREE.TorusGeometry(0.36, 0.035, 8, 20), goldMat);
+      bellPivot.position.set(0, 3.0, 0);
+      const bellBody = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.46, 0.82, 20), goldMat);
+      bellBody.position.y = -0.52;
+      const bellRim = new THREE.Mesh(new THREE.TorusGeometry(0.46, 0.045, 8, 22), goldMat);
       bellRim.rotation.x = Math.PI / 2;
-      bellRim.position.y = -0.77;
+      bellRim.position.y = -0.92;
       bellPivot.add(bellBody, bellRim);
       templeBellMesh = bellPivot;
-      bellTowerGroup.add(bBeam, bRoof, bellPivot);
+      bellTowerGroup.add(bBeam, bRoof1, bRoof2, bellPivot);
       tGroup.add(bellTowerGroup);
 
       registerInteractive(bellTowerGroup, {
         id: 'temple-bell-tower',
         type: 'chua',
         icon: '🔔',
-        zone: 'Khu Viếng Chùa Tâm Linh',
-        title: 'Đại Hồng Chung "Chuông Chùa Giải Bug"',
+        zone: 'Quần Thể Chùa Linh Ứng Zero-Bug',
+        title: 'Tháp Đại Hồng Chung 2 Tầng Mái',
         desc: 'Thỉnh tiếng chuông chùa ngân vang kèm tiếng mõ gỗ trầm ấm giúp tâm tịnh, code mượt và xua tan mọi Bug!',
         getMetrics: () => `
           <div class="flex justify-between"><span class="text-slate-400">Âm thanh:</span><span class="text-amber-300 font-semibold">Chuông đồng + Mõ gỗ 3D 🔔</span></div>
@@ -2210,69 +2429,89 @@ import * as THREE from 'three';
         ]
       });
 
-      [-1.7, 1.7].forEach(lx => {
-        const lanMat = new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0xdc2626, emissiveIntensity: 1.5 });
-        const lan = new THREE.Mesh(new THREE.SphereGeometry(0.22, 12, 10), lanMat);
-        lan.scale.set(0.9, 1.25, 0.9);
-        lan.position.set(lx, 2.45, 1.32);
-        shrineGroup.add(lan);
+      // 6. SYMMETRIC PRAJNA DRUM TOWER (Lầu Trống Bát Nhã 2 Tầng Mái đối xứng bên phải tại X=35.8, Z=3.8)
+      const drumTowerGroup = new THREE.Group();
+      drumTowerGroup.position.set(35.8, 0, 3.8);
+      const drumPod = bellPod.clone();
+      drumTowerGroup.add(drumPod);
+      [[-0.82, -0.82], [0.82, -0.82], [-0.82, 0.82], [0.82, 0.82]].forEach(([bx, bz]) => {
+        const dPost = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.12, 3.2, 12), redWoodMat);
+        dPost.position.set(bx, 1.72, bz);
+        drumTowerGroup.add(dPost);
+      });
+      const dRoof1 = bRoof1.clone();
+      const dRoof2 = bRoof2.clone();
+      const bigDrum = new THREE.Mesh(new THREE.CylinderGeometry(0.48, 0.48, 0.68, 20), redWoodMat);
+      bigDrum.rotation.x = Math.PI / 2;
+      bigDrum.position.set(0, 2.25, 0);
+      const drumFaceF = new THREE.Mesh(new THREE.CylinderGeometry(0.44, 0.44, 0.7, 20), goldMat);
+      drumFaceF.rotation.x = Math.PI / 2;
+      drumFaceF.position.set(0, 2.25, 0);
+      drumTowerGroup.add(dRoof1, dRoof2, bigDrum, drumFaceF);
+      tGroup.add(drumTowerGroup);
+      registerInteractive(drumTowerGroup, {
+        id: 'temple-drum-tower',
+        type: 'chua',
+        icon: '🥁',
+        zone: 'Quần Thể Chùa Linh Ứng Zero-Bug',
+        title: 'Lầu Trống Bát Nhã Đại Cát',
+        desc: 'Lầu Trống Bát Nhã đối xứng với Tháp Đại Hồng Chung, nổi trống khai lễ cầu dự án thành công vang dội!',
+        getMetrics: () => `<div class="flex justify-between"><span class="text-slate-400">Nghi lễ:</span><span class="text-amber-300 font-bold">Chuông Trống Bát Nhã 🔔🥁</span></div>`,
+        getActions: () => [
+          { label: '🥁 Nổi Trống & Thỉnh Chuông Bát Nhã', primary: true, run: () => playTempleBellSound(false) },
+          { label: '🙏 Cả đoàn đồng thanh khấn nguyện', primary: false, run: () => triggerMassTemplePrayers() }
+        ]
       });
 
-      const templeLight = new THREE.PointLight(0xfbbf24, 4.5, 11, 1.5);
-      templeLight.position.set(0, 2.5, 1.2);
-      shrineGroup.add(templeLight);
-      tGroup.add(shrineGroup);
-
-      // Outdoor Bronze Incense Burner (Lư hương lớn ngoài sân để cắm nhang tại X=15.7, Z=5.1)
+      // 7. Outdoor Giant Bronze Incense Cauldron (Đỉnh Lư Hương Đồng Đại Cát tại X=30.5, Z=5.0)
       const burnerGroup = new THREE.Group();
-      burnerGroup.position.set(15.7, 0.05, 5.1);
-      const bPedestal = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.42, 0.65, 14), stoneMat);
-      bPedestal.position.y = 0.325;
-      const bCauldron = new THREE.Mesh(new THREE.CylinderGeometry(0.46, 0.34, 0.48, 16), goldMat);
-      bCauldron.position.y = 0.88;
-      const bAsh = new THREE.Mesh(new THREE.CylinderGeometry(0.41, 0.41, 0.04, 16), new THREE.MeshStandardMaterial({ color: 0x78716c }));
-      bAsh.position.y = 1.11;
+      burnerGroup.position.set(30.5, 0.05, 5.0);
+      const bPedestal = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.58, 0.72, 16), stoneMat);
+      bPedestal.position.y = 0.36;
+      const bCauldron = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.46, 0.58, 18), goldMat);
+      bCauldron.position.y = 0.98;
+      const bAsh = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.05, 18), new THREE.MeshStandardMaterial({ color: 0x78716c }));
+      bAsh.position.y = 1.25;
       burnerGroup.add(bPedestal, bCauldron, bAsh);
 
-      // Glowing Incense Sticks planted inside burner
       const stickMat = new THREE.MeshStandardMaterial({ color: 0x92400e });
       const emberMat = new THREE.MeshBasicMaterial({ color: 0xff4500 });
-      for (let i = 0; i < 14; i++) {
-        const ang = (i / 14) * Math.PI * 2;
-        const rad = 0.06 + (i % 3) * 0.09;
-        const st = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.28, 6), stickMat);
-        st.position.set(Math.cos(ang) * rad, 1.24, Math.sin(ang) * rad);
+      for (let i = 0; i < 18; i++) {
+        const ang = (i / 18) * Math.PI * 2;
+        const rad = 0.08 + (i % 3) * 0.12;
+        const st = new THREE.Mesh(new THREE.CylinderGeometry(0.007, 0.007, 0.34, 6), stickMat);
+        st.position.set(Math.cos(ang) * rad, 1.4, Math.sin(ang) * rad);
         st.rotation.z = (Math.random() - 0.5) * 0.14;
-        const tip = new THREE.Mesh(new THREE.SphereGeometry(0.011, 6, 6), emberMat);
-        tip.position.y = 0.145;
+        const tip = new THREE.Mesh(new THREE.SphereGeometry(0.013, 6, 6), emberMat);
+        tip.position.y = 0.175;
         st.add(tip);
         burnerGroup.add(st);
       }
       tGroup.add(burnerGroup);
 
-      // 2 Red Kneeling Mats & Cushions (Chiếu & Bồ đoàn quỳ lạy)
-      [14.85, 16.55].forEach(cx => {
-        const matMesh = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.03, 1.1), new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.9 }));
-        matMesh.position.set(cx, 0.075, 6.22);
-        const cushion = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.31, 0.1, 16), cushionMat);
-        cushion.position.set(cx, 0.13, 6.18);
+      // 4 Red Kneeling Mats & Cushions across the wide Sanctuary Courtyard (X = 28.4, 29.8, 31.2, 32.6 at Z = 6.35)
+      [28.4, 29.8, 31.2, 32.6].forEach(cx => {
+        const matMesh = new THREE.Mesh(new THREE.BoxGeometry(1.05, 0.03, 1.15), new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.9 }));
+        matMesh.position.set(cx, 0.08, 6.35);
+        const cushion = new THREE.Mesh(new THREE.CylinderGeometry(0.31, 0.34, 0.11, 16), cushionMat);
+        cushion.position.set(cx, 0.14, 6.32);
         tGroup.add(matMesh, cushion);
       });
 
-      // Donation Box (Hòm Công Đức) at (17.85, 0, 5.2) - Interactive!
+      // Donation Box (Hòm Công Đức Đại Lộc) at (33.6, 0, 5.2)
       const donationBoxGroup = new THREE.Group();
-      donationBoxGroup.position.set(17.85, 0, 5.2);
-      const donationBox = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.88, 0.52), redWoodMat);
-      donationBox.position.set(0, 0.49, 0);
-      const slotTop = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.035, 0.06), mats.matteBlack);
-      slotTop.position.set(0, 0.94, 0);
-      const goldTrim = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.06, 0.56), goldMat);
-      goldTrim.position.set(0, 0.91, 0);
+      donationBoxGroup.position.set(33.6, 0, 5.2);
+      const donationBox = new THREE.Mesh(new THREE.BoxGeometry(0.82, 0.98, 0.62), redWoodMat);
+      donationBox.position.set(0, 0.52, 0);
+      const slotTop = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.04, 0.07), mats.matteBlack);
+      slotTop.position.set(0, 1.03, 0);
+      const goldTrim = new THREE.Mesh(new THREE.BoxGeometry(0.86, 0.07, 0.66), goldMat);
+      goldTrim.position.set(0, 1.0, 0);
       const donLabel = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.58, 0.24),
-        new THREE.MeshStandardMaterial({ map: createSignTexture('CÔNG ĐỨC', 'BỎ TIỀN TÍCH PHƯỚC', '#7f1d1d', '#fde047', '#ffffff') })
+        new THREE.PlaneGeometry(0.7, 0.28),
+        new THREE.MeshStandardMaterial({ map: createSignTexture('HÒM CÔNG ĐỨC', 'TÍCH PHƯỚC CHỐNG BUG', '#7f1d1d', '#fde047', '#ffffff') })
       );
-      donLabel.position.set(0, 0.58, 0.27);
+      donLabel.position.set(0, 0.62, 0.32);
       donationBoxGroup.add(donationBox, slotTop, goldTrim, donLabel);
       tGroup.add(donationBoxGroup);
 
@@ -2280,8 +2519,8 @@ import * as THREE from 'three';
         id: 'donation-box',
         type: 'donation',
         icon: '💵',
-        zone: 'Khu Viếng Chùa Tâm Linh',
-        title: 'Hòm Công Đức "Tích Đức Chống Bug"',
+        zone: 'Quần Thể Chùa Linh Ứng Zero-Bug',
+        title: 'Hòm Công Đức Đại Lộc "Tích Đức Chống Bug"',
         desc: 'Bỏ tiền công đức để cầu hệ thống chạy mượt, lương thưởng tăng vọt và bug tự biến mất!',
         getMetrics: () => `
           <div class="flex justify-between"><span class="text-slate-400">Tổng quỹ công đức:</span><span class="text-amber-300 font-bold">${formatVND(state.donationTotal)}</span></div>
@@ -2295,29 +2534,29 @@ import * as THREE from 'three';
         ]
       });
 
-      // Queue Stanchions & Red Velvet Ropes (Hàng rào xếp hàng ngay ngắn hai bên lối vào Z: 7.0 -> 9.2)
-      [14.15, 17.25].forEach(rx => {
-        [7.0, 8.1, 9.2].forEach(rz => {
-          const post = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.04, 0.78, 8), goldMat);
-          post.position.set(rx, 0.44, rz);
-          const knob = new THREE.Mesh(new THREE.SphereGeometry(0.055, 8, 8), goldMat);
-          knob.position.set(rx, 0.85, rz);
+      // Queue Stanchions & Red Velvet Ropes along the Grand Courtyard (X = 27.6 & 33.4, Z: 7.4 -> 10.2)
+      [27.6, 33.4].forEach(rx => {
+        [7.4, 8.8, 10.2].forEach(rz => {
+          const post = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.045, 0.85, 8), goldMat);
+          post.position.set(rx, 0.46, rz);
+          const knob = new THREE.Mesh(new THREE.SphereGeometry(0.065, 8, 8), goldMat);
+          knob.position.set(rx, 0.9, rz);
           tGroup.add(post, knob);
         });
-        const rope = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 2.2, 8), velvetRopeMat);
+        const rope = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 2.8, 8), velvetRopeMat);
         rope.rotation.x = Math.PI / 2;
-        rope.position.set(rx, 0.68, 8.1);
+        rope.position.set(rx, 0.72, 8.8);
         tGroup.add(rope);
       });
 
-      // Incense Smoke rising right from Outdoor Bronze Burner (15.7, 1.38, 5.1)
-      for (let i = 0; i < 12; i++) {
+      // Incense Smoke rising right from Outdoor Bronze Burner (30.5, 1.5, 5.0)
+      for (let i = 0; i < 14; i++) {
         const sp = new THREE.Mesh(
-          new THREE.SphereGeometry(0.06, 8, 8),
+          new THREE.SphereGeometry(0.075, 8, 8),
           new THREE.MeshBasicMaterial({ color: 0xfef3c7, transparent: true, opacity: 0 })
         );
-        sp.position.set(15.7, 1.4, 5.1);
-        sp.userData = { life: i * 0.2, offsetX: (Math.random() - 0.5) * 0.18 };
+        sp.position.set(30.5, 1.5, 5.0);
+        sp.userData = { life: i * 0.18, offsetX: (Math.random() - 0.5) * 0.24 };
         incenseParticles.push(sp);
         scene.add(sp);
       }
@@ -2328,40 +2567,50 @@ import * as THREE from 'three';
         'Quẻ Số 86 (LỘC PHÁT): Tester hôm nay duyệt Pass toàn bộ tính năng ngay vòng đầu tiên! ✅',
         'Quẻ Số 79 (THẦN TÀI): Tháng này có lộc lớn từ dự án mới, tiền về đầy tài khoản! 💎',
         'Quẻ Số 100 (VIÊN MÃN): Tình duyên nở rộ, công việc hanh thông, chiều nay có kèo Sếp khao! 🍻',
-        'Quẻ Số 88 (ĐẠI HỶ): Xuất báo cáo Word Mẫu 2C vạn bản như một, không lệch một dòng! 📄'
+        'Quẻ Số 88 (ĐẠI HỶ): Xuất báo cáo Word Mẫu 2C vạn bản như một, không lệch một dòng! 📄',
+        'Quẻ Số 18 (THƯỢNG CÁT): Truy vấn MongoDB 26.000 user chạy nhanh 1ms, khách hàng tấm tắc khen! 🍃',
+        'Quẻ Số 39 (THẦN TÀI NHỎ): Chiều nay có đồng nghiệp mời trà sữa full topping miễn phí! 🧋',
+        'Quẻ Số 66 (SONG HỶ): Code sạch không một dòng Warning, PR được merge trong 30 giây! 🌿',
+        'Quẻ Số 77 (QUÝ NHÂN): Gặp bug khó tự nhiên nhớ ra giải pháp trong 1 nốt nhạc! 💡',
+        'Quẻ Số 89 (TRƯỜNG THỌ): Server chạy bền bỉ xuyên năm không cần restart! 🖥️',
+        'Quẻ Số 96 (PHÚ QUÝ): Cuối năm đạt danh hiệu Chiến sĩ thi đua, thưởng Tết ngập tràn! 🏆',
+        'Quẻ Số 28 (BÌNH AN): Hôm nay không có cuộc gọi khẩn nào lúc nửa đêm, ngủ ngon tới sáng! 😴',
+        'Quẻ Số 55 (TẤN TÀI): Dự án chính quyền số Đồng Tháp nghiệm thu xuất sắc 100 điểm! 🪷',
+        'Quẻ Số 98 (ĐẠI THẮNG): Đi hát Karaoke VIP bấm chấm điểm lên ngay 100 điểm tuyệt đối! 🎤'
       ];
 
       const shakeFortuneTubeAction = () => {
         playWoodenFishSound();
         setTimeout(() => playWoodenFishSound(), 120);
         setTimeout(() => playDonationSound(), 280);
-        const f = IT_FORTUNES[Math.floor(Math.random() * IT_FORTUNES.length)];
+        const f = pickNextQuote(IT_FORTUNES, 'fortunes');
         showToast(`🎋 ${f}`);
-        if (officeCharacters[0]) showCharacterSpeech(officeCharacters[0], f, 6.0);
+        const speaker = embodiedCharacter || officeCharacters[0];
+        if (speaker) showCharacterSpeech(speaker, f, 6.5);
       };
 
       registerInteractive(shrineGroup, {
         id: 'tech-temple',
         type: 'chua',
         icon: '🛕',
-        zone: 'Khu Viếng Chùa Tâm Linh',
-        title: 'Chùa Cầu Không Bug (Xếp Hàng • Quỳ Lạy • Xin Xăm)',
-        desc: 'Đầy đủ lư hương ngoài sân, bồ đoàn quỳ lạy, hòm công đức, Cây Đào Tiên lắc ống xăm và hàng rào xếp hàng trật tự!',
+        zone: 'Quần Thể Chùa Linh Ứng Zero-Bug',
+        title: 'Đại Hùng Bảo Điện 3 Tầng Mái (Quần Thể Chùa Tâm Linh)',
+        desc: 'Quần thể chùa hoành tráng tách biệt độc lập với Cổng Tam Quan, Hồ Sen, Đại Hùng Bảo Điện 3 tầng mái, Tháp Đại Hồng Chung & Lầu Trống Bát Nhã!',
         getMetrics: () => `
-          <div class="flex justify-between"><span class="text-slate-400">Nghi thức:</span><span class="text-amber-300 font-semibold">Xếp hàng → Thắp nhang → Quỳ lạy → Xin xăm</span></div>
+          <div class="flex justify-between"><span class="text-slate-400">Quy mô:</span><span class="text-amber-300 font-semibold">Đại Hùng Bảo Điện 3 Tầng • Tam Quan</span></div>
           <div class="flex justify-between"><span class="text-slate-400">Quỹ công đức:</span><span class="text-emerald-400 font-bold">${formatVND(state.donationTotal)} (${state.donationCount} lượt)</span></div>
         `,
         getActions: () => [
-          { label: '🙏 Cả team xếp hàng viếng chùa!', primary: true, run: () => triggerOfficeEvent('chua') },
-          { label: '🎋 Lắc Ống Xăm Xin Quẻ Hôm Nay!', primary: false, run: shakeFortuneTubeAction },
+          { label: '🙏 Cả team xếp hàng viếng Đại Hùng Bảo Điện!', primary: true, run: () => triggerOfficeEvent('chua') },
+          { label: '🎋 Lắc Ống Xăm Xin Quẻ Đại Cát!', primary: false, run: shakeFortuneTubeAction },
           { label: '🔔 Thỉnh Đại Hồng Chung (Gõ Chuông)', primary: false, run: () => playTempleBellSound(false) },
           { label: '👑 Sếp Minh Đăng Công đức 10 Triệu', primary: false, run: () => spawnDonationMoney(10000000, 'Trưởng phòng Minh Đăng') },
-          { label: '💬 Đồng thanh khấn câu mới (36 câu)', primary: false, run: () => triggerMassTemplePrayers() },
+          { label: '💬 Đồng thanh khấn nguyện (60+ câu khấn)', primary: false, run: () => triggerMassTemplePrayers() },
           {
-            label: '🕯️ Thắp thêm nhang cầu Uptime',
+            label: '🕯️ Thắp thêm nhang trầm cầu Uptime',
             primary: false,
             run: () => {
-              incenseActiveTimer = 25;
+              incenseActiveTimer = 30;
               playTempleBellSound(false);
               updateInspectorUI();
             }
@@ -2369,42 +2618,41 @@ import * as THREE from 'three';
         ]
       });
 
-      // Sacred Fortune Peach Tree & 3D Fortune Tube Altar right at front-right of Temple Courtyard (X=18.35, Z=6.8)
+      // 8. Sacred Ancient Fortune Peach Tree & 3D Fortune Tube Altar at East Courtyard (X=35.5, Z=7.5)
       const treeGroup = new THREE.Group();
-      treeGroup.position.set(18.35, 0, 6.8);
-      const tPot = new THREE.Mesh(new THREE.CylinderGeometry(0.48, 0.38, 0.62, 16), goldMat);
-      tPot.position.y = 0.31;
-      const tTrunk = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.19, 2.2, 10), redWoodMat);
-      tTrunk.position.y = 1.45;
+      treeGroup.position.set(35.5, 0, 7.5);
+      const tPot = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.5, 0.72, 16), goldMat);
+      tPot.position.y = 0.36;
+      const tTrunk = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.24, 2.6, 12), redWoodMat);
+      tTrunk.position.y = 1.65;
       treeGroup.add(tPot, tTrunk);
       const blossomMat = new THREE.MeshStandardMaterial({ color: 0xf472b6, emissive: 0xec4899, emissiveIntensity: 0.65 });
       const tagRedMat = new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0xdc2626, emissiveIntensity: 0.6 });
-      for (let i = 0; i < 9; i++) {
-        const ang = (i / 9) * Math.PI * 2;
-        const r = i === 0 ? 0 : 0.62;
-        const crown = new THREE.Mesh(new THREE.DodecahedronGeometry(0.46, 1), blossomMat);
-        crown.position.set(Math.cos(ang) * r, 2.45 + (i % 2) * 0.32, Math.sin(ang) * r);
+      for (let i = 0; i < 11; i++) {
+        const ang = (i / 11) * Math.PI * 2;
+        const r = i === 0 ? 0 : 0.78;
+        const crown = new THREE.Mesh(new THREE.DodecahedronGeometry(0.55, 1), blossomMat);
+        crown.position.set(Math.cos(ang) * r, 2.85 + (i % 2) * 0.38, Math.sin(ang) * r);
         treeGroup.add(crown);
         if (i > 0) {
-          const wishTag = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.28, 0.025), tagRedMat);
-          wishTag.position.set(Math.cos(ang) * 0.72, 1.98, Math.sin(ang) * 0.72);
+          const wishTag = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.32, 0.03), tagRedMat);
+          wishTag.position.set(Math.cos(ang) * 0.88, 2.28, Math.sin(ang) * 0.88);
           treeGroup.add(wishTag);
         }
       }
-      // 3D Signboard on Peach Tree + Red Altar Table with Golden Fortune Tube (Ống Xăm Đại Cát)
       const treeSign = new THREE.Mesh(
-        new THREE.BoxGeometry(1.45, 0.42, 0.06),
-        new THREE.MeshStandardMaterial({ map: createSignTexture('CÂY ĐÀO TIÊN', 'LẮC ỐNG XĂM ĐẠI CÁT', '#831843', '#fde047', '#fbcfe8') })
+        new THREE.BoxGeometry(1.7, 0.48, 0.07),
+        new THREE.MeshStandardMaterial({ map: createSignTexture('VƯỜN ĐÀO TIÊN', 'LẮC ỐNG XĂM ĐẠI CÁT', '#831843', '#fde047', '#fbcfe8') })
       );
-      treeSign.position.set(0, 1.45, 0.52);
-      const fortuneStand = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.68, 0.52), redWoodMat);
-      fortuneStand.position.set(-0.55, 0.34, 0.45);
-      const fortuneTube = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.12, 0.34, 14), goldMat);
-      fortuneTube.position.set(-0.55, 0.85, 0.45);
-      for (let s = 0; s < 7; s++) {
-        const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.24, 6), tagRedMat);
-        stick.position.set(-0.55 + Math.cos(s) * 0.05, 1.04, 0.45 + Math.sin(s) * 0.05);
-        stick.rotation.z = (s - 3) * 0.06;
+      treeSign.position.set(0, 1.65, 0.62);
+      const fortuneStand = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.74, 0.58), redWoodMat);
+      fortuneStand.position.set(-0.68, 0.37, 0.52);
+      const fortuneTube = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.14, 0.38, 14), goldMat);
+      fortuneTube.position.set(-0.68, 0.92, 0.52);
+      for (let s = 0; s < 8; s++) {
+        const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.28, 6), tagRedMat);
+        stick.position.set(-0.68 + Math.cos(s) * 0.06, 1.14, 0.52 + Math.sin(s) * 0.06);
+        stick.rotation.z = (s - 3.5) * 0.06;
         treeGroup.add(stick);
       }
       treeGroup.add(treeSign, fortuneStand, fortuneTube);
@@ -2414,11 +2662,11 @@ import * as THREE from 'three';
         id: 'fortune-peach-tree',
         type: 'chua',
         icon: '🎋',
-        zone: 'Khu Viếng Chùa Tâm Linh',
-        title: 'Cây Đào Tiên & Ống Xăm Tử Vi IT',
-        desc: 'Cây đào ước nguyện treo thẻ đỏ cầu may & bàn đặt Ống Xăm Vàng ngay mặt tiền sân chùa! Bấm lắc ống xăm để rút quẻ Đại Cát.',
+        zone: 'Quần Thể Chùa Linh Ứng Zero-Bug',
+        title: 'Cây Đào Tiên Cổ Thụ & Đài Xin Xăm Tử Vi IT',
+        desc: 'Cây đào tiên cổ thụ treo thẻ đỏ cầu may & bàn đặt Ống Xăm Vàng trong sân Đại Hùng Bảo Điện! Bấm lắc ống xăm để rút quẻ Đại Cát.',
         getMetrics: () => `
-          <div class="flex justify-between"><span class="text-slate-400">Linh ứng:</span><span class="text-pink-400 font-bold">100% Quẻ Đại Cát 🌸</span></div>
+          <div class="flex justify-between"><span class="text-slate-400">Linh ứng:</span><span class="text-pink-400 font-bold">15 Quẻ Đại Cát 🌸</span></div>
         `,
         getActions: () => [
           {
@@ -2619,17 +2867,17 @@ import * as THREE from 'three';
 
     function buildCeilingLights() {
       const specs = [
-        { zone: 'dev', x: -6.8, z: 3.5 },
-        { zone: 'meeting', x: -7.2, z: -5.5 },
-        { zone: 'reception', x: 0.8, z: 2.5 },
-        { zone: 'pantry', x: 6.5, z: -5.8 },
-        { zone: 'karaoke', x: 15.8, z: -4.2 },
-        { zone: 'boss', x: -15.5, z: -0.8 }
+        { zone: 'dev', x: -6.8, y: 3.65, z: 3.5 },
+        { zone: 'meeting', x: -7.1, y: 3.94, z: -4.2 },
+        { zone: 'reception', x: 0.8, y: 3.65, z: 2.5 },
+        { zone: 'pantry', x: 6.5, y: 3.65, z: -5.8 },
+        { zone: 'karaoke', x: 15.8, y: 3.65, z: -4.2 },
+        { zone: 'boss', x: -15.5, y: 3.65, z: -0.8 }
       ];
 
       specs.forEach(s => {
         const g = new THREE.Group();
-        g.position.set(s.x, 3.65, s.z);
+        g.position.set(s.x, s.y || 3.65, s.z);
         const ringMat = new THREE.MeshStandardMaterial({
           color: 0xfef3c7, emissive: 0xfde68a, emissiveIntensity: 1.4
         });
@@ -3209,10 +3457,10 @@ import * as THREE from 'three';
       { minX: 18.42, maxX: 19.6, minZ: -9.2, maxZ: 0.85 },     // Karaoke East outer wall
       { minX: 11.8, maxX: 19.5, minZ: 0.05, maxZ: 0.85 },      // Solid partition wall between Karaoke VIP Room and Temple Courtyard
 
-      // 6. Major Furniture & Obstacles (Server Racks, Desks, Conference Table, Shrine)
+      // 6. Major Furniture & Obstacles (Server Racks, Desks, Conference Table, Grand Temple & Koi Pond)
       { minX: -16.75, maxX: -15.35, minZ: -2.0, maxZ: 0.5 },   // Boss Minh Đăng L-Desk
       { minX: -16.45, maxX: -13.95, minZ: -4.55, maxZ: -2.65 },// Boss VIP Sofa & Tea Table
-      { minX: -9.65, maxX: -4.75, minZ: -6.5, maxZ: -4.5 },    // Meeting Room Conference Table
+      { minX: -9.85, maxX: -4.45, minZ: -6.55, maxZ: -4.45 },  // Enlarged Meeting Room Conference Table (5.4m x 1.95m)
       { minX: -10.35, maxX: -3.25, minZ: 0.72, maxZ: 2.18 },   // Dev Desk Cluster Row 1
       { minX: -10.35, maxX: -3.25, minZ: 4.72, maxZ: 6.18 },   // Dev Desk Cluster Row 2
       { minX: 0.15, maxX: 2.85, minZ: 4.88, maxZ: 5.92 },      // Reception Desk
@@ -3220,11 +3468,14 @@ import * as THREE from 'three';
       { minX: 6.9, maxX: 11.45, minZ: 5.95, maxZ: 7.35 },      // Server Racks Row 2 (Rack #03 & #04)
       { minX: 14.6, maxX: 17.0, minZ: -6.55, maxZ: -5.25 },    // Karaoke Marble Table
       { minX: 13.35, maxX: 17.75, minZ: -8.35, maxZ: -7.3 },   // Karaoke North Sofa
-      { minX: 13.45, maxX: 17.95, minZ: 1.55, maxZ: 4.55 }     // Temple Main Shrine Podium
+      { minX: 14.1, maxX: 18.9, minZ: 2.2, maxZ: 7.0 },        // Outdoor Zen Garden Koi Pond
+      { minX: 26.3, maxX: 34.7, minZ: -2.6, maxZ: 3.0 },       // Grand Temple Main Sanctuary (Đại Hùng Bảo Điện 3-Tiered Podium)
+      { minX: 24.0, maxX: 26.4, minZ: 2.6, maxZ: 5.0 },        // Grand Temple Bell Tower (Tháp Đại Hồng Chung)
+      { minX: 34.6, maxX: 37.0, minZ: 2.6, maxZ: 5.0 }         // Grand Temple Drum Tower (Lầu Trống Bát Nhã)
     ];
 
     function isWalkablePosition(x, z) {
-      if (x < -18.35 || x > 18.45 || z < -8.45 || z > 15.2) return false;
+      if (x < -18.35 || x > 39.2 || z < -8.45 || z > 15.2) return false;
       if (x < -12.25 && (z < -4.35 || z > 2.78)) return false;
       for (let i = 0; i < WALL_COLLIDER_BOXES.length; i++) {
         const b = WALL_COLLIDER_BOXES[i];
@@ -3255,6 +3506,7 @@ import * as THREE from 'three';
 
     function getRoomZone(x, z) {
       if (x < -12.1) return 'boss';
+      if (x > 21.0 && z >= -4.5) return 'chua';
       if (x > 12.1 && z < 0.8) return 'karaoke';
       if (x > 12.1 && z >= 0.8) return 'chua';
       if (z > 9.1) return 'nhau';
@@ -3283,8 +3535,8 @@ import * as THREE from 'three';
         path.push({ x: 10.2, z: -3.3, act: 'Đi qua khu Lounge...' });
         path.push({ x: 3.2, z: -1.8, act: 'Quay lại văn phòng chính...' });
       } else if (startZone === 'chua' && !stayingInTemple) {
-        path.push({ x: 14.5, z: 9.5, act: 'Rời sân Chùa Cầu Không Bug...' });
-        path.push({ x: 3.5, z: 9.5, act: 'Đi dọc lối vào văn phòng...' });
+        path.push({ x: 22.2, z: 9.8, act: 'Rời Cổng Tam Quan Quần Thể Chùa Linh Ứng...' });
+        path.push({ x: 3.5, z: 9.8, act: 'Đi dọc đại lộ đá về văn phòng...' });
         path.push({ x: 3.5, z: 6.5, act: 'Bước vào sảnh văn phòng...' });
       } else if (startZone === 'nhau') {
         path.push({ x: 2.5, z: 9.6, act: 'Rời quán nhậu vỉa hè...' });
@@ -3412,38 +3664,38 @@ import * as THREE from 'three';
           ? charObj.templeSlot
           : (Math.floor((charObj.phase || 0) * 10) % 8);
         const templeSpots = [
-          // 2 vị trí quỳ lạy trên bồ đoàn đỏ
-          { x: 14.85, z: 6.22, pose: 'kneel-pray', fx: 15.7, fz: 3.1, act: 'Đang quỳ lạy trên bồ đoàn cầu không Bug 🙏', emoji: '🙏' },
-          { x: 16.55, z: 6.22, pose: 'kneel-pray', fx: 15.7, fz: 3.1, act: 'Đang quỳ lạy cầu Deploy mượt & tăng lương 🙏', emoji: '🙏' },
-          // 1 vị trí đứng ngay trước lư hương cầm nhang vái & cắm nhang
-          { x: 15.70, z: 5.95, pose: 'incense', fx: 15.7, fz: 3.1, act: 'Đang thắp 3 nén nhang vái trước lư hương 🕯️', emoji: '🕯️' },
-          // 1 vị trí đứng trước Hòm Công Đức bỏ tiền
-          { x: 17.85, z: 5.95, pose: 'donate', fx: 17.85, fz: 5.2, act: 'Đang bỏ tiền vào Hòm Công Đức tích phước 💵', emoji: '💵', trigger: 'donate' },
-          // 4 vị trí xếp thành 2 hàng dọc trật tự trong rào dây nhung chờ tới lượt
-          { x: 15.15, z: 7.35, pose: 'queue-pray', fx: 15.7, fz: 3.1, act: 'Đang xếp hàng cầm nhang chờ tới lượt lạy 🕯️', emoji: '🕯️' },
-          { x: 16.25, z: 7.35, pose: 'queue-pray', fx: 15.7, fz: 3.1, act: 'Đang xếp hàng ngay ngắn chờ thắp nhang 🙏', emoji: '🕯️' },
-          { x: 15.15, z: 8.35, pose: 'queue-pray', fx: 15.7, fz: 3.1, act: 'Đang xếp hàng cuối dãy chờ vào viếng chùa 🛕', emoji: '🛕' },
-          { x: 16.25, z: 8.35, pose: 'queue-pray', fx: 15.7, fz: 3.1, act: 'Đang xếp hàng khấn nhẩm cầu thoát ế 🙏', emoji: '🛕' }
+          // 4 vị trí quỳ lạy trên 4 bồ đoàn nhung đỏ trước Đại Hùng Bảo Điện
+          { x: 28.4, z: 6.35, pose: 'kneel-pray', fx: 30.5, fz: 0.2, act: 'Đang quỳ lạy trước Đại Hùng Bảo Điện cầu không Bug 🙏', emoji: '🙏' },
+          { x: 29.8, z: 6.35, pose: 'kneel-pray', fx: 30.5, fz: 0.2, act: 'Đang quỳ lạy cầu Deploy mượt & tăng lương 🙏', emoji: '🙏' },
+          { x: 31.2, z: 6.35, pose: 'kneel-pray', fx: 30.5, fz: 0.2, act: 'Đang quỳ lạy cầu Server 99.99% Uptime 🙏', emoji: '🙏' },
+          { x: 32.6, z: 6.35, pose: 'kneel-pray', fx: 30.5, fz: 0.2, act: 'Đang quỳ lạy cầu PR được Merge ngay lập tức 🙏', emoji: '🙏' },
+          // 1 vị trí đứng ngay trước Đỉnh Lư Hương Đồng Đại Cát (X = 30.5, Z = 5.0)
+          { x: 30.5, z: 5.85, pose: 'incense', fx: 30.5, fz: 0.2, act: 'Đang thắp 3 nén nhang vái trước Đỉnh Lư Hương Đồng 🕯️', emoji: '🕯️' },
+          // 1 vị trí đứng trước Hòm Công Đức Đại Lộc (X = 33.6, Z = 5.2)
+          { x: 33.6, z: 6.05, pose: 'donate', fx: 33.6, fz: 5.2, act: 'Đang bỏ tiền vào Hòm Công Đức Đại Lộc tích phước 💵', emoji: '💵', trigger: 'donate' },
+          // 2 vị trí xếp hàng chờ tới lượt trong sân Đại Tự
+          { x: 29.6, z: 8.20, pose: 'queue-pray', fx: 30.5, fz: 0.2, act: 'Đang xếp hàng cầm nhang chờ tới lượt lạy 🕯️', emoji: '🕯️' },
+          { x: 31.4, z: 8.20, pose: 'queue-pray', fx: 30.5, fz: 0.2, act: 'Đang xếp hàng khấn nhẩm cầu thoát ế 🙏', emoji: '🛕' }
         ];
         const sp = templeSpots[slot % templeSpots.length];
-        if (!stayingInTemple) {
-          path.push({ x: 3.5, z: 7.2, act: 'Ra cửa đi viếng Chùa Cầu Không Bug 🛕' });
-          path.push({ x: 3.5, z: 9.8, act: 'Đi theo đường đá sang sân Chùa...' });
-          path.push({ x: 15.7, z: 9.8, act: 'Vào lối xếp hàng sân Chùa...' });
-        } else if (fromZ < 6.8 && sp.z >= 7.0) {
-          // Người lạy xong vòng gọn ra ngoài hàng rào dây nhung để xếp lại cuối hàng trong sân chùa
-          path.push({ x: 13.75, z: 6.6, act: 'Lạy xong, nhường chỗ cho đồng nghiệp...' });
-          path.push({ x: 13.75, z: 9.45, act: 'Vòng ra cuối hàng sân Chùa...' });
-          path.push({ x: sp.x, z: 9.45, act: 'Vào vị trí xếp hàng...' });
+        if (!stayingInTemple || fromX < 21.5) {
+          path.push({ x: 3.5, z: 7.2, act: 'Ra cửa đi viếng Quần Thể Chùa Linh Ứng 🛕' });
+          path.push({ x: 3.5, z: 9.8, act: 'Đi qua vườn Thiền Hồ Cá Koi...' });
+          path.push({ x: 22.2, z: 9.8, act: 'Bước qua Cổng Tam Quan Đại Tự ⛩️' });
+          path.push({ x: 30.5, z: 9.8, act: 'Tiến vào sân Đại Hùng Bảo Điện...' });
+        } else if (fromZ < 6.8 && sp.z >= 7.5) {
+          path.push({ x: 27.2, z: 6.8, act: 'Lạy xong, nhường chỗ cho đồng nghiệp...' });
+          path.push({ x: 27.2, z: 9.2, act: 'Vòng ra cuối hàng sân Đại Tự...' });
+          path.push({ x: sp.x, z: 9.2, act: 'Vào vị trí xếp hàng...' });
         }
         path.push({ x: sp.x, z: sp.z, finalPose: sp.pose, faceX: sp.fx, faceZ: sp.fz, act: sp.act, emoji: sp.emoji, trigger: sp.trigger || 'incense' });
       } else if (destType === 'donate') {
-        if (!stayingInTemple) {
-          path.push({ x: 3.5, z: 7.2, act: 'Đi ra sân Chùa bỏ tiền công đức 💵' });
-          path.push({ x: 3.5, z: 9.8, act: 'Đi tới Hòm Công Đức...' });
-          path.push({ x: 17.85, z: 9.8, act: 'Tiến lại gần Hòm Công Đức...' });
+        if (!stayingInTemple || fromX < 21.5) {
+          path.push({ x: 3.5, z: 7.2, act: 'Đi sang Quần Thể Chùa Linh Ứng bỏ tiền công đức 💵' });
+          path.push({ x: 3.5, z: 9.8, act: 'Đi qua Cổng Tam Quan tới Hòm Công Đức...' });
+          path.push({ x: 33.6, z: 9.8, act: 'Tiến lại gần Hòm Công Đức Đại Lộc...' });
         }
-        path.push({ x: 17.85, z: 5.95, finalPose: 'donate', faceX: 17.85, faceZ: 5.2, act: 'Đang bỏ tiền vào Hòm Công Đức 💵🙏', emoji: '💵', trigger: 'donate' });
+        path.push({ x: 33.6, z: 6.05, finalPose: 'donate', faceX: 33.6, faceZ: 5.2, act: 'Đang bỏ tiền vào Hòm Công Đức Đại Lộc 💵🙏', emoji: '💵', trigger: 'donate' });
       }
       return path;
     }
@@ -5031,28 +5283,28 @@ import * as THREE from 'three';
         if (!c) return { label: '⚡ [Phím Space] Tương tác', run: () => {} };
         const x = c.rig.root.position.x;
         const z = c.rig.root.position.z;
-        // 1. Near Fortune Peach Tree at Temple
-        if (Math.hypot(x - 18.35, z - 6.8) < 2.3) {
+        // 1. Near Fortune Peach Tree at Grand Temple Complex (X = 35.5, Z = 7.5)
+        if (Math.hypot(x - 35.5, z - 7.5) < 2.8) {
           return {
             label: '🎋 [Phím Space] Lắc Ống Xăm Xin Quẻ Đại Cát!',
             run: () => {
               playWoodenFishSound();
               setTimeout(() => playDonationSound(), 180);
-              const msg = 'Quẻ Số 99 (ĐẠI CÁT): Code 1 phát ăn ngay, 0 Bug, Cuối tháng nhận thưởng lớn! 🎋💰';
+              const msg = pickNextQuote(IT_FORTUNES, 'fortune');
               showCharacterSpeech(c, msg, 6.0);
               showToast(`🎋 ${c.name} vừa rút được: ${msg}`);
             }
           };
         }
-        // 2. Inside Temple Courtyard
-        if (x > 12.1 && z >= 0.8) {
+        // 2. Inside Grand Temple Complex or Zen Koi Garden
+        if (x > 21.0 || (x > 12.1 && z >= 0.8)) {
           return {
             label: '🔔 [Phím Space] Thỉnh Đại Hồng Chung & Quỳ Lạy Khấn!',
             run: () => {
               playTempleBellSound(false);
               c.currentPose = 'kneel-pray';
-              c.rig.root.rotation.y = Math.atan2(15.7 - x, 3.1 - z);
-              const pr = TEMPLE_PRAYERS[Math.floor(Math.random() * TEMPLE_PRAYERS.length)];
+              c.rig.root.rotation.y = Math.atan2(30.5 - x, 0.2 - z);
+              const pr = pickNextQuote(TEMPLE_PRAYERS, 'temple');
               showCharacterSpeech(c, pr, 6.0);
             }
           };
@@ -5520,10 +5772,16 @@ import * as THREE from 'three';
         });
 
         // Determine spawn coordinates based on spawnZone or saved x/z
-        let spawnX = 15.7, spawnZ = 6.0, spawnRotY = Math.PI, initialPose = 'incense';
+        let spawnX = 30.5, spawnZ = 6.05, spawnRotY = Math.PI, initialPose = 'incense';
         if (typeof cfg.x === 'number' && typeof cfg.z === 'number') {
-          spawnX = cfg.x;
-          spawnZ = cfg.z;
+          // Migrate old saved temple coordinates (inside new Koi Pond X: 13.5..19.5) to the new Grand Temple Courtyard (X = 30.5)
+          if (cfg.x >= 13.2 && cfg.x <= 19.8 && cfg.z >= 1.5 && cfg.z <= 8.5) {
+            spawnX = 30.5 + (Math.random() - 0.5) * 1.4;
+            spawnZ = 6.05;
+          } else {
+            spawnX = cfg.x;
+            spawnZ = cfg.z;
+          }
           spawnRotY = typeof cfg.rotY === 'number' ? cfg.rotY : 0;
           initialPose = cfg.pose || 'idle';
         } else if (cfg.spawnZone === 'office') {
@@ -5535,8 +5793,8 @@ import * as THREE from 'three';
         } else if (cfg.spawnZone === 'karaoke') {
           spawnX = 16.05; spawnZ = -2.5; spawnRotY = Math.PI / 2; initialPose = 'sing';
         } else {
-          // Default: Temple Courtyard holding 3 burning incense sticks!
-          spawnX = 15.7 + (Math.random() - 0.5) * 0.8;
+          // Default: Grand Temple Courtyard holding 3 burning incense sticks!
+          spawnX = 30.5 + (Math.random() - 0.5) * 1.4;
           spawnZ = 6.05;
           spawnRotY = Math.PI;
           initialPose = 'incense';
@@ -5724,7 +5982,12 @@ import * as THREE from 'three';
                 if (target.tagEl) target.tagEl.textContent = `${target.name} • ${target.role}`;
               }
               if (typeof es.x === 'number' && typeof es.z === 'number') {
-                target.rig.root.position.set(es.x, 0, es.z);
+                let rx = es.x, rz = es.z;
+                if (rx >= 13.2 && rx <= 19.8 && rz >= 1.5 && rz <= 8.5) {
+                  rx = 30.5;
+                  rz = 6.05;
+                }
+                target.rig.root.position.set(rx, 0, rz);
               }
               if (typeof es.rotY === 'number') {
                 target.rig.root.rotation.y = es.rotY;
@@ -5950,8 +6213,8 @@ import * as THREE from 'three';
           const rect = minimapCanvas.getBoundingClientRect();
           const u = (e.clientX - rect.left) / rect.width;
           const v = (e.clientY - rect.top) / rect.height;
-          // Map (u, v) in [0..1] to World X [-19.2..19.5], World Z [-9.5..14.8]
-          let wx = -19.2 + u * (19.5 - (-19.2));
+          // Map (u, v) in [0..1] to World X [-19.2..39.5], World Z [-9.5..14.8]
+          let wx = -19.2 + u * (39.5 - (-19.2));
           let wz = -9.5 + v * (14.8 - (-9.5));
 
           // Find closest walkable point near (wx, wz)
@@ -5998,7 +6261,7 @@ import * as THREE from 'three';
         const ctx = minimapCanvas.getContext('2d');
         const W = minimapCanvas.width;
         const H = minimapCanvas.height;
-        const minX = -19.2, maxX = 19.5, minZ = -9.5, maxZ = 14.8;
+        const minX = -19.2, maxX = 39.5, minZ = -9.5, maxZ = 14.8;
         const toX = (x) => ((x - minX) / (maxX - minX)) * W;
         const toY = (z) => ((z - minZ) / (maxZ - minZ)) * H;
         const toW = (w) => (w / (maxX - minX)) * W;
@@ -6008,15 +6271,16 @@ import * as THREE from 'three';
         ctx.fillStyle = '#020617';
         ctx.fillRect(0, 0, W, H);
 
-        // Draw 8 Zones on Mini-Map
+        // Draw 9 Zones on Mini-Map (including Zen Koi Garden & Standalone Grand Temple Complex)
         const zones = [
           { x: -18.8, z: -4.8, w: 6.8, h: 8.0, fill: 'rgba(124, 58, 237, 0.32)', stroke: '#a855f7', label: '👑 SẾP' },
-          { x: -12.0, z: -9.0, w: 9.8, h: 6.8, fill: 'rgba(56, 189, 248, 0.18)', stroke: '#38bdf8', label: 'HỌP' },
+          { x: -12.0, z: -9.0, w: 9.8, h: 6.8, fill: 'rgba(56, 189, 248, 0.18)', stroke: '#38bdf8', label: 'HỌP 120"' },
           { x: -12.0, z: -2.2, w: 9.8, h: 11.0, fill: 'rgba(30, 41, 59, 0.7)', stroke: '#64748b', label: 'KHU DEV' },
           { x: -2.2,  z: -9.0, w: 14.2, h: 11.2, fill: 'rgba(51, 65, 85, 0.5)', stroke: '#64748b', label: 'PANTRY' },
           { x: 5.5,   z: 2.2,  w: 6.5, h: 6.65, fill: 'rgba(6, 182, 212, 0.22)', stroke: '#22d3ee', label: 'SERVER' },
           { x: 12.0,  z: -8.85,w: 7.1, h: 9.3,  fill: 'rgba(217, 70, 239, 0.25)', stroke: '#e879f9', label: '🎤 KTV' },
-          { x: 12.1,  z: 1.2,  w: 7.2, h: 9.0,  fill: 'rgba(220, 38, 38, 0.25)', stroke: '#f59e0b', label: '🛕 CHÙA' },
+          { x: 12.1,  z: 0.8,  w: 8.8, h: 8.5,  fill: 'rgba(22, 163, 74, 0.22)', stroke: '#4ade80', label: '🌳 HỒ KOI' },
+          { x: 21.5,  z: -4.2, w: 17.5,h: 17.2, fill: 'rgba(220, 38, 38, 0.28)', stroke: '#f59e0b', label: '🛕 ĐẠI TỰ CHÙA' },
           { x: -7.1,  z: 9.3,  w: 10.2,h: 5.0,  fill: 'rgba(22, 163, 74, 0.28)', stroke: '#4ade80', label: '🍻 NHẬU' }
         ];
         ctx.font = 'bold 7.5px Inter, sans-serif';
@@ -6220,22 +6484,22 @@ import * as THREE from 'three';
       controls.dampingFactor = 0.06;
       controls.maxPolarAngle = Math.PI / 2 - 0.04;
       controls.minDistance = 2.4;
-      controls.maxDistance = 48;
+      controls.maxDistance = 68;
       controls.target.copy(CAMERA_PRESETS.overview.target);
 
       // Core Scene Lights
       ambientLight = new THREE.AmbientLight(0xffffff, 0.65);
       hemiLight = new THREE.HemisphereLight(0xe0f2fe, 0x334155, 0.65);
       dirLight = new THREE.DirectionalLight(0xfffbeb, 1.45);
-      dirLight.position.set(16, 26, 18);
+      dirLight.position.set(18, 30, 20);
       dirLight.castShadow = true;
       dirLight.shadow.mapSize.set(2048, 2048);
       dirLight.shadow.camera.near = 2;
-      dirLight.shadow.camera.far = 65;
+      dirLight.shadow.camera.far = 85;
       dirLight.shadow.camera.left = -24;
-      dirLight.shadow.camera.right = 24;
-      dirLight.shadow.camera.top = 20;
-      dirLight.shadow.camera.bottom = -20;
+      dirLight.shadow.camera.right = 42;
+      dirLight.shadow.camera.top = 24;
+      dirLight.shadow.camera.bottom = -22;
       dirLight.shadow.bias = -0.0005;
       scene.add(ambientLight, hemiLight, dirLight);
 
@@ -6343,13 +6607,13 @@ import * as THREE from 'three';
         }
       });
 
-      // Temple Incense Smoke Particles
+      // Temple Incense Smoke Particles (at Grand Bronze Incense Burner X = 30.5, Z = 5.0)
       if (incenseActiveTimer > 0 && !state.isPaused) incenseActiveTimer -= simDt;
       incenseParticles.forEach(sp => {
         if (incenseActiveTimer > 0 || state.activeEvent === 'chua') {
           sp.userData.life = (sp.userData.life + simDt * 0.55) % 2.2;
           const l = sp.userData.life;
-          sp.position.set(15.7 + sp.userData.offsetX + Math.sin(simElapsed * 1.8 + l * 3) * 0.12, 1.38 + l * 0.72, 5.1);
+          sp.position.set(30.5 + sp.userData.offsetX + Math.sin(simElapsed * 1.8 + l * 3) * 0.12, 1.52 + l * 0.78, 5.0);
           sp.scale.setScalar(0.65 + l * 0.9);
           sp.material.opacity = Math.max(0, (1 - l / 2.2) * 0.42);
         } else {
@@ -6466,11 +6730,11 @@ import * as THREE from 'three';
       // Temple Queue Auto-Rotation, Periodic Bell Tolling & Random Prayers
       if (state.activeEvent === 'chua' && !state.isPaused && templeQueueOrder.length > 0) {
         templeSpeechTimer += simDt;
-        if (templeSpeechTimer >= 2.8) {
+        if (templeSpeechTimer >= 1.8) {
           templeSpeechTimer = 0;
           const lucky = templeQueueOrder[Math.floor(Math.random() * templeQueueOrder.length)];
-          const line = TEMPLE_PRAYERS[Math.floor(Math.random() * TEMPLE_PRAYERS.length)];
-          showCharacterSpeech(lucky, line, 4.2);
+          const line = pickNextQuote(TEMPLE_PRAYERS, 'temple');
+          showCharacterSpeech(lucky, line, 4.8);
         }
         templeAutoBellTimer += simDt;
         if (templeAutoBellTimer >= 7.5) {
@@ -6491,14 +6755,32 @@ import * as THREE from 'three';
         }
       }
 
-      // Ambient IT Quotes during Normal Office Hours
-      if (!state.activeEvent && !state.isPaused) {
+      // Rich Ambient Dialogue Cycle across All Zones (Office, Temple, Nhậu, Karaoke)
+      if (!state.isPaused) {
         speechCycleTimer += simDt;
-        if (speechCycleTimer >= 6.5) {
+        if (speechCycleTimer >= 2.8) {
           speechCycleTimer = 0;
-          const randChar = officeCharacters[Math.floor(Math.random() * officeCharacters.length)];
-          const randQuote = IT_QUOTES[Math.floor(Math.random() * IT_QUOTES.length)];
-          if (randChar) showCharacterSpeech(randChar, randQuote, 4.2);
+          // Pick 2 distinct characters to speak zone-appropriate non-repeating lines
+          const count = officeCharacters.length;
+          if (count > 0) {
+            const idx1 = Math.floor(Math.random() * count);
+            const idx2 = (idx1 + 3 + Math.floor(Math.random() * Math.max(1, count - 3))) % count;
+            [officeCharacters[idx1], officeCharacters[idx2]].forEach(ch => {
+              if (!ch || ch.speechTimer > 0.5) return;
+              const zn = getRoomZone(ch.rig.root.position.x, ch.rig.root.position.z);
+              let quote = '';
+              if (zn === 'chua') {
+                quote = pickNextQuote(TEMPLE_PRAYERS, 'temple');
+              } else if (zn === 'nhau') {
+                quote = pickNextQuote(NHAU_QUOTES, 'nhau');
+              } else if (zn === 'karaoke') {
+                quote = pickNextQuote(KARAOKE_QUOTES, 'karaoke');
+              } else {
+                quote = pickNextQuote(IT_QUOTES, 'it');
+              }
+              showCharacterSpeech(ch, quote, 4.5);
+            });
+          }
         }
       }
 

@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <title>Mô Hình 3D Văn Phòng IT Tương Tác</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- MQTT.js over WebSockets for Serverless Realtime Online Multiplayer -->
+  <script src="https://cdn.jsdelivr.net/npm/mqtt@5.3.5/dist/mqtt.min.js"></script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="./css/styles.css" />
+
+  <!-- Three.js ES Modules Import Map -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body class="text-slate-100">
+
+  <!-- 3D Viewport Container -->
+  <div id="canvas-container"></div>
+
+  <!-- CSS3D Overlay Layer (Embeds Real Interactive Iframe Directly on 3D Karaoke TV) -->
+  <div id="css3d-container"></div>
+
+  <!-- Exit Button for Expanded Karaoke TV Fullscreen Mode -->
+  <button id="btn-exit-tv-expand" class="hidden fixed top-3 right-4 z-[70] px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow-2xl border border-white/20 transition cursor-pointer">
+    ✕ Thu nhỏ về TV 3D (ESC)
+  </button>
+
+  <!-- Floating 2D Labels Layer for 3D Characters -->
+  <div id="character-tags-layer" class="fixed inset-0 z-10 pointer-events-none overflow-hidden"></div>
+
+  <!-- Floating 2D Speech Bubbles Layer -->
+  <div id="speech-bubbles-layer" class="fixed inset-0 z-10 pointer-events-none overflow-hidden"></div>
+
+  <!-- TOP-CENTER: Active Office Event Banner -->
+  <div id="event-banner" class="fixed top-3 left-1/2 -translate-x-1/2 z-30 opacity-0 pointer-events-none -translate-y-3 transition-all duration-300">
+    <div id="event-banner-inner" class="px-4 py-2 rounded-2xl border shadow-2xl backdrop-blur-md flex items-center gap-3 text-xs font-semibold">
+      <span id="event-banner-icon" class="text-base">🚨</span>
+      <span id="event-banner-text">Sự kiện đang diễn ra</span>
+      <button id="btn-end-event" class="ml-1 px-2.5 py-1 rounded-lg bg-white/20 hover:bg-white/30 text-white text-[11px] font-bold transition cursor-pointer">
+        Kết thúc
+      </button>
+    </div>
+  </div>
+
+  <!-- Hover Tooltip -->
+  <div id="hover-tooltip" class="hover-tooltip fixed z-30 opacity-0 px-3 py-1.5 rounded-lg bg-slate-900/90 text-white text-xs font-medium border border-sky-400/40 shadow-lg flex items-center gap-2 whitespace-nowrap">
+    <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
+    <span id="tooltip-text">Thiết bị tương tác</span>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loading-screen" class="fixed inset-0 z-50 bg-slate-950 flex flex-col items-center justify-center transition-opacity duration-500">
+    <div class="w-12 h-12 rounded-2xl border-4 border-sky-500/30 border-t-sky-400 animate-spin mb-4"></div>
+    <h2 class="text-lg font-semibold text-white tracking-wide">Đang khởi tạo Văn phòng IT 3D...</h2>
+    <p class="text-xs text-slate-400 mt-1">Đang dựng kiến trúc, nhân sự và thiết bị tương tác</p>
+  </div>
+
+  <!-- TOP-LEFT: Title & Collapsible Controls (2-Row Header so Title never overlaps Buttons) -->
+  <div class="fixed top-3 left-3 sm:top-4 sm:left-4 z-20 flex flex-col gap-2 w-[calc(100vw-24px)] sm:w-[332px]">
+    <div class="hud-glass rounded-2xl p-2.5 flex flex-col gap-2">
+      <!-- Row 1: Logo + Office Title + Sound & Collapse Buttons -->
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center shadow-md shadow-sky-500/20 shrink-0">
+            <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+          </div>
+          <div class="min-w-0">
+            <h1 class="text-sm font-extrabold text-white leading-tight truncate">IT LAB 3D Office</h1>
+            <p class="text-[11px] text-sky-300 font-semibold truncate" id="mode-badge">Chế độ: Ban ngày</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button id="btn-toggle-sound" title="Bật / Tắt âm thanh hiệu ứng" class="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 transition cursor-pointer text-xs">
+            🔊
+          </button>
+          <button id="toggle-hud-btn" title="Thu gọn / Mở rộng bảng điều khiển" class="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 transition cursor-pointer">
+            <svg id="hud-chevron" class="w-4 h-4 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Row 2: 4 Equal Quick-Action Buttons (No Text Squishing!) -->
+      <div class="grid grid-cols-4 gap-1.5 pt-1.5 border-t border-white/10">
+        <button id="btn-open-char-creator" title="Tự tạo & Custom nhân vật 3D đi lễ chùa / dạo văn phòng" class="px-1.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold transition cursor-pointer text-[10px] shadow-md flex items-center justify-center gap-1 whitespace-nowrap">
+          <span>➕</span><span>Tạo NV</span>
+        </button>
+        <button id="btn-open-embody-bar" title="Hóa thân nhập vai vào nhân vật bất kỳ (FPS / TPS)" class="px-1.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-fuchsia-600 hover:from-amber-400 hover:to-fuchsia-500 text-white font-bold transition cursor-pointer text-[10px] shadow-md flex items-center justify-center gap-1 whitespace-nowrap">
+          <span>🕹️</span><span>Hóa Thân</span>
+        </button>
+        <button id="btn-photo-mode" title="Chụp ảnh Check-in 3D có đóng dấu Watermark (Tải PNG gửi Zalo)" class="px-1.5 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/35 border border-emerald-400/40 text-emerald-200 font-bold transition cursor-pointer text-[10px] flex items-center justify-center gap-1 whitespace-nowrap">
+          <span>📸</span><span>Chụp Ảnh</span>
+        </button>
+        <button id="btn-toggle-minimap" title="Bật / Tắt Bản đồ Radar 2D & Click Dịch chuyển" class="px-1.5 py-1.5 rounded-xl bg-sky-500/20 hover:bg-sky-500/35 border border-sky-400/40 text-sky-200 font-bold transition cursor-pointer text-[10px] flex items-center justify-center gap-1 whitespace-nowrap">
+          <span>🗺️</span><span>Radar</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Collapsible Controls Body -->
+    <div id="hud-body" class="hud-glass rounded-2xl p-3 flex flex-col gap-2.5 panel-transition origin-top max-h-[72vh] overflow-y-auto">
+      <!-- Volume Control -->
+      <div>
+        <div class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold mb-1 flex items-center justify-between">
+          <span>🔊 Âm lượng hệ thống</span>
+          <span id="volume-label" class="text-sky-300 font-bold">75%</span>
+        </div>
+        <input id="volume-slider" type="range" min="0" max="100" value="75" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-sky-400" />
+      </div>
+
+      <!-- Lighting Mode Toggle -->
+      <div>
+        <div class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold mb-1.5 flex items-center justify-between">
+          <span>Ánh sáng & Không gian</span>
+        </div>
+        <div class="grid grid-cols-2 gap-1.5">
+          <button id="btn-day-mode" class="px-2.5 py-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 bg-sky-500 text-white shadow-md shadow-sky-500/25 transition cursor-pointer">
+            ☀️ Ban ngày
+          </button>
+          <button id="btn-night-mode" class="px-2.5 py-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 bg-white/10 hover:bg-white/15 text-slate-200 transition cursor-pointer">
+            🌙 Đêm (OT)
+          </button>
+        </div>
+      </div>
+
+      <!-- Ceiling Lights Control -->
+      <div>
+        <div class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold mb-1.5 flex items-center justify-between">
+          <span>Hệ thống đèn trần</span>
+          <button id="btn-toggle-all-lights" class="text-[11px] text-sky-400 hover:text-sky-300 font-semibold cursor-pointer">Bật/Tắt hết</button>
+        </div>
+        <div class="grid grid-cols-2 gap-1.5 text-[11px]" id="light-zone-buttons">
+          <button data-light-zone="dev" class="light-btn px-2 py-1.5 rounded-lg bg-amber-400/20 border border-amber-400/40 text-amber-200 font-medium flex items-center justify-between cursor-pointer">
+            <span>Khu Dev</span><span class="w-2 h-2 rounded-full bg-amber-400"></span>
+          </button>
+          <button data-light-zone="meeting" class="light-btn px-2 py-1.5 rounded-lg bg-amber-400/20 border border-amber-400/40 text-amber-200 font-medium flex items-center justify-between cursor-pointer">
+            <span>Phòng họp</span><span class="w-2 h-2 rounded-full bg-amber-400"></span>
+          </button>
+          <button data-light-zone="reception" class="light-btn px-2 py-1.5 rounded-lg bg-amber-400/20 border border-amber-400/40 text-amber-200 font-medium flex items-center justify-between cursor-pointer">
+            <span>Lễ tân</span><span class="w-2 h-2 rounded-full bg-amber-400"></span>
+          </button>
+          <button data-light-zone="pantry" class="light-btn px-2 py-1.5 rounded-lg bg-amber-400/20 border border-amber-400/40 text-amber-200 font-medium flex items-center justify-between cursor-pointer">
+            <span>Pantry</span><span class="w-2 h-2 rounded-full bg-amber-400"></span>
+          </button>
+          <button data-light-zone="karaoke" class="light-btn px-2 py-1.5 rounded-lg bg-amber-400/20 border border-amber-400/40 text-amber-200 font-medium flex items-center justify-between cursor-pointer">
+            <span>🎤 Phòng Hát</span><span class="w-2 h-2 rounded-full bg-amber-400"></span>
+          </button>
+          <button data-light-zone="boss" class="light-btn px-2 py-1.5 rounded-lg bg-amber-400/20 border border-amber-400/40 text-amber-200 font-medium flex items-center justify-between cursor-pointer">
+            <span>👑 Phòng Sếp Đăng</span><span class="w-2 h-2 rounded-full bg-amber-400"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Simulation Controls -->
+      <div class="pt-2 border-t border-white/10">
+        <div class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold mb-1.5 flex items-center justify-between">
+          <span>Mô phỏng nhân sự</span>
+          <span id="sim-status-label" class="text-[10px] text-emerald-400 font-semibold">● Đang chạy</span>
+        </div>
+        <div class="grid grid-cols-3 gap-1.5">
+          <button id="btn-sim-play" class="px-2 py-1.5 rounded-xl text-[11px] font-semibold bg-emerald-500/20 border border-emerald-400/40 text-emerald-200 hover:bg-emerald-500/30 transition cursor-pointer">
+            ⏸ Dừng
+          </button>
+          <button id="btn-sim-speed" class="px-2 py-1.5 rounded-xl text-[11px] font-semibold bg-white/10 hover:bg-white/20 text-sky-200 transition cursor-pointer">
+            ⚡ 1x
+          </button>
+          <button id="btn-toggle-tags" class="px-2 py-1.5 rounded-xl text-[11px] font-semibold bg-sky-500/25 border border-sky-400/40 text-sky-200 hover:bg-sky-500/35 transition cursor-pointer">
+            🏷️ Nhãn
+          </button>
+        </div>
+      </div>
+
+      <!-- Fun Office Events (Boss Mode) -->
+      <div class="pt-2 border-t border-white/10">
+        <div class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold mb-1.5 flex items-center justify-between">
+          <span>Sự kiện vui (Boss Mode)</span>
+          <span class="text-[10px] text-amber-300 font-medium">✨ Hot</span>
+        </div>
+        <div class="grid grid-cols-2 gap-1.5">
+          <button id="btn-event-crash" class="px-2 py-1.5 rounded-xl text-[11px] font-semibold bg-rose-500/20 border border-rose-400/40 text-rose-200 hover:bg-rose-500/35 transition cursor-pointer">
+            🚨 Sập Prod!
+          </button>
+          <button id="btn-event-pizza" class="px-2 py-1.5 rounded-xl text-[11px] font-semibold bg-amber-500/20 border border-amber-400/40 text-amber-200 hover:bg-amber-500/35 transition cursor-pointer">
+            🍕 Đãi Pizza
+          </button>
+          <button id="btn-event-disco" class="px-2 py-1.5 rounded-xl text-[11px] font-semibold bg-fuchsia-500/20 border border-fuchsia-400/40 text-fuchsia-200 hover:bg-fuchsia-500/35 transition cursor-pointer">
+            🕺 Quẩy Disco
+          </button>
+          <button id="btn-event-nhau" class="px-2 py-1.5 rounded-xl text-[11px] font-semibold bg-yellow-500/20 border border-yellow-400/40 text-yellow-200 hover:bg-yellow-500/35 transition cursor-pointer">
+            🍻 Đi Nhậu!
+          </button>
+          <button id="btn-event-karaoke" class="px-2 py-1.5 rounded-xl text-[11px] font-semibold bg-purple-500/20 border border-purple-400/40 text-purple-200 hover:bg-purple-500/35 transition cursor-pointer">
+            🎤 Hát Karaoke
+          </button>
+          <button id="btn-event-chua" class="px-2 py-1.5 rounded-xl text-[11px] font-semibold bg-red-500/20 border border-amber-400/50 text-amber-200 hover:bg-red-500/35 transition cursor-pointer">
+            🛕 Viếng Chùa
+          </button>
+          <button id="btn-event-normal" class="col-span-2 px-2 py-1.5 rounded-xl text-[11px] font-semibold bg-white/10 hover:bg-white/20 text-slate-200 transition cursor-pointer">
+            💼 Kết thúc sự kiện • Làm việc lại
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Guide -->
+      <div class="pt-2 border-t border-white/10 text-[11px] text-slate-300 space-y-1">
+        <div class="font-semibold text-white">Hướng dẫn tương tác</div>
+        <p>• <span class="text-white font-medium">Kéo chuột / 1 ngón:</span> Xoay 360°</p>
+        <p>• <span class="text-white font-medium">Cuộn / 2 ngón:</span> Thu phóng & Di chuyển</p>
+        <p>• <span class="text-sky-300 font-medium">Click nhân viên / thiết bị:</span> Ra lệnh đi nhậu, hát Karaoke, viếng chùa, pha cà phê, mở cửa...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOP-RIGHT: Selected Object Inspector Card -->
+  <div id="inspector-card" class="fixed top-3 right-3 sm:top-4 sm:right-4 z-20 w-72 sm:w-80 hud-glass rounded-2xl p-4 panel-transition opacity-0 pointer-events-none translate-y-2 max-h-[82vh] overflow-y-auto">
+    <div class="flex items-start justify-between gap-2 mb-2.5">
+      <div class="flex items-center gap-2">
+        <span id="inspector-icon" class="w-8 h-8 rounded-xl bg-sky-500/20 border border-sky-400/30 flex items-center justify-center text-sky-300 text-base">💻</span>
+        <div>
+          <span id="inspector-zone" class="text-[10px] uppercase tracking-wider text-sky-400 font-semibold block">Khu vực</span>
+          <h3 id="inspector-title" class="text-sm font-bold text-white leading-tight">Tên thiết bị</h3>
+        </div>
+      </div>
+      <button id="close-inspector" class="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 transition cursor-pointer">
+        ✕
+      </button>
+    </div>
+
+    <p id="inspector-desc" class="text-xs text-slate-300 leading-relaxed mb-3"></p>
+    <div id="inspector-metrics" class="bg-slate-950/60 border border-white/10 rounded-xl p-2.5 mb-3 text-xs space-y-1.5"></div>
+    <div id="inspector-actions" class="flex flex-wrap gap-2"></div>
+  </div>
+
+  <!-- BOTTOM-CENTER: Quick Camera Views Bar -->
+  <div class="fixed bottom-3 sm:bottom-5 left-1/2 -translate-x-1/2 z-20 max-w-[96vw]">
+    <div class="hud-glass rounded-2xl p-1.5 flex items-center gap-1 overflow-x-auto no-scrollbar">
+      <button data-cam="overview" class="cam-btn px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap bg-sky-500 text-white shadow-md shadow-sky-500/25 transition cursor-pointer">
+        🏢 Tổng thể
+      </button>
+      <button data-cam="boss" class="cam-btn px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap text-amber-300 hover:bg-white/10 transition cursor-pointer">
+        👑 Phòng Sếp Đăng
+      </button>
+      <button data-cam="dev" class="cam-btn px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap text-slate-200 hover:bg-white/10 transition cursor-pointer">
+        💻 Khu Dev
+      </button>
+      <button data-cam="meeting" class="cam-btn px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap text-slate-200 hover:bg-white/10 transition cursor-pointer">
+        📊 Phòng họp
+      </button>
+      <button data-cam="server" class="cam-btn px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap text-slate-200 hover:bg-white/10 transition cursor-pointer">
+        🖥️ Phòng Server
+      </button>
+      <button data-cam="pantry" class="cam-btn px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap text-slate-200 hover:bg-white/10 transition cursor-pointer">
+        ☕ Pantry
+      </button>
+      <button data-cam="karaoke" class="cam-btn px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap text-slate-200 hover:bg-white/10 transition cursor-pointer">
+        🎤 Phòng Hát
+      </button>
+      <button data-cam="nhau" class="cam-btn px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap text-slate-200 hover:bg-white/10 transition cursor-pointer">
+        🍻 Quán Nhậu
+      </button>
+      <button data-cam="chua" class="cam-btn px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap text-slate-200 hover:bg-white/10 transition cursor-pointer">
+        🛕 Viếng Chùa
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-16 sm:bottom-20 left-1/2 -translate-x-1/2 z-40 px-4 py-2 rounded-xl bg-slate-900/95 border border-sky-400/40 text-xs font-semibold text-white shadow-xl backdrop-blur-md pointer-events-none opacity-0 translate-y-2 transition-all duration-300 whitespace-nowrap"></div>
+
+  <!-- KARAOKE TV 3D COMPACT CONTROL PANEL -->
+  <div id="karaoke-yt-panel" class="fixed bottom-16 right-3 sm:bottom-20 sm:right-4 z-30 w-[350px] sm:w-[395px] max-w-[calc(100vw-24px)] hud-glass rounded-2xl overflow-hidden border border-fuchsia-400/50 shadow-2xl transition-all duration-300 opacity-0 pointer-events-none translate-y-4">
+    <div class="px-3.5 py-2.5 bg-gradient-to-r from-fuchsia-900/90 via-purple-900/90 to-indigo-900/90 border-b border-white/15 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <span class="text-base">🎤</span>
+        <div class="min-w-0">
+          <div class="text-xs font-bold text-white truncate">Dàn Karaoke VIP 3D • KTV Studio</div>
+          <div id="yt-now-playing" class="text-[10px] text-fuchsia-200 truncate">Đang sẵn sàng • Chọn bài Beat 3D hoặc chiếu Video</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-1 shrink-0">
+        <button id="btn-tv-expand" title="Phóng to TV Karaoke toàn màn hình" class="px-2 py-1 rounded-lg bg-white/15 hover:bg-fuchsia-500/70 text-white text-[11px] font-semibold cursor-pointer">⛶ Phóng to</button>
+        <button id="btn-yt-close" title="Đóng bảng điều khiển" class="px-2 py-1 rounded-lg bg-white/15 hover:bg-rose-500/70 text-white text-[11px] font-semibold cursor-pointer">✕</button>
+      </div>
+    </div>
+
+    <div class="p-3 space-y-2.5 max-h-[68vh] overflow-y-auto">
+      <!-- Built-in 3D Beat & Lyrics Song Selector (Works 100% Offline & In 3D) -->
+      <div>
+        <div class="text-[10px] uppercase tracking-wider text-fuchsia-300 font-bold mb-1.5 flex items-center justify-between">
+          <span>🎵 Chọn Bài Nhạc Sống & Chữ Chạy TV 3D</span>
+          <span id="kar-mode-badge" class="px-1.5 py-0.5 rounded bg-fuchsia-500/30 text-fuchsia-200 text-[9px]">Beat 3D</span>
+        </div>
+        <div class="grid grid-cols-2 gap-1.5">
+          <button data-beat-song="cat-doi" class="beat-song-btn px-2 py-1.5 rounded-xl bg-fuchsia-600/40 border border-fuchsia-400/60 text-white text-[11px] font-semibold truncate text-left cursor-pointer transition hover:bg-fuchsia-500/50">
+            🔥 Cắt Đôi Nỗi Sầu
+          </button>
+          <button data-beat-song="dap-mo" class="beat-song-btn px-2 py-1.5 rounded-xl bg-white/10 border border-white/10 text-slate-200 text-[11px] font-medium truncate text-left cursor-pointer transition hover:bg-white/20">
+            🎸 Đắp Mộ Cuộc Tình
+          </button>
+          <button data-beat-song="noi-vong" class="beat-song-btn px-2 py-1.5 rounded-xl bg-white/10 border border-white/10 text-slate-200 text-[11px] font-medium truncate text-left cursor-pointer transition hover:bg-white/20">
+            🤝 Nối Vòng Tay Lớn
+          </button>
+          <button data-beat-song="lac-troi" class="beat-song-btn px-2 py-1.5 rounded-xl bg-white/10 border border-white/10 text-slate-200 text-[11px] font-medium truncate text-left cursor-pointer transition hover:bg-white/20">
+            ☁️ Lạc Trôi (IT Ver)
+          </button>
+          <button data-beat-song="code-xong" class="beat-song-btn px-2 py-1.5 rounded-xl bg-white/10 border border-white/10 text-slate-200 text-[11px] font-medium truncate text-left cursor-pointer transition hover:bg-white/20">
+            💻 Code Xong Chưa Anh
+          </button>
+          <button data-beat-song="do-toc" class="beat-song-btn px-2 py-1.5 rounded-xl bg-white/10 border border-white/10 text-slate-200 text-[11px] font-medium truncate text-left cursor-pointer transition hover:bg-white/20">
+            🎧 Độ Tộc Fix Bug
+          </button>
+        </div>
+      </div>
+
+      <!-- KTV Interactive Room Effects (Score, Confetti, Airhorn, Lights) -->
+      <div class="pt-1.5 border-t border-white/10">
+        <div class="text-[10px] uppercase tracking-wider text-sky-300 font-bold mb-1.5">✨ Hiệu Ứng Khuấy Động Phòng Hát</div>
+        <div class="grid grid-cols-4 gap-1.5">
+          <button id="btn-kar-score" class="px-1.5 py-1.5 rounded-xl bg-amber-500/25 hover:bg-amber-500/45 border border-amber-400/50 text-amber-200 text-[10px] font-bold cursor-pointer transition text-center">
+            💯 Chấm điểm
+          </button>
+          <button id="btn-kar-confetti" class="px-1.5 py-1.5 rounded-xl bg-emerald-500/25 hover:bg-emerald-500/45 border border-emerald-400/50 text-emerald-200 text-[10px] font-bold cursor-pointer transition text-center">
+            🎉 Pháo giấy
+          </button>
+          <button id="btn-kar-airhorn" class="px-1.5 py-1.5 rounded-xl bg-rose-500/25 hover:bg-rose-500/45 border border-rose-400/50 text-rose-200 text-[10px] font-bold cursor-pointer transition text-center">
+            📢 Còi DJ
+          </button>
+          <button id="btn-kar-lightmode" class="px-1.5 py-1.5 rounded-xl bg-purple-500/25 hover:bg-purple-500/45 border border-purple-400/50 text-purple-200 text-[10px] font-bold cursor-pointer transition text-center">
+            🌈 Đèn: Quẩy
+          </button>
+        </div>
+      </div>
+
+      <!-- External Video / Screen Share / Drive Projection -->
+      <div class="pt-1.5 border-t border-white/10 space-y-1.5">
+        <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">📺 Chiếu Video Thật / Màn Hình Lên TV 3D</div>
+        <div class="flex gap-1.5">
+          <input id="yt-url-input" type="text" placeholder="Dán link .mp4, Google Drive hoặc YouTube..." class="flex-1 min-w-0 px-2.5 py-1.5 rounded-xl bg-slate-900/90 border border-white/15 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-fuchsia-400" />
+          <button id="btn-yt-play-custom" class="px-2.5 py-1.5 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-xs font-bold shrink-0 cursor-pointer transition">▶ Chiếu</button>
+        </div>
+        <div class="flex flex-wrap gap-1.5">
+          <button id="btn-kar-screenshare" title="Chiếu trực tiếp tab YouTube đang mở lên mặt TV 3D" class="flex-1 px-2 py-1.5 rounded-xl bg-sky-600/35 hover:bg-sky-500/50 border border-sky-400/40 text-sky-100 text-[11px] font-semibold cursor-pointer transition">
+            🖥️ Chiếu Tab YouTube
+          </button>
+          <label class="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-100 text-[11px] font-semibold cursor-pointer transition">
+            📁 File MP4/MP3
+            <input id="kar-file-input" type="file" accept="audio/*,video/*" class="hidden" />
+          </label>
+          <button class="yt-song-btn px-2 py-1.5 rounded-xl bg-purple-600/35 hover:bg-purple-500/50 border border-purple-400/40 text-purple-100 text-[11px] font-semibold cursor-pointer transition" data-yt-id="https://drive.google.com/file/d/1uCPSPQ-lVG61zPZA4Ibvb7lD1Fc5xDjf/view?usp=sharing" data-yt-title="Karaoke Google Drive (Của bạn)">
+            ☁️ Drive
+          </button>
+          <button id="btn-kar-stop" class="px-2 py-1.5 rounded-xl bg-rose-500/25 hover:bg-rose-500/45 border border-rose-400/40 text-rose-100 text-[11px] font-semibold cursor-pointer transition">
+            ⏹ Dừng
+          </button>
+        </div>
+      </div>
+
+      <!-- Karaoke Volume Slider -->
+      <div class="flex items-center gap-2 pt-1 border-t border-white/10">
+        <span class="text-[11px] text-slate-300">🔊</span>
+        <input id="karaoke-volume-slider" type="range" min="0" max="100" value="75" class="flex-1 h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-fuchsia-400" />
+        <span id="karaoke-volume-label" class="text-[11px] text-fuchsia-300 font-bold w-8 text-right">75%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM-CENTER (Positioned cleanly ABOVE the bottom camera preset bar so they never overlap) -->
+  <div id="embodiment-hud" class="hidden fixed bottom-16 left-1/2 -translate-x-1/2 z-30 w-[calc(100vw-24px)] max-w-xl">
+    <div class="hud-glass rounded-2xl p-2.5 border border-amber-400/50 shadow-2xl flex flex-col gap-1.5">
+      <!-- Top Row: Character Switcher, Rename, Camera Mode (TPS / FPS), Exit -->
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-1.5">
+          <span class="px-2 py-0.5 rounded-lg bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[10px] font-bold whitespace-nowrap">🕹️ HÓA THÂN:</span>
+          <select id="embody-char-select" class="px-2 py-1 rounded-xl bg-slate-900/90 border border-white/20 text-white text-[11px] font-bold focus:outline-none focus:border-amber-400 cursor-pointer"></select>
+          <button id="btn-embody-create-new" title="Tự tạo nhân vật 3D mới để đi chùa / dạo văn phòng" class="px-2 py-1 rounded-lg bg-emerald-500/25 hover:bg-emerald-500/40 border border-emerald-400/50 text-emerald-200 text-[10px] font-bold cursor-pointer transition whitespace-nowrap">
+            ➕ Tạo Nhân Vật
+          </button>
+          <button id="btn-embody-rename" title="Đổi tên nhân vật đang hóa thân" class="px-2 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200 text-[10px] font-semibold cursor-pointer transition whitespace-nowrap">
+            ✏️ Đổi tên
+          </button>
+          <button id="btn-reset-save" title="Xóa tiến trình đã lưu và khôi phục mặc định" class="px-2 py-1 rounded-lg bg-white/10 hover:bg-rose-500/30 text-slate-300 text-[10px] font-semibold cursor-pointer transition whitespace-nowrap">
+            🔄 Reset Lưu
+          </button>
+        </div>
+        <div class="flex items-center gap-1">
+          <button id="btn-embody-cam-mode" title="Phím tắt: V để đổi góc nhìn Thứ 1 (FPS) / Thứ 3 (TPS)" class="px-2 py-1 rounded-xl bg-sky-500/25 hover:bg-sky-500/40 border border-sky-400/50 text-sky-200 text-[10px] font-bold cursor-pointer transition whitespace-nowrap">
+            🎥 Góc nhìn: Thứ 3 (TPS) [Phím V]
+          </button>
+          <button id="btn-embody-minimize" title="Thu nhỏ / Mở rộng bảng Hóa Thân" class="px-2 py-1 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 text-[10px] font-bold cursor-pointer transition">
+            ➖
+          </button>
+          <button id="btn-embody-exit" class="px-2 py-1 rounded-xl bg-rose-500/25 hover:bg-rose-500/45 border border-rose-400/40 text-rose-200 text-[10px] font-bold cursor-pointer transition whitespace-nowrap">
+            ✕ Thoát
+          </button>
+        </div>
+      </div>
+
+      <!-- Collapsible Body of Embodiment HUD -->
+      <div id="embody-hud-body" class="flex flex-col gap-1.5">
+        <!-- Middle Row: Contextual Action Button (Spacebar) + Peer Social Action (Key E) + 4 Quick Emote Buttons (Keys 1-4) -->
+        <div class="flex flex-wrap items-center justify-between gap-1.5">
+          <button id="btn-embody-context-action" class="flex-1 min-w-[170px] px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 text-[11px] font-extrabold shadow-md cursor-pointer transition text-center truncate">
+            ⚡ [Phím Space] Tương tác tại chỗ
+          </button>
+          <button id="btn-embody-peer-action" class="hidden px-2.5 py-1 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-slate-950 text-[11px] font-extrabold shadow-md cursor-pointer transition text-center whitespace-nowrap">
+            🤝 [Phím E] Tương tác đồng nghiệp
+          </button>
+          <div class="flex items-center gap-1">
+            <button data-emote-pose="dance" data-emote-msg="Quẩy lên anh em IT ơi!! 🕺🔥" class="embody-emote-btn px-2 py-1 rounded-xl bg-white/10 hover:bg-fuchsia-500/30 border border-white/10 text-white text-[10px] font-semibold cursor-pointer transition whitespace-nowrap">
+              1: 🕺 Quẩy
+            </button>
+            <button data-emote-pose="kneel-pray" data-emote-msg="Nam mô Zero-Bug Đại Vương, độ cho con code mượt! 🙏" class="embody-emote-btn px-2 py-1 rounded-xl bg-white/10 hover:bg-amber-500/30 border border-white/10 text-white text-[10px] font-semibold cursor-pointer transition whitespace-nowrap">
+              2: 🙏 Khấn
+            </button>
+            <button data-emote-pose="nhau" data-emote-msg="1... 2... 3... DZÔ 100% anh em ơi!! 🍻" class="embody-emote-btn px-2 py-1 rounded-xl bg-white/10 hover:bg-emerald-500/30 border border-white/10 text-white text-[10px] font-semibold cursor-pointer transition whitespace-nowrap">
+              3: 🍻 Cụng bia
+            </button>
+            <button data-emote-pose="sing" data-emote-msg="Cắt đôi nỗi sầu, cắt luôn bug Prod đêm nay!! 🎤🎶" class="embody-emote-btn px-2 py-1 rounded-xl bg-white/10 hover:bg-purple-500/30 border border-white/10 text-white text-[10px] font-semibold cursor-pointer transition whitespace-nowrap">
+              4: 🎤 Cầm mic
+            </button>
+          </div>
+        </div>
+
+        <!-- Bottom Row: Live 3D Speech Bubble Chat Input + Controls Hint -->
+        <div class="flex items-center gap-1.5">
+          <input id="embody-chat-input" type="text" maxlength="90" placeholder="💬 Gõ câu nói bất kỳ rồi nhấn Enter để bật bong bóng thoại 3D trên đầu..." class="flex-1 px-2.5 py-1 rounded-xl bg-slate-900/90 border border-white/15 text-white text-[11px] placeholder:text-slate-400 focus:outline-none focus:border-amber-400" />
+          <button id="btn-embody-chat-send" class="px-2.5 py-1 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-[11px] font-bold cursor-pointer transition whitespace-nowrap">
+            Nói 💬
+          </button>
+          <span class="hidden sm:inline text-[10px] text-slate-300 font-medium whitespace-nowrap">Đi bộ: ⬆️⬇️⬅️➡️</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM-RIGHT: Real-Time 2D Mini-Map Radar & Click-to-Teleport (Separated from Left Control Panel) -->
+  <div id="minimap-widget" class="fixed bottom-16 right-3 sm:right-4 z-20 hud-glass rounded-2xl p-2.5 border border-sky-400/35 shadow-2xl flex flex-col gap-1.5 w-[210px]">
+    <div class="flex items-center justify-between">
+      <span class="text-[10px] font-extrabold text-sky-300 uppercase tracking-wider flex items-center gap-1 whitespace-nowrap">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+        🗺️ Radar 2D (Click = Teleport)
+      </span>
+      <button id="btn-close-minimap" class="text-[10px] text-slate-400 hover:text-white cursor-pointer px-1">✕</button>
+    </div>
+    <canvas id="minimap-canvas" width="190" height="135" class="w-full h-[135px] rounded-xl bg-slate-950/90 border border-white/10 cursor-crosshair"></canvas>
+    <div class="flex items-center justify-between text-[9px] text-slate-400 px-0.5 whitespace-nowrap">
+      <span>🟡 Hóa thân</span>
+      <span>🟢 Online</span>
+      <span>🐶 Corgi</span>
+    </div>
+  </div>
+
+  <!-- TOP-LEFT-ADJACENT: Realtime Online Multiplayer Status & Live Chat Widget (Collapsible & Minimizable) -->
+  <div id="online-multiplayer-widget" class="fixed top-3 left-3 sm:top-4 sm:left-[356px] z-20 flex flex-col gap-1.5 w-[336px] pointer-events-auto">
+    <!-- Compact Pill when Minimized -->
+    <button id="btn-expand-online-widget" class="hidden self-start hud-glass rounded-full px-3 py-1.5 border border-emerald-400/50 shadow-xl flex items-center gap-2 cursor-pointer hover:bg-slate-800/90 transition">
+      <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+      <span id="online-mini-count" class="text-[11px] font-extrabold text-emerald-300 whitespace-nowrap">🟢 1 Online</span>
+      <span class="text-[10px] text-slate-300">🔲 Mở</span>
+    </button>
+
+    <!-- Full Online Header Bar (336px wide so text never overlaps buttons) -->
+    <div id="online-full-header" class="hud-glass rounded-2xl px-3 py-2 border border-emerald-400/45 shadow-xl flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 min-w-0 flex-1">
+        <span id="online-status-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+        <div class="min-w-0 flex-1">
+          <div class="text-[11px] font-extrabold text-emerald-300 leading-tight truncate" id="online-count-label">🟢 ONLINE: 1 người</div>
+          <div class="text-[9px] text-slate-400 truncate" id="online-broker-label">Đang kết nối Server Realtime...</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-1 shrink-0">
+        <button id="btn-open-meeting-call" title="Bật / Tắt bảng Call Video Phòng Họp" class="px-2 py-1 rounded-lg bg-sky-500/25 hover:bg-sky-500/40 border border-sky-400/50 text-sky-200 text-[10px] font-bold cursor-pointer transition whitespace-nowrap">
+          📹 Call Họp
+        </button>
+        <button id="btn-toggle-online-chat" title="Bật / Tắt Kênh Chat Online" class="px-2 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white text-[10px] font-bold cursor-pointer transition whitespace-nowrap">
+          💬 Chat
+        </button>
+        <button id="btn-minimize-online-widget" title="Thu nhỏ toàn bộ cụm Online thành nút gọn" class="px-1.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 text-[10px] font-bold cursor-pointer transition">
+          ➖
+        </button>
+      </div>
+    </div>
+
+    <!-- Collapsible Live Online Chat Drawer (Starts hidden by default so 3D viewport is clean) -->
+    <div id="online-chat-drawer" class="hidden hud-glass rounded-2xl p-2.5 border border-emerald-400/35 shadow-2xl flex flex-col gap-1.5">
+      <div class="flex items-center justify-between gap-1 pb-1 border-b border-white/10">
+        <div id="online-peers-list" class="text-[10px] text-emerald-200 font-semibold px-1 truncate flex-1">
+          👑 Bạn đang trực tuyến
+        </div>
+        <button id="btn-close-online-chat" title="Thu gọn khung Chat" class="text-[10px] text-slate-400 hover:text-white cursor-pointer px-1">➖</button>
+      </div>
+      <div id="online-chat-messages" class="h-[88px] overflow-y-auto flex flex-col gap-1 pr-1 text-[10px] text-slate-200">
+        <div class="text-slate-400 italic">💡 Mở link web trên 2 máy/điện thoại rồi bấm "🕹️ Hóa Thân" để thấy nhau đi bộ & chat Realtime!</div>
+      </div>
+      <div class="flex items-center gap-1 pt-1 border-t border-white/10">
+        <input id="online-quick-chat-input" type="text" maxlength="90" placeholder="Nhắn tin cho mọi người..." class="flex-1 px-2 py-1 rounded-lg bg-slate-900/90 border border-white/15 text-white text-[10px] placeholder:text-slate-500 focus:outline-none focus:border-emerald-400" />
+        <button id="btn-online-quick-chat-send" class="px-2 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-[10px] font-extrabold cursor-pointer transition">
+          Gửi
+        </button>
+      </div>
+    </div>
+
+    <!-- WebRTC Meeting Room Video & Voice Call Dock (Minimizable & Closeable) -->
+    <div id="meeting-call-dock" class="hidden hud-glass rounded-2xl p-2.5 border border-sky-400/55 shadow-2xl flex flex-col gap-2 w-[310px]">
+      <div class="flex items-center justify-between gap-2">
+        <span id="meeting-call-status" class="text-[10px] font-extrabold text-sky-300 truncate flex-1">
+          📹 Phòng Họp Video & Voice Call Online
+        </span>
+        <div class="flex items-center gap-1 shrink-0">
+          <button id="btn-mcall-minimize-dock" title="Thu nhỏ / Mở rộng khung Video Call" class="px-1.5 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[10px] text-slate-200 cursor-pointer">➖</button>
+          <button id="btn-mcall-close-dock" title="Ẩn bảng Video Call" class="px-1.5 py-0.5 rounded bg-white/10 hover:bg-rose-500/40 text-[10px] text-slate-300 hover:text-white cursor-pointer">✕</button>
+        </div>
+      </div>
+
+      <!-- Collapsible Body of Video Call Dock -->
+      <div id="mcall-body-content" class="flex flex-col gap-2">
+        <!-- Join Buttons (shown when not yet in call) -->
+        <div class="flex items-center gap-1.5">
+          <button id="btn-mcall-join-video" class="flex-1 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white text-[11px] font-bold shadow-md cursor-pointer transition">
+            📹 Bật Cam + Mic
+          </button>
+          <button id="btn-mcall-join-voice" class="flex-1 px-2.5 py-1.5 rounded-xl bg-emerald-500/30 hover:bg-emerald-500/45 border border-emerald-400/60 text-emerald-200 text-[11px] font-bold cursor-pointer transition">
+            🎤 Chỉ Bật Mic
+          </button>
+        </div>
+
+        <!-- Active Call Controls (shown while in call) -->
+        <div id="mcall-active-controls" class="hidden flex flex-wrap items-center justify-between gap-1">
+          <button id="btn-mcall-toggle-mic" class="px-2.5 py-1 rounded-xl bg-emerald-500/30 border border-emerald-400/60 text-emerald-200 text-[11px] font-bold cursor-pointer transition">
+            🎤 Mic: Bật
+          </button>
+          <button id="btn-mcall-toggle-cam" class="px-2.5 py-1 rounded-xl bg-sky-500/30 border border-sky-400/60 text-sky-200 text-[11px] font-bold cursor-pointer transition">
+            📷 Cam: Bật
+          </button>
+          <button id="btn-mcall-share-screen" class="px-2 py-1 rounded-xl bg-fuchsia-500/30 border border-fuchsia-400/60 text-fuchsia-200 text-[10px] font-bold cursor-pointer transition">
+            🖥️ Share Màn Hình
+          </button>
+          <button id="btn-mcall-leave" class="px-2 py-1 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-[10px] font-bold cursor-pointer transition">
+            📞 Rời
+          </button>
+        </div>
+
+        <!-- Live Video Grid (2 columns) -->
+        <div id="meeting-video-grid" class="hidden grid grid-cols-2 gap-1.5 max-h-[210px] overflow-y-auto"></div>
+        <div class="text-[9px] text-slate-400 leading-tight">
+          💡 Hình ảnh Video Call đang chiếu trực tiếp lên <b>Màn hình 98" trong Phòng Họp 3D</b>!
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: 3D Custom Character Creator Studio (Tạo Nhân Vật Đi Chùa / Dạo Văn Phòng) -->
+  <div id="char-creator-modal" class="hidden fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-3">
+    <div class="hud-glass rounded-3xl p-4 sm:p-5 border border-amber-400/50 shadow-2xl w-full max-w-md flex flex-col gap-3 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">🛕</span>
+          <div>
+            <h2 class="text-sm font-extrabold text-amber-300">Tạo Nhân Vật 3D Đi Chùa & Dạo Văn Phòng</h2>
+            <p class="text-[10px] text-slate-300">Tự động lưu tiến trình & đồng bộ trực tuyến với mọi người</p>
+          </div>
+        </div>
+        <button id="btn-close-char-creator" class="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 text-xs cursor-pointer">✕</button>
+      </div>
+
+      <!-- Name & Role -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        <div>
+          <label class="text-[11px] font-bold text-slate-300 block mb-1">👤 Họ Tên Nhân Vật</label>
+          <input id="cc-name" type="text" maxlength="28" placeholder="VD: Minh Đăng, Tâm An..." value="Phật Tử Tâm An" class="w-full px-3 py-1.5 rounded-xl bg-slate-900/90 border border-white/20 text-white text-xs font-bold focus:outline-none focus:border-amber-400" />
+        </div>
+        <div>
+          <label class="text-[11px] font-bold text-slate-300 block mb-1">🏷️ Danh Xưng / Vai Trò</label>
+          <select id="cc-role" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-900/90 border border-white/20 text-white text-xs font-semibold focus:outline-none focus:border-amber-400 cursor-pointer">
+            <option value="Phật Tử Đi Lễ Chùa 🙏">🙏 Phật Tử Đi Lễ Chùa</option>
+            <option value="Trưởng Phòng VIP 👑">👑 Trưởng Phòng VIP</option>
+            <option value="Fullstack Developer 💻">💻 Fullstack Developer</option>
+            <option value="QA Không Bug 🎯">🎯 QA Không Bug</option>
+            <option value="Thiện Nam Tín Nữ 🪷">🪷 Thiện Nam Tín Nữ</option>
+            <option value="Thánh Nhậu IT 🍻">🍻 Thánh Nhậu IT</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Gender / Hairstyle & Hair Color -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        <div>
+          <label class="text-[11px] font-bold text-slate-300 block mb-1">💇 Giới Tính & Kiểu Tóc</label>
+          <select id="cc-hair-style" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-900/90 border border-white/20 text-white text-xs font-semibold focus:outline-none focus:border-amber-400 cursor-pointer">
+            <option value="0">👨 Nam Lịch Lãm (Undercut)</option>
+            <option value="1">👩 Nữ Dịu Dàng (Tóc Bob)</option>
+            <option value="2">👱‍♀️ Nữ Năng Động (Tóc Dài Buộc Cao)</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-[11px] font-bold text-slate-300 block mb-1">🎨 Màu Tóc</label>
+          <select id="cc-hair-color" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-900/90 border border-white/20 text-white text-xs font-semibold focus:outline-none focus:border-amber-400 cursor-pointer">
+            <option value="0x1c1917">⚫ Đen Truyền Thống</option>
+            <option value="0x5c3a21">🟤 Nâu Hạt Dẻ</option>
+            <option value="0xd97706">🟡 Vàng Ánh Kim</option>
+            <option value="0x991b1b">🔴 Đỏ Rượu Vang</option>
+            <option value="0x6b21a8">🟣 Tím Khói Thời Thượng</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Outfit Type & Shirt Color -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        <div>
+          <label class="text-[11px] font-bold text-slate-300 block mb-1">👔 Kiểu Trang Phục</label>
+          <select id="cc-outfit-type" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-900/90 border border-white/20 text-white text-xs font-semibold focus:outline-none focus:border-amber-400 cursor-pointer">
+            <option value="temple">🛕 Áo Lam / Pháp Phục Đi Chùa</option>
+            <option value="boss">👑 Áo Vest Chủ Tịch + Cà Vạt</option>
+            <option value="it">👕 Áo Polo IT (Đeo Thẻ Nhân Viên)</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-[11px] font-bold text-slate-300 block mb-1">🌈 Màu Áo Chủ Đạo</label>
+          <select id="cc-shirt-color" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-900/90 border border-white/20 text-white text-xs font-semibold focus:outline-none focus:border-amber-400 cursor-pointer">
+            <option value="0x64748b">🩶 Lam Phật Tử Thanh Tịnh</option>
+            <option value="0x7c3aed">🟣 Tím Hoàng Gia</option>
+            <option value="0xdc2626">🔴 Đỏ Đại Cát Cầu May</option>
+            <option value="0xd97706">🟠 Vàng Hoàng Kim</option>
+            <option value="0x2563eb">🔵 Xanh Đại Dương</option>
+            <option value="0xec4899">🌸 Hồng Đào</option>
+            <option value="0x059669">🟢 Xanh Ngọc Lục Bảo</option>
+            <option value="0x1e293b">⚫ Đen Lịch Lãm</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Skin Tone & Glasses -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        <div>
+          <label class="text-[11px] font-bold text-slate-300 block mb-1">✨ Tông Màu Da</label>
+          <select id="cc-skin-color" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-900/90 border border-white/20 text-white text-xs font-semibold focus:outline-none focus:border-amber-400 cursor-pointer">
+            <option value="0xfde2c8">🏻 Trắng Hồng Rạng Rỡ</option>
+            <option value="0xf3c693" selected>🏼 Vàng Ấm Châu Á</option>
+            <option value="0xc68642">🏽 Nâu Khỏe Khoắn</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-[11px] font-bold text-slate-300 block mb-1">👓 Phụ Kiện Kính Mắt</label>
+          <select id="cc-glasses" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-900/90 border border-white/20 text-white text-xs font-semibold focus:outline-none focus:border-amber-400 cursor-pointer">
+            <option value="true">👓 Có đeo kính tri thức</option>
+            <option value="false">👀 Không đeo kính</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Starting Destination -->
+      <div>
+        <label class="text-[11px] font-bold text-amber-300 block mb-1">📍 Điểm Xuất Phát Sau Khi Tạo</label>
+        <select id="cc-spawn-zone" class="w-full px-2.5 py-2 rounded-xl bg-amber-950/70 border border-amber-400/50 text-amber-100 text-xs font-bold focus:outline-none focus:border-amber-400 cursor-pointer">
+          <option value="chua" selected>🛕 Ra thẳng Sân Chùa Cầu Không Bug (Cầm 3 nén nhang đi lễ ngay!)</option>
+          <option value="office">🏢 Xuất phát tại Sảnh Chính Văn Phòng IT</option>
+          <option value="meeting">📊 Xuất phát trong Phòng Họp Video Call</option>
+          <option value="nhau">🍻 Xuất phát ngoài Quán Nhậu Vỉa Hè 1-2-3 Dzô</option>
+          <option value="karaoke">🎤 Xuất phát trong Phòng Hát Karaoke VIP</option>
+        </select>
+      </div>
+
+      <div class="flex items-center gap-2 pt-2 border-t border-white/10">
+        <button id="btn-cc-submit" class="flex-1 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-slate-950 text-xs font-extrabold shadow-xl cursor-pointer transition">
+          ✨ Tạo Nhân Vật & Bắt Đầu Hóa Thân Ngay!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Three.js Application Script -->
+  <script src="./js/webrtc-meeting.js"></script>
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
