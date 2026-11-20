@@ -3781,6 +3781,26 @@ import * as THREE from 'three';
       return 'central';
     }
 
+    // Exact 8 coordinates of the 8 real 3D red/blue plastic stools at the 2 Beer Tables
+    const REAL_NHAU_STOOLS = [
+      { x: -4.75, z: 10.92, rotY: 0, side: 'north' },
+      { x: -3.65, z: 10.92, rotY: 0, side: 'north' },
+      { x: -4.75, z: 12.68, rotY: Math.PI, side: 'south' },
+      { x: -3.65, z: 12.68, rotY: Math.PI, side: 'south' },
+      { x: -1.35, z: 10.92, rotY: 0, side: 'north' },
+      { x: -0.25, z: 10.92, rotY: 0, side: 'north' },
+      { x: -1.35, z: 12.68, rotY: Math.PI, side: 'south' },
+      { x: -0.25, z: 12.68, rotY: Math.PI, side: 'south' }
+    ];
+
+    function isOnRealNhauStool(x, z) {
+      for (let i = 0; i < REAL_NHAU_STOOLS.length; i++) {
+        const st = REAL_NHAU_STOOLS[i];
+        if (Math.hypot(x - st.x, z - st.z) < 0.28) return true;
+      }
+      return false;
+    }
+
     function buildSmartRoute(fromX, fromZ, destType, charObj) {
       const path = [];
       const startZone = getRoomZone(fromX, fromZ);
@@ -3879,50 +3899,50 @@ import * as THREE from 'three';
         path.push({ x: 13.2, z: -3.3, act: 'Bước vào Phòng Karaoke VIP 🎤' });
         path.push({ x: sp.x, z: sp.z, finalPose: sp.pose, faceX: 18.8, faceZ: -4.0, act: sp.act, emoji: '🎤' });
       } else if (destType === 'nhau') {
-        // 14 vị trí độc lập tại Quán Nhậu (8 ghế chính quanh 2 bàn + 6 ghế đầu bàn & cạnh lò BBQ để đủ cho cả 14 nhân sự, tuyệt đối không trùng ghế)
-        const nhauSpots = [
-          { x: -4.75, z: 10.92, rotY: 0, side: 'north' },
-          { x: -3.65, z: 10.92, rotY: 0, side: 'north' },
-          { x: -4.75, z: 12.68, rotY: Math.PI, side: 'south' },
-          { x: -3.65, z: 12.68, rotY: Math.PI, side: 'south' },
-          { x: -1.35, z: 10.92, rotY: 0, side: 'north' },
-          { x: -0.25, z: 10.92, rotY: 0, side: 'north' },
-          { x: -1.35, z: 12.68, rotY: Math.PI, side: 'south' },
-          { x: -0.25, z: 12.68, rotY: Math.PI, side: 'south' },
-          // 6 vị trí mở rộng đầu bàn & quanh Lò Nướng BBQ (cho người thứ 9 -> 14)
-          { x: -5.38, z: 11.80, rotY: Math.PI / 2, side: 'north' },
-          { x: -3.02, z: 11.80, rotY: -Math.PI / 2, side: 'north' },
-          { x: -1.98, z: 11.80, rotY: Math.PI / 2, side: 'north' },
-          { x: 0.38,  z: 11.80, rotY: -Math.PI / 2, side: 'north' },
-          { x: 0.75,  z: 10.92, rotY: 0, side: 'north' },
-          { x: 0.75,  z: 12.68, rotY: Math.PI, side: 'south' }
-        ];
-        // Kiểm tra ghế đã có người theo CẢ nhauSeatIdx LẪN tọa độ đứng/ngồi thực tế (< 0.55m) của mọi nhân vật (kể cả nhân vật đang Hóa Thân)
+        // Chỉ cho phép ngồi vào đúng 8 ghế đẩu nhựa 3D thật (REAL_NHAU_STOOLS), tuyệt đối không có tọa độ ngồi ảo không ghế!
         const isSeatOccupied = (seatIdx) => {
-          const seat = nhauSpots[seatIdx];
+          if (seatIdx < 0 || seatIdx >= REAL_NHAU_STOOLS.length) return true;
+          const seat = REAL_NHAU_STOOLS[seatIdx];
           return officeCharacters.some(other => {
             if (other === charObj) return false;
             if (typeof other.nhauSeatIdx === 'number' && other.nhauSeatIdx === seatIdx) return true;
-            const d = Math.hypot(other.rig.root.position.x - seat.x, other.rig.root.position.z - seat.z);
-            return d < 0.55;
+            // Chỉ tính người đang đứng/ngồi yên tại ghế (không bị nhiễu bởi người đang đi bộ ngang qua)
+            if (other.currentPose !== 'walking') {
+              const d = Math.hypot(other.rig.root.position.x - seat.x, other.rig.root.position.z - seat.z);
+              if (d < 0.36) return true;
+            }
+            return false;
           });
         };
-        if (typeof charObj.nhauSeatIdx !== 'number' || isSeatOccupied(charObj.nhauSeatIdx)) {
-          const freeSeats = nhauSpots.map((_, i) => i).filter(i => !isSeatOccupied(i));
-          charObj.nhauSeatIdx = freeSeats.length > 0
-            ? freeSeats[0]
-            : (officeCharacters.indexOf(charObj) % nhauSpots.length);
+
+        if (typeof charObj.nhauSeatIdx !== 'number' || charObj.nhauSeatIdx >= REAL_NHAU_STOOLS.length || isSeatOccupied(charObj.nhauSeatIdx)) {
+          const freeSeats = REAL_NHAU_STOOLS.map((_, i) => i).filter(i => !isSeatOccupied(i));
+          charObj.nhauSeatIdx = freeSeats.length > 0 ? freeSeats[0] : -1;
         }
-        const sp = nhauSpots[charObj.nhauSeatIdx % nhauSpots.length];
+
         path.push({ x: 2.5, z: 7.2, act: 'Ra cửa trước đi nhậu thôi! 🍻' });
         path.push({ x: 2.5, z: 9.8, act: 'Tiến ra Quán Bia Hơi vỉa hè...' });
-        if (sp.side === 'south') {
-          path.push({ x: 2.5, z: 13.55, act: 'Đi vòng qua bàn tìm ghế nhựa...' });
-          path.push({ x: sp.x, z: 13.55, act: 'Kéo ghế ngồi vào bàn nhậu...' });
+
+        if (charObj.nhauSeatIdx >= 0 && charObj.nhauSeatIdx < REAL_NHAU_STOOLS.length) {
+          const sp = REAL_NHAU_STOOLS[charObj.nhauSeatIdx];
+          if (sp.side === 'south') {
+            path.push({ x: 2.5, z: 13.55, act: 'Đi vòng qua bàn tìm ghế nhựa...' });
+            path.push({ x: sp.x, z: 13.55, act: 'Kéo ghế ngồi vào bàn nhậu...' });
+          } else {
+            path.push({ x: sp.x, z: 10.1, act: 'Kéo ghế ngồi vào bàn nhậu...' });
+          }
+          path.push({ x: sp.x, z: sp.z, finalPose: 'nhau', faceRotY: sp.rotY, act: 'Đang ngồi ghế nhựa cụng ly 1-2-3 DZÔ cực đã! 🍻', emoji: '🍻' });
         } else {
-          path.push({ x: sp.x, z: 10.1, act: 'Kéo ghế ngồi vào bàn nhậu...' });
+          // Khi cả 8 ghế nhựa đã kín người ngồi: Nhân sự thứ 9+ đứng thưởng thức BBQ & nâng ly bia quanh Lò Nướng (tuyệt đối không ngồi lơ lửng!)
+          const standOffsets = [
+            { x: 0.95, z: 10.75, fx: 1.65, fz: 11.8 },
+            { x: 2.35, z: 10.75, fx: 1.65, fz: 11.8 },
+            { x: 0.95, z: 12.85, fx: 1.65, fz: 11.8 },
+            { x: 2.35, z: 12.85, fx: 1.65, fz: 11.8 }
+          ];
+          const st = standOffsets[officeCharacters.indexOf(charObj) % standOffsets.length];
+          path.push({ x: st.x, z: st.z, finalPose: 'stand-beer', faceX: st.fx, faceZ: st.fz, act: 'Đang đứng cạnh Lò Nướng BBQ nâng ly 1-2-3 DZÔ! 🍻🍢', emoji: '🍻' });
         }
-        path.push({ x: sp.x, z: sp.z, finalPose: 'nhau', faceRotY: sp.rotY, act: 'Đang ngồi cụng ly 1-2-3 DZÔ cực đã! 🍻', emoji: '🍻' });
       } else if (destType === 'chua') {
         const slot = typeof charObj.templeSlot === 'number'
           ? charObj.templeSlot
@@ -4374,7 +4394,7 @@ import * as THREE from 'three';
       const sp = 10 * dt;
 
       if (rig.rightArm.coffeeCup) rig.rightArm.coffeeCup.visible = !!c.holdingCoffee;
-      if (rig.rightArm.beerMug) rig.rightArm.beerMug.visible = (pose === 'nhau');
+      if (rig.rightArm.beerMug) rig.rightArm.beerMug.visible = (pose === 'nhau' || pose === 'stand-beer');
       if (rig.rightArm.microphone) rig.rightArm.microphone.visible = (pose === 'sing');
       if (rig.rightArm.incenseSticks) {
         rig.rightArm.incenseSticks.visible = (pose === 'incense' || pose === 'queue-pray');
@@ -4447,14 +4467,26 @@ import * as THREE from 'three';
         rig.leftArm.elbow.rotation.x = -0.4;
         rig.rightArm.elbow.rotation.x = -0.4;
         rig.headGroup.rotation.y = Math.sin(beat * 0.5) * 0.3;
-      } else if (pose === 'nhau') {
-        // Ngồi xuống ghế nhựa vỉa hè, tay phải nâng ly bia hô 1-2-3 DZÔ!
+      } else if (pose === 'nhau' || pose === 'stand-beer') {
+        // Hard Chair-Validation Guard: Only lower hips into sitting pose if standing directly on one of the 8 real 3D plastic stools!
         const cheers = Math.max(0, Math.sin(t * 2.8 + c.phase));
-        rig.bodyPivot.position.y = lerp(rig.bodyPivot.position.y, -0.40, sp);
-        rig.leftLeg.hip.rotation.x = lerp(rig.leftLeg.hip.rotation.x, -1.52, sp);
-        rig.rightLeg.hip.rotation.x = lerp(rig.rightLeg.hip.rotation.x, -1.52, sp);
-        rig.leftLeg.knee.rotation.x = lerp(rig.leftLeg.knee.rotation.x, 1.55, sp);
-        rig.rightLeg.knee.rotation.x = lerp(rig.rightLeg.knee.rotation.x, 1.55, sp);
+        const pos = rig.root.position;
+        const hasRealStoolBelow = (pose === 'nhau') && isOnRealNhauStool(pos.x, pos.z);
+        if (hasRealStoolBelow) {
+          // Ngồi ngay ngắn trên ghế đẩu nhựa 3D thật, tay phải nâng ly bia hô 1-2-3 DZÔ!
+          rig.bodyPivot.position.y = lerp(rig.bodyPivot.position.y, -0.40, sp);
+          rig.leftLeg.hip.rotation.x = lerp(rig.leftLeg.hip.rotation.x, -1.52, sp);
+          rig.rightLeg.hip.rotation.x = lerp(rig.rightLeg.hip.rotation.x, -1.52, sp);
+          rig.leftLeg.knee.rotation.x = lerp(rig.leftLeg.knee.rotation.x, 1.55, sp);
+          rig.rightLeg.knee.rotation.x = lerp(rig.rightLeg.knee.rotation.x, 1.55, sp);
+        } else {
+          // Không có ghế nhựa ở dưới (đang đứng cạnh bàn/lò BBQ hoặc bấm phím 3 ở nơi khác): Đứng thẳng hai chân nâng ly bia cụng!
+          rig.bodyPivot.position.y = lerp(rig.bodyPivot.position.y, 0, sp);
+          rig.leftLeg.hip.rotation.x = lerp(rig.leftLeg.hip.rotation.x, 0, sp);
+          rig.rightLeg.hip.rotation.x = lerp(rig.rightLeg.hip.rotation.x, 0, sp);
+          rig.leftLeg.knee.rotation.x = lerp(rig.leftLeg.knee.rotation.x, 0, sp);
+          rig.rightLeg.knee.rotation.x = lerp(rig.rightLeg.knee.rotation.x, 0, sp);
+        }
         rig.rightArm.shoulder.rotation.x = lerp(rig.rightArm.shoulder.rotation.x, -0.85 - cheers * 0.75, sp);
         rig.rightArm.elbow.rotation.x = lerp(rig.rightArm.elbow.rotation.x, -0.95, sp);
         rig.leftArm.shoulder.rotation.x = lerp(rig.leftArm.shoulder.rotation.x, -0.55, sp);
