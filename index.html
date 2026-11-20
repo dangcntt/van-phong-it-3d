@@ -196,33 +196,33 @@
   </div>
 
   <!-- TOP-LEFT: Title & Collapsible Controls -->
-  <div class="fixed top-3 left-3 sm:top-4 sm:left-4 z-20 flex flex-col gap-2 max-w-[calc(100vw-24px)] sm:max-w-xs">
-    <div class="hud-glass rounded-2xl px-3.5 py-2.5 flex items-center justify-between gap-3">
-      <div class="flex items-center gap-2.5">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center shadow-md shadow-sky-500/20 shrink-0">
-          <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+  <div class="fixed top-3 left-3 sm:top-4 sm:left-4 z-20 flex flex-col gap-2 w-[calc(100vw-24px)] sm:w-[328px]">
+    <div class="hud-glass rounded-2xl px-3 py-2.5 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center shadow-md shadow-sky-500/20 shrink-0">
+          <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
           </svg>
         </div>
-        <div>
-          <h1 class="text-sm font-bold text-white leading-tight">IT LAB 3D Office</h1>
-          <p class="text-[11px] text-sky-300 font-medium" id="mode-badge">Chế độ: Ban ngày</p>
+        <div class="min-w-0">
+          <h1 class="text-[13px] font-bold text-white leading-tight whitespace-nowrap">IT LAB 3D Office</h1>
+          <p class="text-[10px] text-sky-300 font-medium whitespace-nowrap" id="mode-badge">Chế độ: Ban ngày</p>
         </div>
       </div>
-      <div class="flex items-center gap-1">
-        <button id="btn-open-embody-bar" title="Hóa thân nhập vai vào nhân vật bất kỳ (FPS / TPS)" class="px-2 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-fuchsia-600 hover:from-amber-400 hover:to-fuchsia-500 text-white font-bold transition cursor-pointer text-[11px] shadow-lg shadow-fuchsia-500/25 flex items-center gap-1">
-          <span>🕹️</span><span class="hidden sm:inline">Hóa Thân</span>
+      <div class="flex items-center gap-1 shrink-0">
+        <button id="btn-open-embody-bar" title="Hóa thân nhập vai vào nhân vật bất kỳ (FPS / TPS)" class="px-2 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-fuchsia-600 hover:from-amber-400 hover:to-fuchsia-500 text-white font-bold transition cursor-pointer text-[10px] shadow-lg shadow-fuchsia-500/25 flex items-center gap-1 whitespace-nowrap">
+          <span>🕹️</span><span>Hóa Thân</span>
         </button>
-        <button id="btn-photo-mode" title="Chụp ảnh Check-in 3D có đóng dấu Watermark (Tải PNG gửi Zalo)" class="p-2 rounded-xl bg-emerald-500/25 hover:bg-emerald-500/40 border border-emerald-400/40 text-emerald-200 transition cursor-pointer text-xs">
+        <button id="btn-photo-mode" title="Chụp ảnh Check-in 3D có đóng dấu Watermark (Tải PNG gửi Zalo)" class="p-1.5 rounded-xl bg-emerald-500/25 hover:bg-emerald-500/40 border border-emerald-400/40 text-emerald-200 transition cursor-pointer text-xs">
           📸
         </button>
-        <button id="btn-toggle-minimap" title="Bật / Tắt Bản đồ Radar 2D & Click Dịch chuyển" class="p-2 rounded-xl bg-sky-500/25 hover:bg-sky-500/40 border border-sky-400/40 text-sky-200 transition cursor-pointer text-xs">
+        <button id="btn-toggle-minimap" title="Bật / Tắt Bản đồ Radar 2D & Click Dịch chuyển" class="p-1.5 rounded-xl bg-sky-500/25 hover:bg-sky-500/40 border border-sky-400/40 text-sky-200 transition cursor-pointer text-xs">
           🗺️
         </button>
-        <button id="btn-toggle-sound" title="Bật / Tắt âm thanh hiệu ứng" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 transition cursor-pointer text-xs">
+        <button id="btn-toggle-sound" title="Bật / Tắt âm thanh hiệu ứng" class="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 transition cursor-pointer text-xs">
           🔊
         </button>
-        <button id="toggle-hud-btn" title="Thu gọn / Mở rộng bảng điều khiển" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 transition cursor-pointer">
+        <button id="toggle-hud-btn" title="Thu gọn / Mở rộng bảng điều khiển" class="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 transition cursor-pointer">
           <svg id="hud-chevron" class="w-4 h-4 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
           </svg>
@@ -231,7 +231,7 @@
     </div>
 
     <!-- Collapsible Controls Body -->
-    <div id="hud-body" class="hud-glass rounded-2xl p-3.5 flex flex-col gap-3 panel-transition origin-top max-h-[75vh] overflow-y-auto">
+    <div id="hud-body" class="hud-glass rounded-2xl p-3 flex flex-col gap-2.5 panel-transition origin-top max-h-[72vh] overflow-y-auto">
       <!-- Volume Control -->
       <div>
         <div class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold mb-1 flex items-center justify-between">
@@ -497,56 +497,56 @@
     </div>
   </div>
 
-  <!-- BOTTOM-CENTER: Avatar Embodiment / Role-Play HUD (Hóa Thân Nhân Vật Bất Kỳ) -->
-  <div id="embodiment-hud" class="hidden fixed bottom-3 left-1/2 -translate-x-1/2 z-30 w-[calc(100vw-24px)] max-w-2xl">
-    <div class="hud-glass rounded-2xl p-3 border border-amber-400/50 shadow-2xl flex flex-col gap-2">
+  <!-- BOTTOM-CENTER (Positioned cleanly ABOVE the bottom camera preset bar so they never overlap) -->
+  <div id="embodiment-hud" class="hidden fixed bottom-16 left-1/2 -translate-x-1/2 z-30 w-[calc(100vw-24px)] max-w-xl">
+    <div class="hud-glass rounded-2xl p-2.5 border border-amber-400/50 shadow-2xl flex flex-col gap-1.5">
       <!-- Top Row: Character Switcher, Rename, Camera Mode (TPS / FPS), Exit -->
       <div class="flex flex-wrap items-center justify-between gap-2">
-        <div class="flex items-center gap-2">
-          <span class="px-2 py-1 rounded-lg bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[11px] font-bold">🕹️ ĐANG HÓA THÂN:</span>
-          <select id="embody-char-select" class="px-2.5 py-1 rounded-xl bg-slate-900/90 border border-white/20 text-white text-xs font-bold focus:outline-none focus:border-amber-400 cursor-pointer"></select>
-          <button id="btn-embody-rename" title="Đổi tên nhân vật đang hóa thân" class="px-2 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200 text-[11px] font-semibold cursor-pointer transition">
+        <div class="flex items-center gap-1.5">
+          <span class="px-2 py-0.5 rounded-lg bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[10px] font-bold whitespace-nowrap">🕹️ HÓA THÂN:</span>
+          <select id="embody-char-select" class="px-2 py-1 rounded-xl bg-slate-900/90 border border-white/20 text-white text-[11px] font-bold focus:outline-none focus:border-amber-400 cursor-pointer"></select>
+          <button id="btn-embody-rename" title="Đổi tên nhân vật đang hóa thân" class="px-2 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200 text-[10px] font-semibold cursor-pointer transition whitespace-nowrap">
             ✏️ Đổi tên
           </button>
         </div>
         <div class="flex items-center gap-1.5">
-          <button id="btn-embody-cam-mode" title="Phím tắt: V để đổi góc nhìn Thứ 1 (FPS) / Thứ 3 (TPS)" class="px-2.5 py-1 rounded-xl bg-sky-500/25 hover:bg-sky-500/40 border border-sky-400/50 text-sky-200 text-[11px] font-bold cursor-pointer transition">
+          <button id="btn-embody-cam-mode" title="Phím tắt: V để đổi góc nhìn Thứ 1 (FPS) / Thứ 3 (TPS)" class="px-2 py-1 rounded-xl bg-sky-500/25 hover:bg-sky-500/40 border border-sky-400/50 text-sky-200 text-[10px] font-bold cursor-pointer transition whitespace-nowrap">
             🎥 Góc nhìn: Thứ 3 (TPS) [Phím V]
           </button>
-          <button id="btn-embody-exit" class="px-2.5 py-1 rounded-xl bg-rose-500/25 hover:bg-rose-500/45 border border-rose-400/40 text-rose-200 text-[11px] font-bold cursor-pointer transition">
+          <button id="btn-embody-exit" class="px-2 py-1 rounded-xl bg-rose-500/25 hover:bg-rose-500/45 border border-rose-400/40 text-rose-200 text-[10px] font-bold cursor-pointer transition whitespace-nowrap">
             ✕ Thoát
           </button>
         </div>
       </div>
 
       <!-- Middle Row: Contextual Action Button (Spacebar) + Peer Social Action (Key E) + 4 Quick Emote Buttons (Keys 1-4) -->
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <button id="btn-embody-context-action" class="flex-1 min-w-[180px] px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 text-xs font-extrabold shadow-md cursor-pointer transition text-center">
+      <div class="flex flex-wrap items-center justify-between gap-1.5">
+        <button id="btn-embody-context-action" class="flex-1 min-w-[170px] px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 text-[11px] font-extrabold shadow-md cursor-pointer transition text-center truncate">
           ⚡ [Phím Space] Tương tác tại chỗ
         </button>
-        <button id="btn-embody-peer-action" class="hidden px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-slate-950 text-xs font-extrabold shadow-md cursor-pointer transition text-center">
+        <button id="btn-embody-peer-action" class="hidden px-2.5 py-1 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-slate-950 text-[11px] font-extrabold shadow-md cursor-pointer transition text-center whitespace-nowrap">
           🤝 [Phím E] Tương tác đồng nghiệp
         </button>
         <div class="flex items-center gap-1">
-          <button data-emote-pose="dance" data-emote-msg="Quẩy lên anh em IT ơi!! 🕺🔥" class="embody-emote-btn px-2 py-1.5 rounded-xl bg-white/10 hover:bg-fuchsia-500/30 border border-white/10 text-white text-[11px] font-semibold cursor-pointer transition">
+          <button data-emote-pose="dance" data-emote-msg="Quẩy lên anh em IT ơi!! 🕺🔥" class="embody-emote-btn px-2 py-1 rounded-xl bg-white/10 hover:bg-fuchsia-500/30 border border-white/10 text-white text-[10px] font-semibold cursor-pointer transition whitespace-nowrap">
             1: 🕺 Quẩy
           </button>
-          <button data-emote-pose="kneel-pray" data-emote-msg="Nam mô Zero-Bug Đại Vương, độ cho con code mượt! 🙏" class="embody-emote-btn px-2 py-1.5 rounded-xl bg-white/10 hover:bg-amber-500/30 border border-white/10 text-white text-[11px] font-semibold cursor-pointer transition">
+          <button data-emote-pose="kneel-pray" data-emote-msg="Nam mô Zero-Bug Đại Vương, độ cho con code mượt! 🙏" class="embody-emote-btn px-2 py-1 rounded-xl bg-white/10 hover:bg-amber-500/30 border border-white/10 text-white text-[10px] font-semibold cursor-pointer transition whitespace-nowrap">
             2: 🙏 Khấn
           </button>
-          <button data-emote-pose="nhau" data-emote-msg="1... 2... 3... DZÔ 100% anh em ơi!! 🍻" class="embody-emote-btn px-2 py-1.5 rounded-xl bg-white/10 hover:bg-emerald-500/30 border border-white/10 text-white text-[11px] font-semibold cursor-pointer transition">
+          <button data-emote-pose="nhau" data-emote-msg="1... 2... 3... DZÔ 100% anh em ơi!! 🍻" class="embody-emote-btn px-2 py-1 rounded-xl bg-white/10 hover:bg-emerald-500/30 border border-white/10 text-white text-[10px] font-semibold cursor-pointer transition whitespace-nowrap">
             3: 🍻 Cụng bia
           </button>
-          <button data-emote-pose="sing" data-emote-msg="Cắt đôi nỗi sầu, cắt luôn bug Prod đêm nay!! 🎤🎶" class="embody-emote-btn px-2 py-1.5 rounded-xl bg-white/10 hover:bg-purple-500/30 border border-white/10 text-white text-[11px] font-semibold cursor-pointer transition">
+          <button data-emote-pose="sing" data-emote-msg="Cắt đôi nỗi sầu, cắt luôn bug Prod đêm nay!! 🎤🎶" class="embody-emote-btn px-2 py-1 rounded-xl bg-white/10 hover:bg-purple-500/30 border border-white/10 text-white text-[10px] font-semibold cursor-pointer transition whitespace-nowrap">
             4: 🎤 Cầm mic
           </button>
         </div>
       </div>
 
       <!-- Bottom Row: Live 3D Speech Bubble Chat Input + Controls Hint -->
-      <div class="flex items-center gap-2">
-        <input id="embody-chat-input" type="text" maxlength="90" placeholder="💬 Gõ câu nói bất kỳ rồi nhấn Enter để bật bong bóng thoại 3D trên đầu..." class="flex-1 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-white/15 text-white text-xs placeholder:text-slate-400 focus:outline-none focus:border-amber-400" />
-        <button id="btn-embody-chat-send" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold cursor-pointer transition">
+      <div class="flex items-center gap-1.5">
+        <input id="embody-chat-input" type="text" maxlength="90" placeholder="💬 Gõ câu nói bất kỳ rồi nhấn Enter để bật bong bóng thoại 3D trên đầu..." class="flex-1 px-2.5 py-1 rounded-xl bg-slate-900/90 border border-white/15 text-white text-[11px] placeholder:text-slate-400 focus:outline-none focus:border-amber-400" />
+        <button id="btn-embody-chat-send" class="px-2.5 py-1 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-[11px] font-bold cursor-pointer transition whitespace-nowrap">
           Nói 💬
         </button>
         <span class="hidden sm:inline text-[10px] text-slate-300 font-medium whitespace-nowrap">Đi bộ: ⬆️⬇️⬅️➡️</span>
@@ -554,18 +554,18 @@
     </div>
   </div>
 
-  <!-- BOTTOM-LEFT: Real-Time 2D Mini-Map Radar & Click-to-Teleport -->
-  <div id="minimap-widget" class="fixed bottom-12 left-3 sm:left-4 z-20 hud-glass rounded-2xl p-2.5 border border-sky-400/35 shadow-2xl flex flex-col gap-1.5 w-[210px]">
+  <!-- BOTTOM-RIGHT: Real-Time 2D Mini-Map Radar & Click-to-Teleport (Separated from Left Control Panel) -->
+  <div id="minimap-widget" class="fixed bottom-16 right-3 sm:right-4 z-20 hud-glass rounded-2xl p-2.5 border border-sky-400/35 shadow-2xl flex flex-col gap-1.5 w-[210px]">
     <div class="flex items-center justify-between">
-      <span class="text-[10px] font-extrabold text-sky-300 uppercase tracking-wider flex items-center gap-1">
+      <span class="text-[10px] font-extrabold text-sky-300 uppercase tracking-wider flex items-center gap-1 whitespace-nowrap">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
         🗺️ Radar 2D (Click = Teleport)
       </span>
       <button id="btn-close-minimap" class="text-[10px] text-slate-400 hover:text-white cursor-pointer px-1">✕</button>
     </div>
     <canvas id="minimap-canvas" width="190" height="135" class="w-full h-[135px] rounded-xl bg-slate-950/90 border border-white/10 cursor-crosshair"></canvas>
-    <div class="flex items-center justify-between text-[9px] text-slate-400 px-0.5">
-      <span>🟡 Đang hóa thân</span>
+    <div class="flex items-center justify-between text-[9px] text-slate-400 px-0.5 whitespace-nowrap">
+      <span>🟡 Hóa thân</span>
       <span>🔵 14 Nhân sự</span>
       <span>🐶 Corgi</span>
     </div>
@@ -3415,79 +3415,209 @@
       const bodyPivot = new THREE.Group();
       root.add(bodyPivot);
 
-      const skinMat = new THREE.MeshStandardMaterial({ color: opts.skin || 0xf1c27d, roughness: 0.72 });
-      const shirtMat = new THREE.MeshStandardMaterial({ color: opts.shirt || 0x3b82f6, roughness: 0.78 });
-      const pantsMat = new THREE.MeshStandardMaterial({ color: opts.pants || 0x1e293b, roughness: 0.85 });
-      const hairMat = new THREE.MeshStandardMaterial({ color: opts.hair || 0x1c1917, roughness: 0.8 });
-      const shoeMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.6 });
+      const skinMat = new THREE.MeshStandardMaterial({ color: opts.skin || 0xf3c693, roughness: 0.62 });
+      const lipMat = new THREE.MeshStandardMaterial({ color: 0xe17065, roughness: 0.55 });
+      const shirtMat = new THREE.MeshStandardMaterial({ color: opts.shirt || 0x3b82f6, roughness: 0.68 });
+      const whiteShirtMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.55 });
+      const pantsMat = new THREE.MeshStandardMaterial({ color: opts.pants || 0x1e293b, roughness: 0.8 });
+      const hairMat = new THREE.MeshStandardMaterial({ color: opts.hair || 0x1c1917, roughness: 0.72 });
+      const shoeUpperMat = new THREE.MeshStandardMaterial({ color: opts.isBoss ? 0x1e1b4b : 0x334155, roughness: 0.55 });
+      const shoeSoleMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.5 });
+      const beltMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.45 });
+      const goldAccentMat = new THREE.MeshStandardMaterial({ color: 0xfbbf24, roughness: 0.25, metalness: 0.8 });
 
-      // Rounded Torso & Pelvis
-      const pelvis = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.14, 0.14, 12), pantsMat);
+      // 1. Sculpted Pelvis, Belt & Anatomical Torso
+      const pelvis = new THREE.Mesh(new THREE.CylinderGeometry(0.152, 0.142, 0.15, 16), pantsMat);
+      pelvis.scale.set(1.06, 1.0, 0.8);
       pelvis.position.y = 0.82;
-      const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.16, 0.28, 6, 12), shirtMat);
-      torso.scale.set(1.08, 1.0, 0.76);
+
+      // Leather Belt + Metallic Buckle
+      const belt = new THREE.Mesh(new THREE.CylinderGeometry(0.156, 0.155, 0.04, 16), beltMat);
+      belt.scale.set(1.06, 1.0, 0.82);
+      belt.position.y = 0.895;
+      const buckle = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.045, 0.025), opts.isBoss ? goldAccentMat : mats.chrome);
+      buckle.position.set(0, 0.895, 0.125);
+
+      const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.162, 0.28, 8, 16), shirtMat);
+      torso.scale.set(1.12, 1.0, 0.76);
       torso.position.y = 1.08;
-      bodyPivot.add(pelvis, torso);
 
-      // Neck & Oval Head
-      const headGroup = new THREE.Group();
-      headGroup.position.set(0, 1.36, 0);
-      const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.06, 0.09, 10), skinMat);
-      neck.position.y = 0.02;
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.145, 16, 14), skinMat);
-      head.scale.set(0.95, 1.08, 0.98);
-      head.position.y = 0.16;
-      headGroup.add(neck, head);
+      // Collar & Office Attire Details (Boss Executive Suit + Tie vs IT Staff Polo Collar + Lanyard ID Badge)
+      const collarL = new THREE.Mesh(new THREE.BoxGeometry(0.065, 0.04, 0.08), opts.isBoss ? whiteShirtMat : shirtMat);
+      collarL.position.set(-0.045, 1.32, 0.045);
+      collarL.rotation.z = 0.35;
+      const collarR = collarL.clone();
+      collarR.position.x = 0.045;
+      collarR.rotation.z = -0.35;
 
-      // Eyes
-      const eyeMat = new THREE.MeshBasicMaterial({ color: 0x0f172a });
-      [-0.048, 0.048].forEach(ex => {
-        const eye = new THREE.Mesh(new THREE.SphereGeometry(0.015, 8, 8), eyeMat);
-        eye.position.set(ex, 0.17, 0.13);
-        headGroup.add(eye);
-      });
+      bodyPivot.add(pelvis, belt, buckle, torso, collarL, collarR);
 
-      // Glasses (optional)
-      if (opts.glasses) {
-        const frameMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.3 });
-        [-0.048, 0.048].forEach(gx => {
-          const rim = new THREE.Mesh(new THREE.TorusGeometry(0.032, 0.006, 6, 12), frameMat);
-          rim.position.set(gx, 0.17, 0.142);
-          headGroup.add(rim);
-        });
+      if (opts.isBoss) {
+        // Executive White Shirt Front, Red-Gold Silk Necktie & Golden Crown Lapel Pin for Boss Minh Đăng
+        const dressShirt = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.26, 0.03), whiteShirtMat);
+        dressShirt.position.set(0, 1.17, 0.115);
+        const tieMat = new THREE.MeshStandardMaterial({ color: 0xdc2626, roughness: 0.35 });
+        const tieKnot = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.035, 0.035), tieMat);
+        tieKnot.position.set(0, 1.28, 0.13);
+        const tieBody = new THREE.Mesh(new THREE.BoxGeometry(0.042, 0.21, 0.025), tieMat);
+        tieBody.position.set(0, 1.15, 0.132);
+        const lapelPin = new THREE.Mesh(new THREE.OctahedronGeometry(0.022, 0), goldAccentMat);
+        lapelPin.position.set(0.085, 1.23, 0.128);
+        bodyPivot.add(dressShirt, tieKnot, tieBody, lapelPin);
+      } else {
+        // IT Staff Lanyard Strap & Glowing ID Card Badge on Chest
+        const lanyardMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.5 });
+        const strapL = new THREE.Mesh(new THREE.BoxGeometry(0.014, 0.18, 0.015), lanyardMat);
+        strapL.position.set(-0.032, 1.22, 0.125);
+        strapL.rotation.z = -0.18;
+        const strapR = strapL.clone();
+        strapR.position.x = 0.032;
+        strapR.rotation.z = 0.18;
+        const badgeHolder = new THREE.Mesh(new THREE.BoxGeometry(0.056, 0.075, 0.012), whiteShirtMat);
+        badgeHolder.position.set(0, 1.10, 0.132);
+        const badgePhoto = new THREE.Mesh(new THREE.BoxGeometry(0.042, 0.032, 0.014), new THREE.MeshBasicMaterial({ color: 0x38bdf8 }));
+        badgePhoto.position.set(0, 1.115, 0.133);
+        bodyPivot.add(strapL, strapR, badgeHolder, badgePhoto);
       }
 
-      // Hair Styles (0: Short, 1: Bob, 2: Ponytail)
-      const hairCap = new THREE.Mesh(new THREE.SphereGeometry(0.152, 14, 12, 0, Math.PI * 2, 0, Math.PI * 0.62), hairMat);
-      hairCap.position.y = 0.175;
+      // 2. Sculpted Head, Ears, 3-Layer Expressive Eyes, Eyebrows, Nose & Smile
+      const headGroup = new THREE.Group();
+      headGroup.position.set(0, 1.36, 0);
+      const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.062, 0.1, 12), skinMat);
+      neck.position.y = 0.025;
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.146, 22, 18), skinMat);
+      head.scale.set(0.95, 1.08, 0.98);
+      head.position.y = 0.165;
+      headGroup.add(neck, head);
+
+      // 3D Ears on Both Sides
+      [-0.138, 0.138].forEach(earX => {
+        const ear = new THREE.Mesh(new THREE.SphereGeometry(0.028, 10, 10), skinMat);
+        ear.scale.set(0.55, 1.15, 0.75);
+        ear.position.set(earX, 0.16, 0.0);
+        headGroup.add(ear);
+      });
+
+      // 3-Layer Expressive Eyes (White Sclera + Dark Iris + Sparkling White Catchlight) & Eyebrows
+      const scleraMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      const irisMat = new THREE.MeshBasicMaterial({ color: 0x1e1b4b });
+      const browMat = new THREE.MeshStandardMaterial({ color: 0x1c1917, roughness: 0.7 });
+      [-0.048, 0.048].forEach((ex, eIdx) => {
+        const sclera = new THREE.Mesh(new THREE.SphereGeometry(0.022, 12, 10), scleraMat);
+        sclera.scale.set(1.15, 0.92, 0.55);
+        sclera.position.set(ex, 0.172, 0.128);
+
+        const iris = new THREE.Mesh(new THREE.SphereGeometry(0.0135, 10, 10), irisMat);
+        iris.scale.set(1.0, 1.05, 0.6);
+        iris.position.set(ex, 0.172, 0.137);
+
+        const catchlight = new THREE.Mesh(new THREE.SphereGeometry(0.0048, 6, 6), scleraMat);
+        catchlight.position.set(ex + 0.005, 0.177, 0.144);
+
+        const brow = new THREE.Mesh(new THREE.BoxGeometry(0.038, 0.0085, 0.012), browMat);
+        brow.position.set(ex, 0.205, 0.134);
+        brow.rotation.z = eIdx === 0 ? 0.06 : -0.06;
+
+        headGroup.add(sclera, iris, catchlight, brow);
+      });
+
+      // 3D Sculpted Nose & Friendly Smile Lips
+      const nose = new THREE.Mesh(new THREE.ConeGeometry(0.016, 0.042, 8), skinMat);
+      nose.rotation.x = Math.PI * 0.42;
+      nose.position.set(0, 0.148, 0.146);
+
+      const smile = new THREE.Mesh(new THREE.TorusGeometry(0.024, 0.0055, 8, 14, Math.PI), lipMat);
+      smile.rotation.x = Math.PI;
+      smile.position.set(0, 0.118, 0.133);
+      headGroup.add(nose, smile);
+
+      // Detailed Eyeglasses with Nose Bridge & Temple Arms
+      if (opts.glasses) {
+        const frameMat = new THREE.MeshStandardMaterial({ color: opts.isBoss ? 0xfbbf24 : 0x0f172a, roughness: 0.25, metalness: 0.7 });
+        [-0.048, 0.048].forEach(gx => {
+          const rim = new THREE.Mesh(new THREE.TorusGeometry(0.031, 0.0045, 8, 16), frameMat);
+          rim.position.set(gx, 0.172, 0.142);
+          const templeArm = new THREE.Mesh(new THREE.BoxGeometry(0.005, 0.005, 0.13), frameMat);
+          templeArm.position.set(gx > 0 ? 0.082 : -0.082, 0.174, 0.075);
+          headGroup.add(rim, templeArm);
+        });
+        const bridge = new THREE.Mesh(new THREE.CylinderGeometry(0.0035, 0.0035, 0.036, 6), frameMat);
+        bridge.rotation.z = Math.PI / 2;
+        bridge.position.set(0, 0.175, 0.143);
+        headGroup.add(bridge);
+      }
+
+      // 3. Sculpted Multi-Part 3D Hairstyles with Bangs & Sideburns
+      const hairCap = new THREE.Mesh(new THREE.SphereGeometry(0.153, 18, 14, 0, Math.PI * 2, 0, Math.PI * 0.62), hairMat);
+      hairCap.position.y = 0.178;
       headGroup.add(hairCap);
-      if (opts.hairStyle === 1) {
-        const bob = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.15, 0.18, 12, 1, false, Math.PI * 0.5, Math.PI), hairMat);
-        bob.position.set(0, 0.11, -0.02);
-        headGroup.add(bob);
+
+      if (opts.hairStyle === 0) {
+        // Handsome Mens Side-Part Quiff + Sideburns
+        const quiff = new THREE.Mesh(new THREE.CapsuleGeometry(0.045, 0.12, 6, 10), hairMat);
+        quiff.rotation.z = Math.PI / 2 - 0.18;
+        quiff.position.set(0.015, 0.268, 0.105);
+        [-0.132, 0.132].forEach(sx => {
+          const burn = new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.085, 0.045), hairMat);
+          burn.position.set(sx, 0.185, 0.02);
+          headGroup.add(burn);
+        });
+        headGroup.add(quiff);
+      } else if (opts.hairStyle === 1) {
+        // Layered Bob Hair with Front Bangs & Cheek Locks
+        const bob = new THREE.Mesh(new THREE.CylinderGeometry(0.144, 0.156, 0.19, 16, 1, false, Math.PI * 0.5, Math.PI), hairMat);
+        bob.position.set(0, 0.115, -0.02);
+        const bangs = new THREE.Mesh(new THREE.CapsuleGeometry(0.036, 0.13, 6, 10), hairMat);
+        bangs.rotation.z = Math.PI / 2;
+        bangs.position.set(0, 0.248, 0.112);
+        [-0.125, 0.125].forEach(lx => {
+          const lock = new THREE.Mesh(new THREE.CapsuleGeometry(0.026, 0.12, 6, 8), hairMat);
+          lock.position.set(lx, 0.12, 0.055);
+          headGroup.add(lock);
+        });
+        headGroup.add(bob, bangs);
       } else if (opts.hairStyle === 2) {
-        const pony = new THREE.Mesh(new THREE.CapsuleGeometry(0.045, 0.14, 4, 8), hairMat);
-        pony.position.set(0, 0.12, -0.17);
-        pony.rotation.x = 0.35;
-        headGroup.add(pony);
+        // High Ponytail with Scrunchie & Swept Front Bangs
+        const bangs = new THREE.Mesh(new THREE.CapsuleGeometry(0.034, 0.125, 6, 10), hairMat);
+        bangs.rotation.z = Math.PI / 2;
+        bangs.position.set(0, 0.248, 0.112);
+        const scrunchie = new THREE.Mesh(new THREE.TorusGeometry(0.034, 0.012, 8, 12), new THREE.MeshStandardMaterial({ color: 0xf43f5e }));
+        scrunchie.position.set(0, 0.19, -0.145);
+        const pony = new THREE.Mesh(new THREE.CapsuleGeometry(0.048, 0.17, 6, 10), hairMat);
+        pony.position.set(0, 0.12, -0.185);
+        pony.rotation.x = 0.42;
+        headGroup.add(bangs, scrunchie, pony);
       }
       bodyPivot.add(headGroup);
 
-      // Articulated Arms (Shoulder + Elbow + Hand Props)
+      // 4. Articulated Arms with Sleeve Cuffs, Smartwatch, Thumb Hands & Interactive Props
       const buildArm = (xOffset, isRight) => {
         const shoulder = new THREE.Group();
         shoulder.position.set(xOffset, 1.24, 0);
-        const upperArm = new THREE.Mesh(new THREE.CapsuleGeometry(0.048, 0.18, 4, 8), shirtMat);
+        const upperArm = new THREE.Mesh(new THREE.CapsuleGeometry(0.05, 0.18, 6, 10), shirtMat);
         upperArm.position.y = -0.11;
         shoulder.add(upperArm);
 
         const elbow = new THREE.Group();
         elbow.position.set(0, -0.22, 0);
-        const foreArm = new THREE.Mesh(new THREE.CapsuleGeometry(0.04, 0.17, 4, 8), skinMat);
+        const foreArm = new THREE.Mesh(new THREE.CapsuleGeometry(0.041, 0.17, 6, 10), opts.isBoss ? shirtMat : skinMat);
         foreArm.position.y = -0.1;
-        const hand = new THREE.Mesh(new THREE.SphereGeometry(0.042, 8, 8), skinMat);
+        const hand = new THREE.Mesh(new THREE.SphereGeometry(0.043, 10, 10), skinMat);
+        hand.scale.set(0.88, 1.08, 0.95);
         hand.position.y = -0.21;
-        elbow.add(foreArm, hand);
+        const thumb = new THREE.Mesh(new THREE.CapsuleGeometry(0.013, 0.025, 4, 6), skinMat);
+        thumb.position.set(isRight ? -0.028 : 0.028, -0.20, 0.025);
+        thumb.rotation.x = 0.45;
+        elbow.add(foreArm, hand, thumb);
+
+        if (!isRight) {
+          // Smartwatch / Rolex on Left Wrist
+          const watchBand = new THREE.Mesh(new THREE.CylinderGeometry(0.043, 0.043, 0.024, 12), opts.isBoss ? goldAccentMat : beltMat);
+          watchBand.position.y = -0.165;
+          const watchFace = new THREE.Mesh(new THREE.BoxGeometry(0.032, 0.032, 0.015), new THREE.MeshBasicMaterial({ color: 0x38bdf8 }));
+          watchFace.position.set(0, -0.165, 0.04);
+          elbow.add(watchBand, watchFace);
+        }
         shoulder.add(elbow);
 
         let coffeeCup = null;
@@ -3523,7 +3653,6 @@
           microphone.visible = false;
           elbow.add(microphone);
 
-          // 3 Burning Incense Sticks held in hand
           incenseSticks = new THREE.Group();
           incenseSticks.position.set(-0.08, -0.2, 0.09);
           incenseSticks.rotation.x = 0.25;
@@ -3538,7 +3667,6 @@
           incenseSticks.visible = false;
           elbow.add(incenseSticks);
 
-          // Vietnamese Banknote prop for Donation Box
           banknote = new THREE.Mesh(
             new THREE.BoxGeometry(0.11, 0.01, 0.055),
             new THREE.MeshStandardMaterial({ color: 0x22c55e, emissive: 0x15803d, emissiveIntensity: 0.3 })
@@ -3551,24 +3679,34 @@
         bodyPivot.add(shoulder);
         return { shoulder, elbow, coffeeCup, beerMug, microphone, incenseSticks, banknote };
       };
-      const leftArm = buildArm(-0.23, false);
-      const rightArm = buildArm(0.23, true);
+      const leftArm = buildArm(-0.235, false);
+      const rightArm = buildArm(0.235, true);
 
-      // Articulated Legs (Hip + Knee + Sneaker)
+      // 5. Articulated Legs with Two-Tone Sneakers (Upper + Rounded Toe + Thick White Sole)
       const buildLeg = (xOffset) => {
         const hip = new THREE.Group();
         hip.position.set(xOffset, 0.78, 0);
-        const thigh = new THREE.Mesh(new THREE.CapsuleGeometry(0.062, 0.28, 4, 8), pantsMat);
+        const thigh = new THREE.Mesh(new THREE.CapsuleGeometry(0.064, 0.28, 6, 10), pantsMat);
         thigh.position.y = -0.18;
         hip.add(thigh);
 
         const knee = new THREE.Group();
         knee.position.set(0, -0.38, 0);
-        const shin = new THREE.Mesh(new THREE.CapsuleGeometry(0.052, 0.28, 4, 8), pantsMat);
+        const shin = new THREE.Mesh(new THREE.CapsuleGeometry(0.054, 0.28, 6, 10), pantsMat);
         shin.position.y = -0.18;
-        const shoe = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.07, 0.21), shoeMat);
-        shoe.position.set(0, -0.37, 0.04);
-        knee.add(shin, shoe);
+
+        const shoeGroup = new THREE.Group();
+        shoeGroup.position.set(0, -0.37, 0.038);
+        const shoeUpper = new THREE.Mesh(new THREE.BoxGeometry(0.108, 0.055, 0.19), shoeUpperMat);
+        shoeUpper.position.y = 0.01;
+        const shoeToe = new THREE.Mesh(new THREE.SphereGeometry(0.054, 10, 8), shoeUpperMat);
+        shoeToe.scale.set(1.0, 0.65, 1.15);
+        shoeToe.position.set(0, 0.0, 0.075);
+        const shoeSole = new THREE.Mesh(new THREE.BoxGeometry(0.116, 0.026, 0.225), shoeSoleMat);
+        shoeSole.position.set(0, -0.024, 0.012);
+        shoeGroup.add(shoeUpper, shoeToe, shoeSole);
+
+        knee.add(shin, shoeGroup);
         hip.add(knee);
 
         bodyPivot.add(hip);
@@ -4125,7 +4263,8 @@
         const rig = createHumanoidRig({
           shirt: def.shirt,
           hairStyle: def.hairStyle,
-          glasses: def.glasses
+          glasses: def.glasses,
+          isBoss: idx === 0
         });
 
         if (def.homeSeat) {
