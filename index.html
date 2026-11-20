@@ -5978,21 +5978,6 @@
         if (p >= 1) camTransition.active = false;
       }
 
-      // Follow Selected Character Mode (TPS / FPS)
-      if (embodiedCharacter && embodyCamMode === 'fps') {
-        const p = embodiedCharacter.rig.root.position;
-        const rot = embodiedCharacter.rig.root.rotation.y;
-        const eyeY = 1.56 + (embodiedCharacter.currentPose === 'walking' ? Math.sin(simElapsed * 11) * 0.025 : 0);
-        camera.position.set(p.x, eyeY, p.z);
-        controls.target.set(p.x + Math.sin(rot) * 3.5, eyeY - 0.08, p.z + Math.cos(rot) * 3.5);
-      } else if (state.followCharacter) {
-        const p = state.followCharacter.rig.root.position;
-        const desiredTarget = new THREE.Vector3(p.x, 1.25, p.z);
-        controls.target.lerp(desiredTarget, 0.12);
-      }
-
-      controls.update();
-
       // Animate Hinged Glass Doors
       animatedDoors.forEach(d => {
         if (d.autoCloseTimer > 0 && !state.isPaused) {
@@ -6227,6 +6212,7 @@
 
       // 4 Arrow Keys (⬆️ ⬇️ ⬅️ ➡️) Direct Walking Control with Wall Collision for ANY Embodied Character
       const activeAvatar = embodiedCharacter || (wasdControlBoss ? officeCharacters[0] : null);
+      let isAvatarArrowMoving = false;
       if (activeAvatar) {
         let inputRight = 0, inputForward = 0;
         if (keysPressed['arrowup']) inputForward += 1;
@@ -6247,6 +6233,7 @@
             activeAvatar.rig.root.rotation.y -= inputRight * 2.25 * rawDt;
           }
           if (inputForward !== 0) {
+            isAvatarArrowMoving = true;
             const rot = activeAvatar.rig.root.rotation.y;
             const speed = 3.5 * rawDt * inputForward;
             const dx = Math.sin(rot) * speed;
@@ -6260,6 +6247,10 @@
         } else {
           // Third-Person Mode (TPS): Move relative to current horizontal camera view
           if (inputRight !== 0 || inputForward !== 0) {
+            isAvatarArrowMoving = true;
+            camTransition.active = false;
+            state.followCharacter = activeAvatar;
+
             const camFwdX = controls.target.x - camera.position.x;
             const camFwdZ = controls.target.z - camera.position.z;
             const camLen = Math.hypot(camFwdX, camFwdZ) || 1;
@@ -6271,18 +6262,12 @@
             const moveX = fwdX * inputForward + rightX * inputRight;
             const moveZ = fwdZ * inputForward + rightZ * inputRight;
             const len = Math.hypot(moveX, moveZ) || 1;
-            const speed = 3.7 * rawDt;
+            const speed = 3.8 * rawDt;
             const dx = (moveX / len) * speed;
             const dz = (moveZ / len) * speed;
 
             const pos = activeAvatar.rig.root.position;
-            const oldX = pos.x, oldZ = pos.z;
             moveBossWithCollision(pos, dx, dz);
-            // Translate camera along with character so Orbit distance stays locked
-            camera.position.x += (pos.x - oldX);
-            camera.position.z += (pos.z - oldZ);
-            controls.target.x += (pos.x - oldX);
-            controls.target.z += (pos.z - oldZ);
 
             activeAvatar.rig.root.rotation.y = Math.atan2(moveX, moveZ);
             activeAvatar.currentPose = 'walking';
@@ -6295,6 +6280,55 @@
 
       // Update Characters & Floating Tags
       updateCharacters(simDt, simElapsed);
+
+      // True 3rd-Person Chase Camera & 1st-Person FPS Camera Sync (Runs AFTER movement so camera locks 1:1 with character)
+      const trackedChar = embodiedCharacter || state.followCharacter || (wasdControlBoss ? officeCharacters[0] : null);
+      if (trackedChar && !camTransition.active) {
+        const p = trackedChar.rig.root.position;
+        const rot = trackedChar.rig.root.rotation.y;
+        if (embodiedCharacter && embodyCamMode === 'fps') {
+          const eyeY = 1.56 + (embodiedCharacter.currentPose === 'walking' ? Math.sin(simElapsed * 11) * 0.025 : 0);
+          camera.position.set(p.x, eyeY, p.z);
+          controls.target.set(p.x + Math.sin(rot) * 3.5, eyeY - 0.08, p.z + Math.cos(rot) * 3.5);
+        } else {
+          // 1. Physically translate BOTH camera.position and controls.target with the character's exact displacement
+          const desiredTarget = new THREE.Vector3(p.x, 1.25, p.z);
+          const moveDelta = desiredTarget.clone().sub(controls.target);
+          controls.target.add(moveDelta);
+          camera.position.add(moveDelta);
+
+          // 2. If moving with Arrow Keys (or camera is too far out in Overview), smoothly pull camera to ideal 3rd-person chase distance (~4.6m) behind character
+          const offsetX = camera.position.x - p.x;
+          const offsetZ = camera.position.z - p.z;
+          const horizDist = Math.hypot(offsetX, offsetZ) || 0.001;
+          if (isAvatarArrowMoving) {
+            const idealDist = 4.6;
+            const idealHeight = 2.95;
+            // Smoothly pull distance to 4.6m if zoomed out far
+            const newDist = horizDist + (idealDist - horizDist) * Math.min(1, 5.5 * rawDt);
+            // Gently swing camera behind character's back while turning left/right
+            const curCamAngle = Math.atan2(offsetX, offsetZ);
+            const behindCharAngle = Math.atan2(-Math.sin(rot), -Math.cos(rot));
+            let angleDiff = behindCharAngle - curCamAngle;
+            while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
+            while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
+            const swingRate = (keysPressed['arrowleft'] || keysPressed['arrowright']) ? 2.4 : 1.1;
+            const newAngle = curCamAngle + angleDiff * Math.min(1, swingRate * rawDt);
+
+            camera.position.x = p.x + Math.sin(newAngle) * newDist;
+            camera.position.z = p.z + Math.cos(newAngle) * newDist;
+            camera.position.y += (idealHeight - camera.position.y) * Math.min(1, 4.5 * rawDt);
+          } else if (horizDist > 8.5) {
+            // Even when autonomous walking in Follow Mode, keep camera within 6.2m so walls don't block view
+            const pullDist = horizDist + (5.5 - horizDist) * Math.min(1, 3.5 * rawDt);
+            camera.position.x = p.x + (offsetX / horizDist) * pullDist;
+            camera.position.z = p.z + (offsetZ / horizDist) * pullDist;
+            camera.position.y += (3.2 - camera.position.y) * Math.min(1, 3.5 * rawDt);
+          }
+        }
+      }
+
+      controls.update();
 
       // Update Office Corgi ("Boss Corgi • Giám Đốc Tinh Thần") & Floating Tag
       if (officeCorgi && !state.isPaused) {
