@@ -11,6 +11,7 @@ import * as THREE from 'three';
       selectedObject: null,
       hoveredObject: null,
       followCharacter: null,
+      cameraLockedToAvatar: false,
       isPaused: false,
       simSpeed: 1,
       showTags: true,
@@ -371,83 +372,137 @@ import * as THREE from 'three';
       'Thành tâm kính lễ trước Đại Hùng Bảo Điện, nguyện một lòng viết Clean Code! 🙏'
     ];
 
-    const IT_QUOTES = [
-      'Code chạy trên máy tui ngon lành mà! 😅',
-      'Fix 1 bug xong tự nhiên đẻ thêm 3 bug mới... 😭',
-      'Deploy chiều thứ 6 là môn thể thao mạo hiểm anh em ơi! 🎢',
-      'Chiều nay tan làm ghé Quán Nhậu vỉa hè làm vài vại nhé! 🍻',
-      'Ai rảnh vào review PR giùm tui với,300 dòng thôi! 🙏',
-      'Cà phê Espresso hôm nay đậm đấy, đủ đô để debug tới chiều! ☕',
-      'Uptime 99.99% tháng này chắc chắn là nhờ anh em chăm đi chùa cầu đó! 🛕',
-      'Tối nay tăng 1 Bia hơi, tăng 2 vào Phòng Hát Karaoke VIP nha! 🎤',
-      'Đừng hỏi khi nào xong deadline, hãy hỏi tháng này thưởng bao nhiêu! 😂',
-      'Sếp Minh Đăng vừa nâng cấp dàn màn hình 100 inch nhìn chiến thực sự! 👑',
-      'Cấu trúc .NET 9 kết hợp MongoDB với Redis Hash chạy nhanh xé gió! ⚡',
-      'Mới tối ưu lại cái index MongoDB, tốc độ query giảm từ 2 giây xuống 3ms! 🍃',
-      'Ai vừa xóa key trên Redis làm tui tưởng mất phân quyền CR_UNIT_ROLE vậy?! 🔑',
-      'Xuất báo cáo Word Mẫu 2C bằng OpenXml mượt rồi, không lệch 1 milimet! 📄',
-      'Giao diện Vue 3 mới lên màu Glassmorphism nhìn sang xịn mịn quá! ✨',
-      'Chú chó Boss Corgi hôm nay chạy lon ton quanh phòng nhìn cưng xỉu! 🐶',
-      'Vào Phòng Họp bật Call Video WebRTC nói chuyện trực tiếp luôn anh em ơi! 📹',
-      'Ủa ai đặt tên biến là temp1, temp2, tempFinal_v3_reallyFinal vậy?! 🤔',
-      'Đừng sửa trực tiếp trên nhánh main nha, tạo branch đàng hoàng đi! 🌿',
-      'Tester vừa nhắn chữ "Anh ơi..." là thấy tim đập chân run rồi! 💓',
-      'Hôm nay Postman chạy một mạch xanh lè 100% Pass, sướng rơn người! ✅',
-      'Có ai đặt trà sữa full topping không, IT-Bot Mini đang đi giao kìa! 🧋',
-      'Mới bấm chuông Đại Hồng Chung ngoài chùa, nghe tiếng chuông xong tỉnh cả người! 🔔',
-      'Ra Cây Đào Tiên lắc ống xăm thử đi, nay tui rút được quẻ Số 99 Đại Cát đó! 🎋',
-      'Lò nướng BBQ ngoài vỉa hè đang bốc khói thơm phức mùi mực nướng kìa! 🦑',
-      'Hôm nay quyết tâm viết Clean Code, không dùng try-catch nuốt lỗi nữa! 🛡️',
-      'Khách hàng bảo "Sửa giúp anh cái nút này nhỏ thôi", sửa xong đổi cả DB! 🤣',
-      'Màn hình phòng Sếp Đăng chiếu trực tiếp màn hình máy tính thật lên 3D đỉnh ghê! 🖥️',
-      'Tối qua nằm mơ cũng thấy đang viết câu truy vấn Aggregation Pipeline! 😴',
-      'Anh em nhớ Clear Cache trình duyệt Ctrl+F5 trước khi báo bug nha! 🔄',
-      'Docker container lên xanh hết rồi, chuẩn bị bàn giao bản Staging thôi! 🐳',
-      'Làm ngụm nước rồi vào Phòng Họp bàn kiến trúc Microservices nào! 📊',
-      'Chiều nay trời mát thế này mà ngồi vỉa hè cụng ly 1-2-3 DZÔ thì hết nước chấm! 🍺',
-      'Nhớ lưu lại Postman Collection trước khi push code lên Git nha anh em! 📮',
-      'Từ ngày có hệ thống Realtime Online, anh em vào văn phòng 3D đi dạo vui hẳn! 🌐',
-      'Bấm nút Tạo Nhân Vật tự chọn áo lam đi lễ chùa nhìn thành tâm chưa kìa! 🙏',
-      'Lưng hơi mỏi rồi, ra ghế Sofa khu Lounge nằm chill 5 phút lấy sức đã! 🛋️',
-      'Ai đang giữ khóa phòng Server mở cửa cho tui vào kiểm tra nhiệt độ tủ Rack với! ❄️',
-      'Code viết lúc 2 giờ sáng lúc nào nhìn lại cũng như người ngoài hành tinh viết! 👽',
-      'Sếp Minh Đăng bảo dự án này nghiệm thu xong thưởng nóng cả phòng đi du lịch! ✈️',
-      'Tài liệu HDSD xuất theo chuẩn Nghị định 30 Times New Roman 14pt đẹp chuẩn chỉ! 📘',
-      'Đừng quên kiểm tra Dependency Injection trong Program.cs kẻo chạy lên báo lỗi 500! ⚙️',
-      'Mỗi lần nghe tiếng còi hơi DJ trong phòng Karaoke là chân tay lại muốn quẩy! 🕺',
-      'Hôm nay tâm trạng 100%, năng lượng 100%, bug nào vào đây cũng xử đẹp hết! 🔥',
-      'Anh em nào đang Online bấm phím E đi nối đuôi nhau thành đoàn rồng rắn lên mây nào! 🤝'
-    ];
+    // =========================================================================
+    // 1.2 STRICT ROOM-SPECIFIC DIALOGUE BANKS (9 ZONES - NO CROSS-ROOM QUOTES!)
+    // =========================================================================
+    const ZONE_QUOTES = {
+      // 1. Phòng Trưởng Phòng VIP (boss)
+      boss: [
+        'Hệ thống .NET 9 + Vue 3 + MongoDB + Redis của phòng mình tuần này đạt 100% KPI! 👑',
+        'Màn hình điều hành 100 inch này theo dõi kiến trúc Microservices rõ từng chỉ số! 🖥️',
+        'Chuẩn bị duyệt kế hoạch Go-Live và ký quyết định thưởng nóng cho toàn bộ anh em! 💰',
+        'Kiến trúc phân quyền CR_UNIT_ROLE & đồng bộ Redis Hash phải thật chuẩn chỉ nhé! 🔑',
+        'Engine xuất báo cáo Word Mẫu 2C bằng OpenXml đã sẵn sàng bàn giao nghiệm thu! 📄',
+        'Anh em cứ yên tâm cống hiến, cuối tháng Trưởng phòng Minh Đăng thưởng lớn! 👑✨',
+        'Báo cáo tiến độ chuyển đổi số tháng này vượt chỉ tiêu trước hạn 5 ngày! 🚀',
+        'Trà chiều ở bàn Sofa VIP thơm quá, vừa thưởng trà vừa duyệt Pull Request! 🍵',
+        'Đảm bảo hệ thống chịu tải mượt 26.000+ user truy cập đồng thời không độ trễ! ⚡',
+        'Tài liệu HDSD xuất chuẩn Nghị định 30 Times New Roman 14pt rất chuyên nghiệp! 📘',
+        'Hôm nay ký duyệt xong 3 dự án trọng điểm, tinh thần anh em quá tuyệt vời! 🏆',
+        'Phòng Trưởng phòng lúc nào cũng mở cửa đón anh em vào trao đổi giải pháp kỹ thuật! 🤝'
+      ],
+      // 2. Phòng Họp Kính 120" (meeting)
+      meeting: [
+        'Mời anh em nhìn lên màn hình 120 inch để chốt sơ đồ kiến trúc Microservices nhé! 📊',
+        'Biểu đồ Sprint Burndown tuần này đang bám rất sát kế hoạch bàn giao! 📈',
+        'Anh em bật Call Video & Mic WebRTC lên để trao đổi trực tiếp trong Phòng Họp nào! 📹',
+        'Bảng Kanban hôm nay đã kéo được 12 task từ In-Progress sang Done rồi! ✅',
+        'Thống nhất chuẩn RESTful API trả về JSON đồng nhất cho cả Web và Mobile nha! 🔗',
+        'Share màn hình trực tiếp lên TV 120 inch trong phòng họp nhìn nét căng! 🖥️',
+        'Sprint này mình ưu tiên tối ưu tốc độ phản hồi API xuống dưới 15ms nhé! ⚡',
+        'Ghi biên bản cuộc họp xong nhớ gửi lên nhóm cho cả team cùng nắm tiến độ! 📝',
+        'Giải pháp đồng bộ dữ liệu thời gian thực qua WebSockets này quá hợp lý! 🌐',
+        'Cuộc họp hôm nay ngắn gọn 15 phút, chốt xong giải pháp là ra code ngay! ⏱️',
+        'Các chỉ số KPI Uptime 99.99% trên slide báo cáo nhìn thuyết phục thực sự! 🏆',
+        'Anh em Product Manager với Solution Architect chốt xong luồng nghiệp vụ chưa? 🤝',
+        'Phòng họp kính cách âm tốt thật, thảo luận kiến trúc hệ thống cực kỳ tập trung! 💡',
+        'Đổi sang Slide tiếp theo để xem thống kê hiệu năng cụm Database tuần qua nào! ⏭️'
+      ],
+      // 3. Khu Lập Trình / Dev Zone (dev)
+      dev: [
+        'Code chạy trên máy tui ngon lành, build .NET 9 sạch bóng 0 Warning 0 Error! 💻',
+        'Ai rảnh vào review Pull Request giùm tui với, mới tối ưu lại tầng Service gọn lắm! 🙏',
+        'Cấu trúc .NET 9 kết hợp MongoDB với Redis Hash chạy nhanh xé gió! ⚡',
+        'Mới đánh lại cái Compound Index trên MongoDB, tốc độ query giảm từ 2s xuống 3ms! 🍃',
+        'Kiểm tra kỹ Dependency Injection trong Program.cs rồi, chạy lên mượt mà! ⚙️',
+        'Xuất báo cáo Word Mẫu 2C bằng OpenXml chuẩn từng dòng, không lệch 1 milimet! 📄',
+        'Giao diện Vue 3 Vite mới lên hiệu ứng Glassmorphism nhìn sang xịn mịn quá! ✨',
+        'Đừng sửa trực tiếp trên nhánh main nha, tạo feature branch đàng hoàng đi! 🌿',
+        'Hôm nay chạy bộ test Postman xanh lè 100% Pass ngay lần đầu, sướng rơn! ✅',
+        'Quyết tâm viết Clean Code, tách riêng Interface và Service rõ ràng! 🛡️',
+        'Docker container build xong rồi, chuẩn bị đẩy bản mới lên môi trường Staging! 🐳',
+        'Nhớ cập nhật lại Postman Collection sau khi thêm API mới nha anh em! 📮',
+        'Màn hình đôi ở bàn Dev vừa mở VS Code vừa xem log Terminal tiện thật sự! 🖥️',
+        'Phân quyền DataAccess với Authorize trên Controller đã rào kín mọi trường hợp! 🔒',
+        'Anh em nhớ Clear Cache trình duyệt Ctrl+F5 sau khi pull bản Frontend mới nhé! 🔄',
+        'Viết câu truy vấn Aggregation Pipeline xử lý 26.000 bản ghi chạy trong chớp mắt! 🚀',
+        'Fix xong cái bug bất đồng bộ async/await này là hoàn thành trọn vẹn task hôm nay! 🔥',
+        'Bàn phím cơ gõ êm tay quá, code một mạch từ sáng tới giờ không biết mệt! ⌨️'
+      ],
+      // 4. Phòng Server / Data Center (server)
+      server: [
+        'Nhiệt độ 4 tủ Rack Server đang duy trì ổn định ở mức 18°C mát lạnh! ❄️',
+        'Cụm MongoDB ReplicaSet và Redis Cluster đang đồng bộ 100% không rớt gói tin nào! 🖥️',
+        'Đèn LED xanh trên tủ Rack #01 và #02 nhấp nháy đều đặn, băng thông rất mượt! 🟢',
+        'Bật chế độ Turbo Cooling làm mát máy chủ để đảm bảo Uptime 99.9999%! ⚡',
+        'Đã kiểm tra xong bản sao lưu Backup Database tự động sáng nay, an toàn tuyệt đối! 💾',
+        'Tường lửa Firewall và chứng chỉ bảo mật SSL trên cụm Server hoạt động hoàn hảo! 🔒',
+        'Ổ cứng NVMe RAID 10 trên tủ Rack #03 tốc độ đọc ghi IOPS cao ngất ngưởng! 💽',
+        'Đường truyền cáp quang专线 vào phòng Server hôm nay ping chỉ có 1ms! 🌐',
+        'CPU và RAM của 16 node máy chủ Production vẫn còn dư hơn 65% tài nguyên! 📊',
+        'Cửa kính bảo mật phòng Server luôn kiểm soát chặt chẽ, mát rượi cả căn phòng! 🔐'
+      ],
+      // 5. Khu Pantry & Lounge / Arcade (pantry)
+      pantry: [
+        'Cà phê Espresso mới pha thơm lừng cả góc Pantry, uống một ngụm tỉnh táo hẳn! ☕',
+        'Làm ly trà sữa mát lạnh nạp lại 100% năng lượng trước khi quay về bàn code! 🧋',
+        'Ra ghế Sofa khu Lounge ngả lưng 5 phút cho giãn cột sống êm quá anh em ơi! 🛋️',
+        'Máy game thùng Arcade cổ điển này chơi cuốn thật, sắp phá kỷ lục điểm cao rồi! 🕹️',
+        'Tủ lạnh Pantry hôm nay đầy ắp nước trái cây với bánh ngọt luôn! 🍰',
+        'Ngồi ở quầy Bar gỗ uống cà phê ngắm cây xanh trong văn phòng thư thái ghê! 🌿',
+        'Ai uống Espresso hay Cappuccino để tui bấm máy pha luôn một thể nào! ☕✨',
+        'Giải lao 10 phút ở khu Lounge nói chuyện phiếm xong tinh thần phấn chấn hẳn! 😊',
+        'Bánh Pizza nóng hổi ở bàn Pantry thơm quá, làm một miếng lấy sức nào! 🍕',
+        'Góc Pantry & Lounge thiết kế sàn gỗ ấm cúng như quán cà phê thứ thiệt! 🏡'
+      ],
+      // 6. Sảnh Lễ Tân & Hành Lang Trung Tâm (central)
+      central: [
+        'Chào mừng mọi người đến với Văn Phòng IT 3D Interactive Studio! 👋✨',
+        'Chú chó Boss Corgi chạy lon ton ở sảnh trung tâm nhìn cưng xỉu luôn kìa! 🐶',
+        'Robot IT-Bot Mini đang đi tuần tra giao trà sữa quanh hành lang trung tâm! 🤖🧋',
+        'Sảnh lễ tân hôm nay sáng sủa, cây xanh tươi mát tràn đầy sinh khí! 🏢',
+        'Từ sảnh trung tâm này đi sang Phòng Họp, Khu Dev hay Phòng Server đều tiện! 🚶',
+        'Quầy lễ tân lúc nào cũng sẵn sàng đón tiếp khách hàng và đối tác đến làm việc! 🤝',
+        'Anh em đi ngang qua sảnh nhớ vẫy tay chào nhau một câu cho ngày mới rộn ràng nhé! 😊',
+        'Không gian mở ở sảnh trung tâm thoáng đãng thật, đi bộ dạo quanh rất thích! 🌟'
+      ],
+      // 7. Phòng Hát Karaoke VIP (karaoke)
+      karaoke: [
+        'Cho tui xin bài Cắt Đôi Nỗi Sầu, cắt luôn nỗi đau fix bug! 🎤',
+        'Giọng ca vàng làng lập trình lên sân khấu lĩnh xướng đây! 🎶',
+        'Bấm ưu tiên bài Đắp Mộ Cuộc Tình nhạc sống Beat 3D giùm tui với! 🎵',
+        'Quẩy nhiệt lên anh em ơi, bật đèn Strobe chớp chớp cho cháy! 🔥',
+        'Bấm chấm điểm 100đ và bắn pháo giấy cổ vũ ca sĩ trên sân khấu đi! 💯🎉',
+        'Hát cho quên hết mọi ưu phiền, mai lên văn phòng tinh thần phơi phới! 🎤✨',
+        'Ai bấm còi hơi DJ Pờ Rèn Pờ Rèn trong phòng hát nghe sung quá vậy! 📢',
+        'Lên sân khấu song ca bài Nối Vòng Tay Lớn nào anh em ơi! 🤝🎶',
+        'Dàn loa KTV VIP 999 này đập bass căng đét, cách âm tuyệt đối! 🔊',
+        'Chiếu video lên màn hình TV Karaoke 3D hát nhạc trẻ cực mượt luôn! 📺',
+        'Đứng trên bục sân khấu tròn có vòng đèn Neon hồng nhìn như ca sĩ chuyên nghiệp! 🌟',
+        'Bấm chọn bài trên Đầu Cảm Ứng KTV Pro nhạy thật, đủ cả 6 bài Hit! 🎵'
+      ],
+      // 8. Quán Nhậu Vỉa Hè & Lò BBQ (nhau)
+      nhau: [
+        '1... 2... 3... DZÔ!! Không say không về anh em ơi! 🍻',
+        'Trưởng phòng Minh Đăng bao hết tăng này nha!! 100% nào! 👑🍺',
+        'Mực nướng BBQ than hồng thơm nức mũi, làm miếng mồi bén đi! 🦑🔥',
+        'Uống cốc bia hơi mát lạnh cho sảng khoái sau giờ làm việc! 😋',
+        'Chủ quán ơi cho thêm 1 tháp bia lạnh và 2 đĩa bò tảng nướng nữa! 🥩',
+        'Ngồi bàn inox ghế nhựa vỉa hè cụng ly là chuẩn bài nhất! 🥂',
+        'Chúc mừng hệ thống vận hành mượt mà, nâng ly chúc sức khỏe cả bàn! 🎉',
+        'Ai đang ngồi ở bàn bia hơi chưa hết ly thì tự giác trăm phần trăm nhé! 🍺',
+        'Bia hơi hôm nay mát lạnh ngọt lịm, đúng là bia Sếp khao có khác! 🍻',
+        'Trở tay xiên thịt trên lò nướng BBQ kẻo cháy xiên ba chỉ bò kìa! 🍢',
+        'Gió vỉa hè mát rượi, tiếng cụng ly KENG KENG nghe vui tai thực sự! 🌬️',
+        'KENG!! Chúc anh em năm nay lương thưởng gấp đôi, dự án nào cũng thắng lớn! 💰'
+      ],
+      // 9. Quần Thể Chùa Linh Ứng & Hồ Koi (chua)
+      chua: TEMPLE_PRAYERS
+    };
 
-    const NHAU_QUOTES = [
-      '1... 2... 3... DZÔ!! Không say không về anh em ơi! 🍻',
-      'Trưởng phòng Minh Đăng bao hết tăng này nha!! 100% nào! 👑🍺',
-      'Mực nướng BBQ than hồng thơm nức mũi, làm miếng mồi bén đi! 🦑🔥',
-      'Uống cốc bia lạnh cho trôi hết mọi bug Production tuần qua! 😂',
-      'Chủ quán ơi cho thêm 1 tháp bia lạnh và 2 đĩa bò tảng nướng nữa! 🥩',
-      'Code có thể bug nhưng cụng ly là không được long đền nha! 🥂',
-      'Chúc mừng hệ thống Go-Live mượt mà, nâng ly chúc sức khỏe cả phòng! 🎉',
-      'Tăng 1 bia hơi vỉa hè sương sương, lát kéo nhau vào Phòng Hát Karaoke tăng 2! 🎤',
-      'Ai chưa hết ly thì tự giác trăm phần trăm đi nhé! 🍺',
-      'Bia hôm nay ngọt thế, đúng là bia Sếp khao có khác! 😋',
-      'Nướng khéo kẻo cháy xiên ba chỉ bò kìa anh em ơi! 🍢',
-      'Ngồi ghế nhựa vỉa hè gió mát rượi, bao nhiêu áp lực deadline bay sạch! 🌬️',
-      'KENG!! Chúc anh em phòng IT năm nay lương thưởng gấp đôi năm ngoái! 💰',
-      'Tình anh em Frontend - Backend gắn kết bên bàn bia hơi! 🤝'
-    ];
-
-    const KARAOKE_QUOTES = [
-      'Cho tui xin bài Cắt Đôi Nỗi Sầu, cắt luôn nỗi đau fix bug! 🎤',
-      'Giọng ca vàng làng lập trình lên sân khấu lĩnh xướng đây! 🎶',
-      'Bấm ưu tiên bài Đắp Mộ Cuộc Tình nhạc sống giùm tui với! 🎵',
-      'Quẩy nhiệt lên anh em ơi, bật đèn Strobe chớp chớp cho cháy! 🔥',
-      'Bấm chấm điểm 100đ và bắn pháo giấy cổ vũ ca sĩ đi! 💯🎉',
-      'Hát cho quên hết mọi ưu phiền, mai lên văn phòng code tiếp! 🍻',
-      'Ai bấm còi hơi DJ Pờ Rèn Pờ Rèn nghe sung quá vậy! 📢',
-      'Lên sân khấu song ca bài Nối Vòng Tay Lớn nào anh em ơi! 🤝🎶',
-      'Dàn loa KTV VIP 999 này đập bass căng đét, hát nhẹ cả hơi! 🔊',
-      'Share màn hình YouTube lên TV 3D hát nhạc trẻ cực mượt luôn! 📺'
-    ];
+    const IT_QUOTES = ZONE_QUOTES.dev;
+    const NHAU_QUOTES = ZONE_QUOTES.nhau;
+    const KARAOKE_QUOTES = ZONE_QUOTES.karaoke;
 
     const quoteShuffleBags = {};
     function pickNextQuote(list, bagKey = 'default') {
@@ -461,6 +516,16 @@ import * as THREE from 'three';
         quoteShuffleBags[bagKey] = indices;
       }
       return list[quoteShuffleBags[bagKey].pop()];
+    }
+
+    function pickZoneQuoteForCharacter(charObj) {
+      if (!charObj || !charObj.rig || !charObj.rig.root) {
+        return pickNextQuote(ZONE_QUOTES.central, 'zone_central');
+      }
+      const pos = charObj.rig.root.position;
+      const zn = getRoomZone(pos.x, pos.z);
+      const bank = ZONE_QUOTES[zn] || ZONE_QUOTES.central;
+      return pickNextQuote(bank, 'zone_' + zn);
     }
 
     // =========================================================================
@@ -4602,7 +4667,15 @@ import * as THREE from 'three';
       const preset = CAMERA_PRESETS[key];
       if (!preset) return;
       state.activeCameraPreset = key;
+      // Unlock camera from embodied character so the camera flies to the selected room and stays there!
+      state.cameraLockedToAvatar = false;
       state.followCharacter = null;
+      if (embodiedCharacter && embodyCamMode === 'fps') {
+        embodyCamMode = 'tps';
+        if (embodiedCharacter.rig && embodiedCharacter.rig.headGroup) {
+          embodiedCharacter.rig.headGroup.visible = true;
+        }
+      }
       camTransition.active = true;
       camTransition.startPos.copy(camera.position);
       camTransition.endPos.copy(preset.pos);
@@ -5410,6 +5483,7 @@ import * as THREE from 'three';
         charObj.manualTask = 'arrows';
         charObj.currentPose = 'idle';
         state.followCharacter = charObj;
+        state.cameraLockedToAvatar = true;
         camTransition.active = false;
 
         if (embodyCamMode === 'fps' && charObj.rig && charObj.rig.headGroup) {
@@ -5450,6 +5524,7 @@ import * as THREE from 'three';
         wasdControlBoss = false;
         embodyCamMode = 'tps';
         state.followCharacter = null;
+        state.cameraLockedToAvatar = false;
         if (embodyHud) embodyHud.classList.add('hidden');
         if (prev) {
           showToast(`Đã thoát hóa thân ${prev.name}.`);
@@ -5595,12 +5670,12 @@ import * as THREE from 'three';
             }
           };
         }
-        // Default anywhere in Main Office / Meeting / Dev
+        // Default anywhere in Main Office / Meeting / Dev -> Speak room-specific quote
         return {
           label: '👋 [Phím Space] Chào Đồng Nghiệp & Báo Cáo Tiến Độ!',
           run: () => {
             playSynthTone(740, 0.1, 'triangle', 0.12);
-            const q = IT_QUOTES[Math.floor(Math.random() * IT_QUOTES.length)];
+            const q = pickZoneQuoteForCharacter(c);
             showCharacterSpeech(c, q, 5.0);
           }
         };
@@ -7001,30 +7076,20 @@ import * as THREE from 'three';
         }
       }
 
-      // Rich Ambient Dialogue Cycle across All Zones (Office, Temple, Nhậu, Karaoke)
+      // Rich Ambient Dialogue Cycle strictly bound to each Character's Current Room Zone (9 Zones)
       if (!state.isPaused) {
         speechCycleTimer += simDt;
         if (speechCycleTimer >= 2.8) {
           speechCycleTimer = 0;
-          // Pick 2 distinct characters to speak zone-appropriate non-repeating lines
+          // Pick 2 distinct stationary characters to speak strictly room-specific non-repeating lines
           const count = officeCharacters.length;
           if (count > 0) {
             const idx1 = Math.floor(Math.random() * count);
             const idx2 = (idx1 + 3 + Math.floor(Math.random() * Math.max(1, count - 3))) % count;
             [officeCharacters[idx1], officeCharacters[idx2]].forEach(ch => {
               if (!ch || ch.speechTimer > 0.5) return;
-              const zn = getRoomZone(ch.rig.root.position.x, ch.rig.root.position.z);
-              let quote = '';
-              if (zn === 'chua') {
-                quote = pickNextQuote(TEMPLE_PRAYERS, 'temple');
-              } else if (zn === 'nhau') {
-                quote = pickNextQuote(NHAU_QUOTES, 'nhau');
-              } else if (zn === 'karaoke') {
-                quote = pickNextQuote(KARAOKE_QUOTES, 'karaoke');
-              } else {
-                quote = pickNextQuote(IT_QUOTES, 'it');
-              }
-              showCharacterSpeech(ch, quote, 4.5);
+              const quote = pickZoneQuoteForCharacter(ch);
+              if (quote) showCharacterSpeech(ch, quote, 4.5);
             });
           }
         }
@@ -7077,10 +7142,13 @@ import * as THREE from 'three';
         if (embodyCamMode === 'fps') {
           // First-Person Mode: Left/Right arrows turn head yaw, Up/Down walk forward/backward
           if (inputRight !== 0) {
+            isAvatarArrowMoving = true;
+            state.cameraLockedToAvatar = true;
             activeAvatar.rig.root.rotation.y -= inputRight * 2.25 * rawDt;
           }
           if (inputForward !== 0) {
             isAvatarArrowMoving = true;
+            state.cameraLockedToAvatar = true;
             const rot = activeAvatar.rig.root.rotation.y;
             const speed = 3.5 * rawDt * inputForward;
             const dx = Math.sin(rot) * speed;
@@ -7097,6 +7165,7 @@ import * as THREE from 'three';
             isAvatarArrowMoving = true;
             camTransition.active = false;
             state.followCharacter = activeAvatar;
+            state.cameraLockedToAvatar = true;
 
             const camFwdX = controls.target.x - camera.position.x;
             const camFwdZ = controls.target.z - camera.position.z;
@@ -7155,8 +7224,8 @@ import * as THREE from 'three';
         }
       }
 
-      // True 3rd-Person Chase Camera & 1st-Person FPS Camera Sync (Runs AFTER movement so camera locks 1:1 with character)
-      const trackedChar = embodiedCharacter || state.followCharacter || (wasdControlBoss ? officeCharacters[0] : null);
+      // True 3rd-Person Chase Camera & 1st-Person FPS Camera Sync (Only when cameraLockedToAvatar or explicit followCharacter is active!)
+      const trackedChar = state.followCharacter || (state.cameraLockedToAvatar ? (embodiedCharacter || (wasdControlBoss ? officeCharacters[0] : null)) : null);
       if (trackedChar && !camTransition.active) {
         const p = trackedChar.rig.root.position;
         const rot = trackedChar.rig.root.rotation.y;
