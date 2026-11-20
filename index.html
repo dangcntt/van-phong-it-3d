@@ -210,6 +210,9 @@
         </div>
       </div>
       <div class="flex items-center gap-1.5">
+        <button id="btn-open-embody-bar" title="Hóa thân nhập vai vào nhân vật bất kỳ (FPS / TPS)" class="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-fuchsia-600 hover:from-amber-400 hover:to-fuchsia-500 text-white font-bold transition cursor-pointer text-[11px] shadow-lg shadow-fuchsia-500/25 flex items-center gap-1">
+          <span>🕹️</span><span>Hóa Thân</span>
+        </button>
         <button id="btn-toggle-sound" title="Bật / Tắt âm thanh hiệu ứng" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 transition cursor-pointer text-xs">
           🔊
         </button>
@@ -488,6 +491,60 @@
     </div>
   </div>
 
+  <!-- BOTTOM-CENTER: Avatar Embodiment / Role-Play HUD (Hóa Thân Nhân Vật Bất Kỳ) -->
+  <div id="embodiment-hud" class="hidden fixed bottom-3 left-1/2 -translate-x-1/2 z-30 w-[calc(100vw-24px)] max-w-2xl">
+    <div class="hud-glass rounded-2xl p-3 border border-amber-400/50 shadow-2xl flex flex-col gap-2">
+      <!-- Top Row: Character Switcher, Rename, Camera Mode (TPS / FPS), Exit -->
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-1 rounded-lg bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[11px] font-bold">🕹️ ĐANG HÓA THÂN:</span>
+          <select id="embody-char-select" class="px-2.5 py-1 rounded-xl bg-slate-900/90 border border-white/20 text-white text-xs font-bold focus:outline-none focus:border-amber-400 cursor-pointer"></select>
+          <button id="btn-embody-rename" title="Đổi tên nhân vật đang hóa thân" class="px-2 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200 text-[11px] font-semibold cursor-pointer transition">
+            ✏️ Đổi tên
+          </button>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <button id="btn-embody-cam-mode" title="Phím tắt: V để đổi góc nhìn Thứ 1 (FPS) / Thứ 3 (TPS)" class="px-2.5 py-1 rounded-xl bg-sky-500/25 hover:bg-sky-500/40 border border-sky-400/50 text-sky-200 text-[11px] font-bold cursor-pointer transition">
+            🎥 Góc nhìn: Thứ 3 (TPS) [Phím V]
+          </button>
+          <button id="btn-embody-exit" class="px-2.5 py-1 rounded-xl bg-rose-500/25 hover:bg-rose-500/45 border border-rose-400/40 text-rose-200 text-[11px] font-bold cursor-pointer transition">
+            ✕ Thoát
+          </button>
+        </div>
+      </div>
+
+      <!-- Middle Row: Contextual Action Button (Spacebar) + 4 Quick Emote Buttons (Keys 1-4) -->
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <button id="btn-embody-context-action" class="flex-1 min-w-[200px] px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 text-xs font-extrabold shadow-md cursor-pointer transition text-center">
+          ⚡ [Phím Space] Tương tác tại chỗ
+        </button>
+        <div class="flex items-center gap-1">
+          <button data-emote-pose="dance" data-emote-msg="Quẩy lên anh em IT ơi!! 🕺🔥" class="embody-emote-btn px-2 py-1.5 rounded-xl bg-white/10 hover:bg-fuchsia-500/30 border border-white/10 text-white text-[11px] font-semibold cursor-pointer transition">
+            1: 🕺 Quẩy
+          </button>
+          <button data-emote-pose="kneel-pray" data-emote-msg="Nam mô Zero-Bug Đại Vương, độ cho con code mượt! 🙏" class="embody-emote-btn px-2 py-1.5 rounded-xl bg-white/10 hover:bg-amber-500/30 border border-white/10 text-white text-[11px] font-semibold cursor-pointer transition">
+            2: 🙏 Khấn
+          </button>
+          <button data-emote-pose="nhau" data-emote-msg="1... 2... 3... DZÔ 100% anh em ơi!! 🍻" class="embody-emote-btn px-2 py-1.5 rounded-xl bg-white/10 hover:bg-emerald-500/30 border border-white/10 text-white text-[11px] font-semibold cursor-pointer transition">
+            3: 🍻 Cụng bia
+          </button>
+          <button data-emote-pose="sing" data-emote-msg="Cắt đôi nỗi sầu, cắt luôn bug Prod đêm nay!! 🎤🎶" class="embody-emote-btn px-2 py-1.5 rounded-xl bg-white/10 hover:bg-purple-500/30 border border-white/10 text-white text-[11px] font-semibold cursor-pointer transition">
+            4: 🎤 Cầm mic
+          </button>
+        </div>
+      </div>
+
+      <!-- Bottom Row: Live 3D Speech Bubble Chat Input + Controls Hint -->
+      <div class="flex items-center gap-2">
+        <input id="embody-chat-input" type="text" maxlength="90" placeholder="💬 Gõ câu nói bất kỳ rồi nhấn Enter để bật bong bóng thoại 3D trên đầu..." class="flex-1 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-white/15 text-white text-xs placeholder:text-slate-400 focus:outline-none focus:border-amber-400" />
+        <button id="btn-embody-chat-send" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold cursor-pointer transition">
+          Nói 💬
+        </button>
+        <span class="hidden sm:inline text-[10px] text-slate-300 font-medium whitespace-nowrap">Đi bộ: ⬆️⬇️⬅️➡️</span>
+      </div>
+    </div>
+  </div>
+
   <!-- Main Three.js Application Script -->
   <script type="module">
     import * as THREE from 'three';
@@ -589,6 +646,8 @@
     let bossVideoTexture = null;
     let bossScreenSharing = false;
     let wasdControlBoss = false;
+    let embodiedCharacter = null; // Currently embodied character (any of the 14 staff!)
+    let embodyCamMode = 'tps';    // 'tps' (3rd-person follow) | 'fps' (1st-person eye view)
     const keysPressed = {};
     const bbqSmokeParticles = [];
     const steamParticles = [];
@@ -1789,22 +1848,14 @@
             }
           },
           {
-            label: wasdControlBoss ? '⏹ Tắt lái Sếp Đăng (4 Phím Mũi Tên)' : '🎮 Lái Sếp Đăng đi dạo (4 Phím ⬆️⬇️⬅️➡️)',
+            label: (embodiedCharacter === officeCharacters[0]) ? '⏹ Thoát Hóa Thân Sếp Đăng' : '🕹️ Hóa Thân Thành Sếp Minh Đăng (4 Phím ⬆️⬇️⬅️➡️)',
             primary: false,
             run: () => {
-              wasdControlBoss = !wasdControlBoss;
-              const bossChar = officeCharacters[0];
-              if (wasdControlBoss && bossChar) {
-                bossChar.taskQueue = [];
-                bossChar.manualTask = 'arrows';
-                state.followCharacter = bossChar;
-                showCharacterSpeech(bossChar, 'Để Trưởng phòng Minh Đăng đi thị sát anh em code thế nào! 👑', 4.5);
-                showToast('🎮 Bấm 4 Phím Mũi Tên (⬆️ ⬇️ ⬅️ ➡️) để đi bộ qua các cửa phòng (có chống xuyên tường & tự mở cửa kính)!');
-              } else {
-                state.followCharacter = null;
-                showToast('Đã tắt chế độ điều khiển 4 phím mũi tên.');
+              if (embodiedCharacter === officeCharacters[0]) {
+                stopEmbodyCharacter();
+              } else if (officeCharacters[0]) {
+                startEmbodyCharacter(officeCharacters[0]);
               }
-              updateInspectorUI();
             }
           },
           {
@@ -3964,9 +4015,19 @@
           `,
           getActions: () => {
             const isFollowing = state.followCharacter === charData;
-            const actions = [];
+            const isEmbodied = embodiedCharacter === charData;
+            const actions = [
+              {
+                label: isEmbodied ? `⏹ Thoát Hóa Thân (${charData.name})` : `🕹️ Hóa Thân Thành ${charData.name}!`,
+                primary: true,
+                run: () => {
+                  if (isEmbodied) stopEmbodyCharacter();
+                  else startEmbodyCharacter(charData);
+                }
+              }
+            ];
             if (charData.homeSeat) {
-              actions.push({ label: '💻 Làm việc', primary: true, run: () => commandCharacter(charData, 'work') });
+              actions.push({ label: '💻 Làm việc', primary: false, run: () => commandCharacter(charData, 'work') });
             }
             actions.push({ label: '☕ Pha cà phê', primary: false, run: () => commandCharacter(charData, 'coffee') });
             actions.push({ label: '🍻 Đi nhậu', primary: false, run: () => commandCharacter(charData, 'nhau') });
@@ -5024,6 +5085,294 @@
       const btnKarStop = document.getElementById('btn-kar-stop');
       if (btnKarStop) btnKarStop.addEventListener('click', stopAllKaraokeMedia);
 
+      // =======================================================================
+      // AVATAR EMBODIMENT SYSTEM (HÓA THÂN THÀNH 1 NHÂN VẬT BẤT KỲ - FPS & TPS)
+      // =======================================================================
+      const embodyHud = document.getElementById('embodiment-hud');
+      const embodySelect = document.getElementById('embody-char-select');
+      const btnOpenEmbody = document.getElementById('btn-open-embody-bar');
+      const btnEmbodyRename = document.getElementById('btn-embody-rename');
+      const btnEmbodyCamMode = document.getElementById('btn-embody-cam-mode');
+      const btnEmbodyExit = document.getElementById('btn-embody-exit');
+      const btnEmbodyContext = document.getElementById('btn-embody-context-action');
+      const embodyChatInput = document.getElementById('embody-chat-input');
+      const btnEmbodyChatSend = document.getElementById('btn-embody-chat-send');
+
+      function populateEmbodySelect() {
+        if (!embodySelect) return;
+        embodySelect.innerHTML = officeCharacters
+          .map((c, idx) => `<option value="${idx}">${c.name} • ${c.role}</option>`)
+          .join('');
+        if (embodiedCharacter) {
+          const idx = officeCharacters.indexOf(embodiedCharacter);
+          if (idx >= 0) embodySelect.value = String(idx);
+        }
+      }
+      populateEmbodySelect();
+
+      window.startEmbodyCharacter = function(charObj) {
+        if (!charObj) return;
+        // Restore head visibility of previous embodied character if in FPS
+        if (embodiedCharacter && embodiedCharacter.rig && embodiedCharacter.rig.headGroup) {
+          embodiedCharacter.rig.headGroup.visible = true;
+        }
+        embodiedCharacter = charObj;
+        wasdControlBoss = (charObj === officeCharacters[0]);
+        charObj.taskQueue = [];
+        charObj.manualTask = 'arrows';
+        charObj.currentPose = 'idle';
+        state.followCharacter = charObj;
+        camTransition.active = false;
+
+        if (embodyCamMode === 'fps' && charObj.rig && charObj.rig.headGroup) {
+          charObj.rig.headGroup.visible = false;
+        } else if (charObj.rig && charObj.rig.headGroup) {
+          charObj.rig.headGroup.visible = true;
+          // Position TPS camera nicely behind the character
+          const p = charObj.rig.root.position;
+          const rot = charObj.rig.root.rotation.y;
+          camera.position.set(p.x - Math.sin(rot) * 4.5, 3.2, p.z - Math.cos(rot) * 4.5);
+          controls.target.set(p.x, 1.25, p.z);
+        }
+
+        if (embodyHud) embodyHud.classList.remove('hidden');
+        populateEmbodySelect();
+        updateEmbodyCamButton();
+        showCharacterSpeech(charObj, `Tôi là ${charObj.name} (${charObj.role})! Dùng 4 phím ⬆️⬇️⬅️➡️ để đi dạo nhé! 🕹️`, 4.5);
+        showToast(`🕹️ Đã hóa thân thành ${charObj.name} (${charObj.role})! Bấm ⬆️⬇️⬅️➡️ để đi, phím V đổi góc nhìn FPS/TPS, phím Space tương tác!`);
+        updateInspectorUI();
+      };
+
+      window.stopEmbodyCharacter = function() {
+        if (embodiedCharacter && embodiedCharacter.rig && embodiedCharacter.rig.headGroup) {
+          embodiedCharacter.rig.headGroup.visible = true;
+        }
+        const prev = embodiedCharacter;
+        embodiedCharacter = null;
+        wasdControlBoss = false;
+        embodyCamMode = 'tps';
+        state.followCharacter = null;
+        if (embodyHud) embodyHud.classList.add('hidden');
+        if (prev) {
+          showToast(`Đã thoát hóa thân ${prev.name}.`);
+        }
+        updateInspectorUI();
+      };
+
+      function updateEmbodyCamButton() {
+        if (!btnEmbodyCamMode) return;
+        if (embodyCamMode === 'fps') {
+          btnEmbodyCamMode.textContent = '👁️ Góc nhìn: Thứ 1 (FPS Mắt Thật) [Phím V]';
+          btnEmbodyCamMode.className = 'px-2.5 py-1 rounded-xl bg-amber-500/30 hover:bg-amber-500/45 border border-amber-400/70 text-amber-200 text-[11px] font-bold cursor-pointer transition';
+        } else {
+          btnEmbodyCamMode.textContent = '🎥 Góc nhìn: Thứ 3 (TPS Sau Lưng) [Phím V]';
+          btnEmbodyCamMode.className = 'px-2.5 py-1 rounded-xl bg-sky-500/25 hover:bg-sky-500/40 border border-sky-400/50 text-sky-200 text-[11px] font-bold cursor-pointer transition';
+        }
+      }
+
+      window.toggleEmbodyCamMode = function() {
+        if (!embodiedCharacter) return;
+        embodyCamMode = (embodyCamMode === 'tps') ? 'fps' : 'tps';
+        if (embodiedCharacter.rig && embodiedCharacter.rig.headGroup) {
+          embodiedCharacter.rig.headGroup.visible = (embodyCamMode !== 'fps');
+        }
+        if (embodyCamMode === 'tps') {
+          const p = embodiedCharacter.rig.root.position;
+          const rot = embodiedCharacter.rig.root.rotation.y;
+          camera.position.set(p.x - Math.sin(rot) * 4.5, 3.2, p.z - Math.cos(rot) * 4.5);
+          controls.target.set(p.x, 1.25, p.z);
+          showToast('🎥 Đã chuyển sang Góc nhìn Thứ 3 (TPS Sau lưng nhân vật)');
+        } else {
+          showToast('👁️ Đã chuyển sang Góc nhìn Thứ 1 (FPS Mắt thật nhân vật)! Dùng ⬅️ ➡️ để quay đầu, ⬆️ ⬇️ để tiến/lùi!');
+        }
+        updateEmbodyCamButton();
+      };
+
+      window.getEmbodyContextSpec = function(c) {
+        if (!c) return { label: '⚡ [Phím Space] Tương tác', run: () => {} };
+        const x = c.rig.root.position.x;
+        const z = c.rig.root.position.z;
+        // 1. Near Fortune Peach Tree at Temple
+        if (Math.hypot(x - 18.35, z - 6.8) < 2.3) {
+          return {
+            label: '🎋 [Phím Space] Lắc Ống Xăm Xin Quẻ Đại Cát!',
+            run: () => {
+              playWoodenFishSound();
+              setTimeout(() => playDonationSound(), 180);
+              const msg = 'Quẻ Số 99 (ĐẠI CÁT): Code 1 phát ăn ngay, 0 Bug, Cuối tháng nhận thưởng lớn! 🎋💰';
+              showCharacterSpeech(c, msg, 6.0);
+              showToast(`🎋 ${c.name} vừa rút được: ${msg}`);
+            }
+          };
+        }
+        // 2. Inside Temple Courtyard
+        if (x > 12.1 && z >= 0.8) {
+          return {
+            label: '🔔 [Phím Space] Thỉnh Đại Hồng Chung & Quỳ Lạy Khấn!',
+            run: () => {
+              playTempleBellSound(false);
+              c.currentPose = 'kneel-pray';
+              c.rig.root.rotation.y = Math.atan2(15.7 - x, 3.1 - z);
+              const pr = TEMPLE_PRAYERS[Math.floor(Math.random() * TEMPLE_PRAYERS.length)];
+              showCharacterSpeech(c, pr, 6.0);
+            }
+          };
+        }
+        // 3. Inside Karaoke VIP Room
+        if (x > 12.1 && z < 0.8) {
+          return {
+            label: '🎤 [Phím Space] Cầm Mic Lĩnh Xướng & Bắn Pháo Giấy!',
+            run: () => {
+              c.currentPose = 'sing';
+              spawnKaraokeConfetti(40);
+              if (!state.beatPlaying && !state.youtubePlaying) {
+                playKaraokeBeatSong(state.currentSongKey || 'cat-doi');
+              }
+              showCharacterSpeech(c, 'Cắt đôi nỗi sầu, cắt luôn bug Prod đêm nay!! 🎤🎶', 5.5);
+            }
+          };
+        }
+        // 4. At Nhậu Zone / BBQ Grill
+        if (z > 8.6 && x < 6.5) {
+          return {
+            label: '🍻 [Phím Space] Nâng Ly Bia Hô "1-2-3 DZÔ!" & Ăn BBQ!',
+            run: () => {
+              c.currentPose = 'nhau';
+              playSynthTone(1568, 0.08, 'sine', 0.16);
+              setTimeout(() => playSynthTone(2093, 0.18, 'triangle', 0.18), 70);
+              showCharacterSpeech(c, 'KENG!! 1... 2... 3... DZÔ 100% anh em ơi!! 🍻🦑', 5.0);
+              showToast(`🍻 ${c.name} vừa nâng cốc cụng ly 1-2-3 DZÔ tại Quán Nhậu!`);
+            }
+          };
+        }
+        // 5. Inside Boss Minh Đăng Office
+        if (x < -12.0) {
+          return {
+            label: '👑 [Phím Space] Phát Lệnh Go-Live & Thưởng Nóng Toàn Team!',
+            run: () => {
+              playDonationSound();
+              spawnKaraokeConfetti(45);
+              showCharacterSpeech(c, 'Hệ thống .NET 9 + Vue 3 + MongoDB Go-Live thành công! Thưởng nóng cả phòng!! 👑💰', 6.0);
+              showToast(`👑 ${c.name} vừa phát lệnh Go-Live từ Phòng Trưởng Phòng!`);
+            }
+          };
+        }
+        // 6. Inside Server Room
+        if (x > 5.3 && z > 2.2 && x <= 12.1) {
+          return {
+            label: '❄️ [Phím Space] Kích Hoạt Turbo Làm Mát Tủ Server!',
+            run: () => {
+              turboCooling = !turboCooling;
+              if (state.activeEvent === 'crash') triggerOfficeEvent(null);
+              playSynthTone(880, 0.15, 'sine', 0.12);
+              showCharacterSpeech(c, 'Đã tối ưu MongoDB & Redis Cluster, hạ nhiệt Server về 18°C! ❄️🖥️', 5.0);
+            }
+          };
+        }
+        // 7. Near Pantry / Espresso Machine
+        if (x > 1.8 && z <= 2.2 && x <= 12.1) {
+          return {
+            label: '☕ [Phím Space] Pha Espresso Thơm Lừng & Cầm Tay Đi Dạo!',
+            run: () => {
+              coffeeBrewingTimer = 6.0;
+              c.holdingCoffee = true;
+              c.energy = 100;
+              playSynthTone(660, 0.12, 'triangle', 0.12);
+              showCharacterSpeech(c, 'Làm ly Espresso nóng hổi lấy 100% năng lượng code tiếp nào! ☕⚡', 5.0);
+            }
+          };
+        }
+        // Default anywhere in Main Office / Meeting / Dev
+        return {
+          label: '👋 [Phím Space] Chào Đồng Nghiệp & Báo Cáo Tiến Độ!',
+          run: () => {
+            playSynthTone(740, 0.1, 'triangle', 0.12);
+            const q = IT_QUOTES[Math.floor(Math.random() * IT_QUOTES.length)];
+            showCharacterSpeech(c, q, 5.0);
+          }
+        };
+      };
+
+      if (btnOpenEmbody) {
+        btnOpenEmbody.addEventListener('click', () => {
+          if (embodiedCharacter) {
+            stopEmbodyCharacter();
+          } else {
+            const targetChar = (state.selectedObject && state.selectedObject.type === 'character')
+              ? officeCharacters.find(c => c.id === state.selectedObject.id) || officeCharacters[0]
+              : officeCharacters[0];
+            startEmbodyCharacter(targetChar);
+          }
+        });
+      }
+      if (embodySelect) {
+        embodySelect.addEventListener('change', (e) => {
+          const idx = parseInt(e.target.value, 10);
+          if (officeCharacters[idx]) {
+            startEmbodyCharacter(officeCharacters[idx]);
+          }
+        });
+      }
+      if (btnEmbodyRename) {
+        btnEmbodyRename.addEventListener('click', () => {
+          if (!embodiedCharacter) return;
+          const newName = window.prompt('Nhập tên mới cho nhân vật bạn đang hóa thân:', embodiedCharacter.name);
+          if (newName && newName.trim()) {
+            embodiedCharacter.name = newName.trim();
+            if (embodiedCharacter.tagEl) {
+              embodiedCharacter.tagEl.textContent = `${embodiedCharacter.name} • ${embodiedCharacter.role}`;
+            }
+            if (embodiedCharacter.rig && embodiedCharacter.rig.root && embodiedCharacter.rig.root.userData && embodiedCharacter.rig.root.userData.inspectorMeta) {
+              embodiedCharacter.rig.root.userData.inspectorMeta.title = embodiedCharacter.name;
+            }
+            populateEmbodySelect();
+            showCharacterSpeech(embodiedCharacter, `Xin chào anh em! Tôi là ${embodiedCharacter.name} đây! 👋✨`, 5.0);
+            updateInspectorUI();
+          }
+        });
+      }
+      if (btnEmbodyCamMode) {
+        btnEmbodyCamMode.addEventListener('click', () => toggleEmbodyCamMode());
+      }
+      if (btnEmbodyExit) {
+        btnEmbodyExit.addEventListener('click', () => stopEmbodyCharacter());
+      }
+      if (btnEmbodyContext) {
+        btnEmbodyContext.addEventListener('click', () => {
+          if (embodiedCharacter) {
+            getEmbodyContextSpec(embodiedCharacter).run();
+          }
+        });
+      }
+      document.querySelectorAll('.embody-emote-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (!embodiedCharacter) return;
+          const pose = btn.dataset.emotePose || 'dance';
+          const msg = btn.dataset.emoteMsg || 'Quẩy lên anh em ơi!';
+          embodiedCharacter.currentPose = pose;
+          showCharacterSpeech(embodiedCharacter, msg, 5.0);
+          playSynthTone(659.3, 0.1, 'triangle', 0.12);
+        });
+      });
+      if (btnEmbodyChatSend && embodyChatInput) {
+        const sendLiveChat = () => {
+          if (!embodiedCharacter) return;
+          const msg = embodyChatInput.value.trim();
+          if (!msg) return;
+          showCharacterSpeech(embodiedCharacter, msg, 6.5);
+          playSynthTone(784, 0.09, 'sine', 0.12);
+          embodyChatInput.value = '';
+          embodyChatInput.blur();
+        };
+        btnEmbodyChatSend.addEventListener('click', sendLiveChat);
+        embodyChatInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            sendLiveChat();
+          }
+        });
+      }
+
       // Native Fullscreen & ESC Handling
       const onFullscreenChange = () => {
         const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
@@ -5043,13 +5392,20 @@
         if (k === 'arrowup' || k === 'arrowdown' || k === 'arrowleft' || k === 'arrowright') {
           e.preventDefault();
           keysPressed[k] = true;
-          if (!wasdControlBoss && officeCharacters[0]) {
-            wasdControlBoss = true;
-            const bossChar = officeCharacters[0];
-            bossChar.taskQueue = [];
-            bossChar.manualTask = 'arrows';
-            showToast('🎮 Đang điều khiển Trưởng phòng Minh Đăng 👑 bằng 4 Phím Mũi Tên (⬆️ ⬇️ ⬅️ ➡️)');
-            if (typeof updateInspectorUI === 'function') updateInspectorUI();
+          if (!embodiedCharacter && officeCharacters[0]) {
+            startEmbodyCharacter(officeCharacters[0]);
+          }
+        } else if (embodiedCharacter) {
+          if (k === 'v') {
+            e.preventDefault();
+            toggleEmbodyCamMode();
+          } else if (e.code === 'Space') {
+            e.preventDefault();
+            getEmbodyContextSpec(embodiedCharacter).run();
+          } else if (k === '1' || k === '2' || k === '3' || k === '4') {
+            const btns = document.querySelectorAll('.embody-emote-btn');
+            const b = btns[parseInt(k, 10) - 1];
+            if (b) b.click();
           }
         }
       });
@@ -5233,11 +5589,17 @@
         if (p >= 1) camTransition.active = false;
       }
 
-      // Follow Selected Character Mode
-      if (state.followCharacter) {
+      // Follow Selected Character Mode (TPS / FPS)
+      if (embodiedCharacter && embodyCamMode === 'fps') {
+        const p = embodiedCharacter.rig.root.position;
+        const rot = embodiedCharacter.rig.root.rotation.y;
+        const eyeY = 1.56 + (embodiedCharacter.currentPose === 'walking' ? Math.sin(simElapsed * 11) * 0.025 : 0);
+        camera.position.set(p.x, eyeY, p.z);
+        controls.target.set(p.x + Math.sin(rot) * 3.5, eyeY - 0.08, p.z + Math.cos(rot) * 3.5);
+      } else if (state.followCharacter) {
         const p = state.followCharacter.rig.root.position;
-        const desiredTarget = new THREE.Vector3(p.x, 1.2, p.z);
-        controls.target.lerp(desiredTarget, 0.08);
+        const desiredTarget = new THREE.Vector3(p.x, 1.25, p.z);
+        controls.target.lerp(desiredTarget, 0.12);
       }
 
       controls.update();
@@ -5474,38 +5836,71 @@
         sm.material.opacity = Math.max(0, (1 - l / 2.1) * 0.52);
       });
 
-      // 4 Arrow Keys (⬆️ ⬇️ ⬅️ ➡️) Direct Walking Control with Wall Collision for Boss Minh Đăng
-      if (wasdControlBoss && officeCharacters[0]) {
-        const boss = officeCharacters[0];
+      // 4 Arrow Keys (⬆️ ⬇️ ⬅️ ➡️) Direct Walking Control with Wall Collision for ANY Embodied Character
+      const activeAvatar = embodiedCharacter || (wasdControlBoss ? officeCharacters[0] : null);
+      if (activeAvatar) {
         let inputRight = 0, inputForward = 0;
         if (keysPressed['arrowup']) inputForward += 1;
         if (keysPressed['arrowdown']) inputForward -= 1;
         if (keysPressed['arrowleft']) inputRight -= 1;
         if (keysPressed['arrowright']) inputRight += 1;
-        if (inputRight !== 0 || inputForward !== 0) {
-          // Calculate movement direction relative to current horizontal camera view
-          const camFwdX = controls.target.x - camera.position.x;
-          const camFwdZ = controls.target.z - camera.position.z;
-          const camLen = Math.hypot(camFwdX, camFwdZ) || 1;
-          const fwdX = camFwdX / camLen;
-          const fwdZ = camFwdZ / camLen;
-          const rightX = -fwdZ;
-          const rightZ = fwdX;
 
-          const moveX = fwdX * inputForward + rightX * inputRight;
-          const moveZ = fwdZ * inputForward + rightZ * inputRight;
-          const len = Math.hypot(moveX, moveZ) || 1;
-          const speed = 3.6 * rawDt;
-          const dx = (moveX / len) * speed;
-          const dz = (moveZ / len) * speed;
+        // Update contextual Spacebar button text dynamically
+        const ctxBtn = document.getElementById('btn-embody-context-action');
+        if (ctxBtn && typeof window.getEmbodyContextSpec === 'function') {
+          const spec = window.getEmbodyContextSpec(activeAvatar);
+          if (ctxBtn.textContent !== spec.label) ctxBtn.textContent = spec.label;
+        }
 
-          const pos = boss.rig.root.position;
-          moveBossWithCollision(pos, dx, dz);
-          boss.rig.root.rotation.y = Math.atan2(moveX, moveZ);
-          boss.currentPose = 'walking';
-          boss.activity = 'Đang trực tiếp đi thị sát văn phòng (4 phím ⬆️⬇️⬅️➡️) 👑';
-        } else if (boss.manualTask === 'arrows' || boss.manualTask === 'wasd') {
-          boss.currentPose = 'idle';
+        if (embodyCamMode === 'fps') {
+          // First-Person Mode: Left/Right arrows turn head yaw, Up/Down walk forward/backward
+          if (inputRight !== 0) {
+            activeAvatar.rig.root.rotation.y -= inputRight * 2.25 * rawDt;
+          }
+          if (inputForward !== 0) {
+            const rot = activeAvatar.rig.root.rotation.y;
+            const speed = 3.5 * rawDt * inputForward;
+            const dx = Math.sin(rot) * speed;
+            const dz = Math.cos(rot) * speed;
+            moveBossWithCollision(activeAvatar.rig.root.position, dx, dz);
+            activeAvatar.currentPose = 'walking';
+            activeAvatar.activity = 'Đang đi bộ nhập vai Góc nhìn Thứ 1 (FPS) 👁️';
+          } else if (activeAvatar.currentPose === 'walking') {
+            activeAvatar.currentPose = 'idle';
+          }
+        } else {
+          // Third-Person Mode (TPS): Move relative to current horizontal camera view
+          if (inputRight !== 0 || inputForward !== 0) {
+            const camFwdX = controls.target.x - camera.position.x;
+            const camFwdZ = controls.target.z - camera.position.z;
+            const camLen = Math.hypot(camFwdX, camFwdZ) || 1;
+            const fwdX = camFwdX / camLen;
+            const fwdZ = camFwdZ / camLen;
+            const rightX = -fwdZ;
+            const rightZ = fwdX;
+
+            const moveX = fwdX * inputForward + rightX * inputRight;
+            const moveZ = fwdZ * inputForward + rightZ * inputRight;
+            const len = Math.hypot(moveX, moveZ) || 1;
+            const speed = 3.7 * rawDt;
+            const dx = (moveX / len) * speed;
+            const dz = (moveZ / len) * speed;
+
+            const pos = activeAvatar.rig.root.position;
+            const oldX = pos.x, oldZ = pos.z;
+            moveBossWithCollision(pos, dx, dz);
+            // Translate camera along with character so Orbit distance stays locked
+            camera.position.x += (pos.x - oldX);
+            camera.position.z += (pos.z - oldZ);
+            controls.target.x += (pos.x - oldX);
+            controls.target.z += (pos.z - oldZ);
+
+            activeAvatar.rig.root.rotation.y = Math.atan2(moveX, moveZ);
+            activeAvatar.currentPose = 'walking';
+            activeAvatar.activity = 'Đang nhập vai đi dạo văn phòng (4 phím ⬆️⬇️⬅️➡️) 🕹️';
+          } else if (activeAvatar.currentPose === 'walking') {
+            activeAvatar.currentPose = 'idle';
+          }
         }
       }
 
