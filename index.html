@@ -209,9 +209,15 @@
           <p class="text-[11px] text-sky-300 font-medium" id="mode-badge">Chế độ: Ban ngày</p>
         </div>
       </div>
-      <div class="flex items-center gap-1.5">
-        <button id="btn-open-embody-bar" title="Hóa thân nhập vai vào nhân vật bất kỳ (FPS / TPS)" class="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-fuchsia-600 hover:from-amber-400 hover:to-fuchsia-500 text-white font-bold transition cursor-pointer text-[11px] shadow-lg shadow-fuchsia-500/25 flex items-center gap-1">
-          <span>🕹️</span><span>Hóa Thân</span>
+      <div class="flex items-center gap-1">
+        <button id="btn-open-embody-bar" title="Hóa thân nhập vai vào nhân vật bất kỳ (FPS / TPS)" class="px-2 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-fuchsia-600 hover:from-amber-400 hover:to-fuchsia-500 text-white font-bold transition cursor-pointer text-[11px] shadow-lg shadow-fuchsia-500/25 flex items-center gap-1">
+          <span>🕹️</span><span class="hidden sm:inline">Hóa Thân</span>
+        </button>
+        <button id="btn-photo-mode" title="Chụp ảnh Check-in 3D có đóng dấu Watermark (Tải PNG gửi Zalo)" class="p-2 rounded-xl bg-emerald-500/25 hover:bg-emerald-500/40 border border-emerald-400/40 text-emerald-200 transition cursor-pointer text-xs">
+          📸
+        </button>
+        <button id="btn-toggle-minimap" title="Bật / Tắt Bản đồ Radar 2D & Click Dịch chuyển" class="p-2 rounded-xl bg-sky-500/25 hover:bg-sky-500/40 border border-sky-400/40 text-sky-200 transition cursor-pointer text-xs">
+          🗺️
         </button>
         <button id="btn-toggle-sound" title="Bật / Tắt âm thanh hiệu ứng" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 transition cursor-pointer text-xs">
           🔊
@@ -513,10 +519,13 @@
         </div>
       </div>
 
-      <!-- Middle Row: Contextual Action Button (Spacebar) + 4 Quick Emote Buttons (Keys 1-4) -->
+      <!-- Middle Row: Contextual Action Button (Spacebar) + Peer Social Action (Key E) + 4 Quick Emote Buttons (Keys 1-4) -->
       <div class="flex flex-wrap items-center justify-between gap-2">
-        <button id="btn-embody-context-action" class="flex-1 min-w-[200px] px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 text-xs font-extrabold shadow-md cursor-pointer transition text-center">
+        <button id="btn-embody-context-action" class="flex-1 min-w-[180px] px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 text-xs font-extrabold shadow-md cursor-pointer transition text-center">
           ⚡ [Phím Space] Tương tác tại chỗ
+        </button>
+        <button id="btn-embody-peer-action" class="hidden px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-slate-950 text-xs font-extrabold shadow-md cursor-pointer transition text-center">
+          🤝 [Phím E] Tương tác đồng nghiệp
         </button>
         <div class="flex items-center gap-1">
           <button data-emote-pose="dance" data-emote-msg="Quẩy lên anh em IT ơi!! 🕺🔥" class="embody-emote-btn px-2 py-1.5 rounded-xl bg-white/10 hover:bg-fuchsia-500/30 border border-white/10 text-white text-[11px] font-semibold cursor-pointer transition">
@@ -542,6 +551,23 @@
         </button>
         <span class="hidden sm:inline text-[10px] text-slate-300 font-medium whitespace-nowrap">Đi bộ: ⬆️⬇️⬅️➡️</span>
       </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM-LEFT: Real-Time 2D Mini-Map Radar & Click-to-Teleport -->
+  <div id="minimap-widget" class="fixed bottom-12 left-3 sm:left-4 z-20 hud-glass rounded-2xl p-2.5 border border-sky-400/35 shadow-2xl flex flex-col gap-1.5 w-[210px]">
+    <div class="flex items-center justify-between">
+      <span class="text-[10px] font-extrabold text-sky-300 uppercase tracking-wider flex items-center gap-1">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+        🗺️ Radar 2D (Click = Teleport)
+      </span>
+      <button id="btn-close-minimap" class="text-[10px] text-slate-400 hover:text-white cursor-pointer px-1">✕</button>
+    </div>
+    <canvas id="minimap-canvas" width="190" height="135" class="w-full h-[135px] rounded-xl bg-slate-950/90 border border-white/10 cursor-crosshair"></canvas>
+    <div class="flex items-center justify-between text-[9px] text-slate-400 px-0.5">
+      <span>🟡 Đang hóa thân</span>
+      <span>🔵 14 Nhân sự</span>
+      <span>🐶 Corgi</span>
     </div>
   </div>
 
@@ -648,6 +674,9 @@
     let wasdControlBoss = false;
     let embodiedCharacter = null; // Currently embodied character (any of the 14 staff!)
     let embodyCamMode = 'tps';    // 'tps' (3rd-person follow) | 'fps' (1st-person eye view)
+    let nearestPeerChar = null;   // Closest colleague within 2.1m for Key E interaction
+    const followerCharacters = new Set(); // Colleagues currently following the player
+    let officeCorgi = null;       // 3D Office Pet Corgi ("Boss Corgi • Giám Đốc Tinh Thần")
     const keysPressed = {};
     const bbqSmokeParticles = [];
     const steamParticles = [];
@@ -3252,6 +3281,132 @@
       });
     }
 
+    function buildOfficeCorgi() {
+      const dog = new THREE.Group();
+      dog.position.set(-1.2, 0, 1.8);
+
+      const furGold = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.65 });
+      const furWhite = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.7 });
+      const noseBlack = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.3 });
+      const collarRed = new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.4 });
+
+      // Plump Corgi Torso + White Chest
+      const body = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.22, 0.56), furGold);
+      body.position.set(0, 0.25, 0);
+      const chest = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.18, 0.22), furWhite);
+      chest.position.set(0, 0.23, 0.2);
+      const rump = new THREE.Mesh(new THREE.SphereGeometry(0.14, 12, 10), furWhite);
+      rump.position.set(0, 0.26, -0.26);
+      const collar = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.06, 0.08), collarRed);
+      collar.position.set(0, 0.28, 0.23);
+
+      // Corgi Head, Snout & Big Perky Ears
+      const headGroup = new THREE.Group();
+      headGroup.position.set(0, 0.38, 0.28);
+      const skull = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.22, 0.22), furGold);
+      const snout = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.1, 0.14), furWhite);
+      snout.position.set(0, -0.03, 0.15);
+      const nose = new THREE.Mesh(new THREE.SphereGeometry(0.03, 8, 8), noseBlack);
+      nose.position.set(0, 0, 0.22);
+      [-0.07, 0.07].forEach(ex => {
+        const eye = new THREE.Mesh(new THREE.SphereGeometry(0.022, 8, 8), noseBlack);
+        eye.position.set(ex, 0.04, 0.11);
+        const ear = new THREE.Mesh(new THREE.ConeGeometry(0.065, 0.16, 4), furGold);
+        ear.position.set(ex * 1.35, 0.16, -0.02);
+        ear.rotation.z = ex > 0 ? -0.2 : 0.2;
+        headGroup.add(eye, ear);
+      });
+      headGroup.add(skull, snout, nose);
+
+      // 4 Stubby Corgi Legs
+      const legs = [];
+      [[-0.09, 0.18], [0.09, 0.18], [-0.09, -0.18], [0.09, -0.18]].forEach(([lx, lz]) => {
+        const leg = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.16, 0.07), furWhite);
+        leg.position.set(lx, 0.08, lz);
+        dog.add(leg);
+        legs.push(leg);
+      });
+
+      // Wagging Tail Pivot
+      const tailPivot = new THREE.Group();
+      tailPivot.position.set(0, 0.32, -0.29);
+      const tailMesh = new THREE.Mesh(new THREE.SphereGeometry(0.055, 8, 8), furGold);
+      tailMesh.position.set(0, 0.04, -0.04);
+      tailPivot.add(tailMesh);
+
+      dog.add(body, chest, rump, collar, headGroup, tailPivot);
+      enableShadows(dog);
+      scene.add(dog);
+
+      // Floating Tag & Speech Bubble for Boss Corgi
+      const tagsLayer = document.getElementById('character-tags-layer');
+      const speechLayer = document.getElementById('speech-bubbles-layer');
+      const tagEl = document.createElement('div');
+      tagEl.className = 'char-tag px-2 py-0.5 rounded-full bg-amber-950/90 border border-amber-400/50 text-[10px] font-bold text-amber-200 whitespace-nowrap shadow-md';
+      tagEl.textContent = '🐶 Boss Corgi • Giám Đốc Tinh Thần';
+      tagsLayer.appendChild(tagEl);
+
+      const speechEl = document.createElement('div');
+      speechEl.className = 'speech-bubble px-2.5 py-1 rounded-xl bg-amber-100 text-slate-900 text-[11px] font-bold shadow-lg whitespace-nowrap opacity-0';
+      speechLayer.appendChild(speechEl);
+
+      officeCorgi = {
+        group: dog,
+        headGroup,
+        tailPivot,
+        legs,
+        followPlayer: true,
+        wpIndex: 0,
+        tagEl,
+        speechEl,
+        speechTimer: 0,
+        waypoints: [
+          { x: -1.2, z: 1.8 }, { x: -14.0, z: -0.8 }, { x: -2.2, z: 3.2 },
+          { x: 3.2, z: 6.5 }, { x: 15.2, z: 7.2 }, { x: -1.8, z: 11.2 }
+        ]
+      };
+
+      const barkCorgi = (msg = 'Gâu gâu!! Chúc Sếp Minh Đăng & anh em IT hôm nay 0 Bug, tiền về ngập két! 🐶🦴') => {
+        playSynthTone(680, 0.07, 'triangle', 0.14);
+        setTimeout(() => playSynthTone(860, 0.09, 'triangle', 0.16), 95);
+        officeCorgi.speechEl.textContent = msg;
+        officeCorgi.speechEl.style.opacity = '1';
+        officeCorgi.speechTimer = 5.0;
+      };
+
+      registerInteractive(dog, {
+        id: 'office-corgi',
+        type: 'pet',
+        icon: '🐶',
+        zone: 'Thú Cưng Văn Phòng IT',
+        title: 'Boss Corgi Vàng (Giám Đốc Tinh Thần)',
+        desc: 'Chú chó Corgi chân ngắn đáng yêu nhất phòng IT! Luôn chạy lon ton bám theo chân bạn để tiếp thêm 100% năng lượng tích cực.',
+        getMetrics: () => `
+          <div class="flex justify-between"><span class="text-slate-400">Trạng thái:</span><span class="text-amber-300 font-bold">${officeCorgi.followPlayer ? '🐾 Đang chạy bám theo chân bạn' : '🐕 Đang tự đi tuần tra'}</span></div>
+        `,
+        getActions: () => [
+          {
+            label: officeCorgi.followPlayer ? '🐕 Cho Corgi tự đi dạo' : '🐾 Gọi Boss Corgi chạy theo chân mình!',
+            primary: true,
+            run: () => {
+              officeCorgi.followPlayer = !officeCorgi.followPlayer;
+              barkCorgi(officeCorgi.followPlayer ? 'Gâu gâu!! Đợi em chạy theo chân Sếp với! 🐾🐶' : 'Gâu! Để em đi tuần tra quanh văn phòng nhé! 🐕');
+              updateInspectorUI();
+            }
+          },
+          {
+            label: '🦴 Thưởng Xúc Xích Nướng (+100% Vui cả phòng)',
+            primary: false,
+            run: () => {
+              barkCorgi('Gâu gâu!! Xúc xích BBQ ngon bá cháy! Yêu cả phòng IT! 🦴❤️');
+              officeCharacters.forEach(c => { c.mood = 100; });
+              showToast('🐶 Boss Corgi vừa làm trò xoay vòng, cả văn phòng tăng 100% Tâm trạng!');
+            }
+          }
+        ]
+      });
+    }
+
     // =========================================================================
     // 5. HUMANOID 3D CHARACTERS & THE SIMS-STYLE AI
     // =========================================================================
@@ -5373,6 +5528,236 @@
         });
       }
 
+      const btnEmbodyPeer = document.getElementById('btn-embody-peer-action');
+      window.runPeerSocialAction = function() {
+        const actor = embodiedCharacter || officeCharacters[0];
+        if (!actor || !nearestPeerChar) return;
+        const peer = nearestPeerChar;
+        // Face each other
+        actor.rig.root.rotation.y = Math.atan2(peer.rig.root.position.x - actor.rig.root.position.x, peer.rig.root.position.z - actor.rig.root.position.z);
+        peer.rig.root.rotation.y = Math.atan2(actor.rig.root.position.x - peer.rig.root.position.x, actor.rig.root.position.z - peer.rig.root.position.z);
+
+        if (actor === officeCharacters[0] && !followerCharacters.has(peer)) {
+          // Boss Minh Đăng rewards colleague + invites them along!
+          playDonationSound();
+          spawnKaraokeConfetti(30);
+          peer.energy = 100;
+          peer.mood = 100;
+          peer.taskQueue = [];
+          peer.currentPose = 'dance';
+          followerCharacters.add(peer);
+          showCharacterSpeech(actor, `Thưởng nóng ${peer.name} 500k vì code tốt! Đi theo anh thị sát văn phòng nào! 👑💰`, 5.5);
+          showCharacterSpeech(peer, `Đa tạ Trưởng phòng Minh Đăng thưởng nóng 500k!! Em đi theo Sếp ngay! 🕺👑`, 5.5);
+          showToast(`💰 Sếp Minh Đăng vừa thưởng nóng 500k & gọi ${peer.name} đi theo hộ tống!`);
+        } else if (followerCharacters.has(peer)) {
+          followerCharacters.delete(peer);
+          peer.currentPose = 'idle';
+          showCharacterSpeech(peer, `Oke ${actor.name}, để tui quay lại vị trí làm việc nhé! 👋`, 4.0);
+          showToast(`Đã cho ${peer.name} dừng đi theo.`);
+        } else {
+          playSynthTone(740, 0.1, 'triangle', 0.14);
+          setTimeout(() => playSynthTone(987.8, 0.15, 'triangle', 0.15), 90);
+          peer.taskQueue = [];
+          peer.mood = 100;
+          followerCharacters.add(peer);
+          showCharacterSpeech(actor, `Ê ${peer.name}, đi dạo qua Quán Nhậu / Phòng Hát với tui không? 🍻`, 4.5);
+          showCharacterSpeech(peer, `Chốt luôn ${actor.name} ơi! Bạn đi đâu tui nối đuôi theo đó! 🤝🔥`, 5.0);
+          showToast(`🤝 ${peer.name} đã gia nhập đội đi theo sau lưng ${actor.name}!`);
+        }
+      };
+      if (btnEmbodyPeer) {
+        btnEmbodyPeer.addEventListener('click', () => window.runPeerSocialAction());
+      }
+
+      // Photo Mode (Screenshot with Official Watermark -> PNG Download)
+      const btnPhotoMode = document.getElementById('btn-photo-mode');
+      window.take3DOfficeScreenshot = function() {
+        if (!renderer || !scene || !camera) return;
+        playSynthTone(1200, 0.05, 'sine', 0.15);
+        setTimeout(() => playSynthTone(1600, 0.08, 'triangle', 0.16), 60);
+        renderer.render(scene, camera);
+
+        const srcCanvas = renderer.domElement;
+        const outCanvas = document.createElement('canvas');
+        outCanvas.width = srcCanvas.width;
+        outCanvas.height = srcCanvas.height;
+        const ctx = outCanvas.getContext('2d');
+        ctx.drawImage(srcCanvas, 0, 0);
+
+        // Draw Sleek Bottom-Left Watermark Banner
+        const pad = 24;
+        const boxW = Math.min(outCanvas.width - 48, 640);
+        const boxH = 74;
+        const bx = pad;
+        const by = outCanvas.height - boxH - pad;
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.roundRect(bx, by, boxW, boxH, 16);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#fde047';
+        ctx.font = 'bold 20px Inter, sans-serif';
+        ctx.fillText('🏢 VĂN PHÒNG IT 3D • TRƯỞNG PHÒNG NGUYỄN MINH ĐĂNG 👑', bx + 18, by + 30);
+
+        const who = embodiedCharacter ? `Đang hóa thân: ${embodiedCharacter.name} (${embodiedCharacter.role})` : 'Góc nhìn Toàn cảnh 3D Interactive Studio';
+        const nowStr = new Date().toLocaleString('vi-VN');
+        ctx.fillStyle = '#e2e8f0';
+        ctx.font = '600 14px Inter, sans-serif';
+        ctx.fillText(`${who}  •  📸 ${nowStr}`, bx + 18, by + 55);
+
+        const link = document.createElement('a');
+        link.download = `Van_Phong_IT_3D_Minh_Dang_${Date.now()}.png`;
+        link.href = outCanvas.toDataURL('image/png');
+        link.click();
+        showToast('📸 Đã chụp & tải ảnh Check-in 3D chất lượng cao (.PNG) về máy để gửi Zalo!');
+      };
+      if (btnPhotoMode) {
+        btnPhotoMode.addEventListener('click', () => window.take3DOfficeScreenshot());
+      }
+
+      // 2D Mini-Map Radar & Click-to-Teleport
+      const minimapWidget = document.getElementById('minimap-widget');
+      const minimapCanvas = document.getElementById('minimap-canvas');
+      const btnToggleMinimap = document.getElementById('btn-toggle-minimap');
+      const btnCloseMinimap = document.getElementById('btn-close-minimap');
+      if (btnToggleMinimap && minimapWidget) {
+        btnToggleMinimap.addEventListener('click', () => minimapWidget.classList.toggle('hidden'));
+      }
+      if (btnCloseMinimap && minimapWidget) {
+        btnCloseMinimap.addEventListener('click', () => minimapWidget.classList.add('hidden'));
+      }
+      if (minimapCanvas) {
+        minimapCanvas.addEventListener('click', (e) => {
+          const rect = minimapCanvas.getBoundingClientRect();
+          const u = (e.clientX - rect.left) / rect.width;
+          const v = (e.clientY - rect.top) / rect.height;
+          // Map (u, v) in [0..1] to World X [-19.2..19.5], World Z [-9.5..14.8]
+          let wx = -19.2 + u * (19.5 - (-19.2));
+          let wz = -9.5 + v * (14.8 - (-9.5));
+
+          // Find closest walkable point near (wx, wz)
+          if (!isWalkablePosition(wx, wz)) {
+            let found = false;
+            for (let r = 0.4; r <= 2.8 && !found; r += 0.4) {
+              for (let a = 0; a < Math.PI * 2; a += Math.PI / 4) {
+                const tx = wx + Math.cos(a) * r;
+                const tz = wz + Math.sin(a) * r;
+                if (isWalkablePosition(tx, tz)) {
+                  wx = tx;
+                  wz = tz;
+                  found = true;
+                  break;
+                }
+              }
+            }
+          }
+
+          if (!embodiedCharacter && officeCharacters[0]) {
+            startEmbodyCharacter(officeCharacters[0]);
+          }
+          const targetChar = embodiedCharacter || officeCharacters[0];
+          if (targetChar) {
+            const pos = targetChar.rig.root.position;
+            const dx = wx - pos.x;
+            const dz = wz - pos.z;
+            pos.x = wx;
+            pos.z = wz;
+            camera.position.x += dx;
+            camera.position.z += dz;
+            controls.target.x += dx;
+            controls.target.z += dz;
+            playSynthTone(523.3, 0.07, 'sine', 0.14);
+            setTimeout(() => playSynthTone(1046.5, 0.12, 'triangle', 0.16), 70);
+            showCharacterSpeech(targetChar, '⚡ Dịch chuyển tức thời (Teleport) thành công!', 3.5);
+            showToast(`⚡ Đã Teleport ${targetChar.name} tới tọa độ (${wx.toFixed(1)}, ${wz.toFixed(1)})!`);
+          }
+        });
+      }
+
+      window.drawMiniMapRadar = function() {
+        if (!minimapCanvas || (minimapWidget && minimapWidget.classList.contains('hidden'))) return;
+        const ctx = minimapCanvas.getContext('2d');
+        const W = minimapCanvas.width;
+        const H = minimapCanvas.height;
+        const minX = -19.2, maxX = 19.5, minZ = -9.5, maxZ = 14.8;
+        const toX = (x) => ((x - minX) / (maxX - minX)) * W;
+        const toY = (z) => ((z - minZ) / (maxZ - minZ)) * H;
+        const toW = (w) => (w / (maxX - minX)) * W;
+        const toH = (h) => (h / (maxZ - minZ)) * H;
+
+        ctx.clearRect(0, 0, W, H);
+        ctx.fillStyle = '#020617';
+        ctx.fillRect(0, 0, W, H);
+
+        // Draw 8 Zones on Mini-Map
+        const zones = [
+          { x: -18.8, z: -4.8, w: 6.8, h: 8.0, fill: 'rgba(124, 58, 237, 0.32)', stroke: '#a855f7', label: '👑 SẾP' },
+          { x: -12.0, z: -9.0, w: 9.8, h: 6.8, fill: 'rgba(56, 189, 248, 0.18)', stroke: '#38bdf8', label: 'HỌP' },
+          { x: -12.0, z: -2.2, w: 9.8, h: 11.0, fill: 'rgba(30, 41, 59, 0.7)', stroke: '#64748b', label: 'KHU DEV' },
+          { x: -2.2,  z: -9.0, w: 14.2, h: 11.2, fill: 'rgba(51, 65, 85, 0.5)', stroke: '#64748b', label: 'PANTRY' },
+          { x: 5.5,   z: 2.2,  w: 6.5, h: 6.65, fill: 'rgba(6, 182, 212, 0.22)', stroke: '#22d3ee', label: 'SERVER' },
+          { x: 12.0,  z: -8.85,w: 7.1, h: 9.3,  fill: 'rgba(217, 70, 239, 0.25)', stroke: '#e879f9', label: '🎤 KTV' },
+          { x: 12.1,  z: 1.2,  w: 7.2, h: 9.0,  fill: 'rgba(220, 38, 38, 0.25)', stroke: '#f59e0b', label: '🛕 CHÙA' },
+          { x: -7.1,  z: 9.3,  w: 10.2,h: 5.0,  fill: 'rgba(22, 163, 74, 0.28)', stroke: '#4ade80', label: '🍻 NHẬU' }
+        ];
+        ctx.font = 'bold 7.5px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        zones.forEach(zn => {
+          const rx = toX(zn.x), ry = toY(zn.z), rw = toW(zn.w), rh = toH(zn.h);
+          ctx.fillStyle = zn.fill;
+          ctx.strokeStyle = zn.stroke;
+          ctx.lineWidth = 1;
+          ctx.fillRect(rx, ry, rw, rh);
+          ctx.strokeRect(rx, ry, rw, rh);
+          ctx.fillStyle = '#e2e8f0';
+          ctx.fillText(zn.label, rx + rw / 2, ry + rh / 2 + 2.5);
+        });
+
+        // Draw Office Corgi dot
+        if (officeCorgi) {
+          const cx = toX(officeCorgi.group.position.x);
+          const cy = toY(officeCorgi.group.position.z);
+          ctx.fillStyle = '#fb923c';
+          ctx.beginPath();
+          ctx.arc(cx, cy, 2.6, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // Draw 14 Characters on Radar
+        const activeAv = embodiedCharacter || (wasdControlBoss ? officeCharacters[0] : null);
+        officeCharacters.forEach((c, idx) => {
+          const px = toX(c.rig.root.position.x);
+          const py = toY(c.rig.root.position.z);
+          const isMe = (c === activeAv);
+          if (isMe) {
+            // Direction cone
+            const rot = c.rig.root.rotation.y;
+            ctx.strokeStyle = '#fde047';
+            ctx.lineWidth = 1.6;
+            ctx.beginPath();
+            ctx.moveTo(px, py);
+            ctx.lineTo(px + Math.sin(rot) * 9, py + Math.cos(rot) * 9);
+            ctx.stroke();
+
+            ctx.fillStyle = '#facc15';
+            ctx.beginPath();
+            ctx.arc(px, py, 4.2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          } else {
+            ctx.fillStyle = idx === 0 ? '#c084fc' : (followerCharacters.has(c) ? '#34d399' : '#38bdf8');
+            ctx.beginPath();
+            ctx.arc(px, py, 2.6, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        });
+      };
+
       // Native Fullscreen & ESC Handling
       const onFullscreenChange = () => {
         const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
@@ -5399,6 +5784,9 @@
           if (k === 'v') {
             e.preventDefault();
             toggleEmbodyCamMode();
+          } else if (k === 'e') {
+            e.preventDefault();
+            window.runPeerSocialAction();
           } else if (e.code === 'Space') {
             e.preventDefault();
             getEmbodyContextSpec(embodiedCharacter).run();
@@ -5502,7 +5890,7 @@
       camera = new THREE.PerspectiveCamera(42, container.clientWidth / container.clientHeight, 0.1, 140);
       camera.position.copy(CAMERA_PRESETS.overview.pos);
 
-      renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+      renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: true });
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.setSize(container.clientWidth, container.clientHeight);
       renderer.shadowMap.enabled = true;
@@ -5557,6 +5945,7 @@
       buildNhauZone();
       buildCeilingLights();
       buildDeliveryRobot();
+      buildOfficeCorgi();
       buildOfficeCharacters();
 
       setLightingMode(false);
@@ -5907,10 +6296,118 @@
       // Update Characters & Floating Tags
       updateCharacters(simDt, simElapsed);
 
+      // Update Office Corgi ("Boss Corgi • Giám Đốc Tinh Thần") & Floating Tag
+      if (officeCorgi && !state.isPaused) {
+        officeCorgi.tailPivot.rotation.y = Math.sin(simElapsed * 18) * 0.45;
+        const cPos = officeCorgi.group.position;
+        const leader = embodiedCharacter || officeCharacters[0];
+        let targetX, targetZ, stopDist = 0.15;
+        if (officeCorgi.followPlayer && leader) {
+          const lPos = leader.rig.root.position;
+          const lRot = leader.rig.root.rotation.y;
+          targetX = lPos.x - Math.sin(lRot) * 1.15;
+          targetZ = lPos.z - Math.cos(lRot) * 1.15;
+          stopDist = 0.45;
+        } else {
+          const wp = officeCorgi.waypoints[officeCorgi.wpIndex];
+          targetX = wp.x;
+          targetZ = wp.z;
+        }
+        const dx = targetX - cPos.x;
+        const dz = targetZ - cPos.z;
+        const dist = Math.hypot(dx, dz);
+        if (dist > stopDist) {
+          const step = Math.min(dist, 3.2 * simDt);
+          moveBossWithCollision(cPos, (dx / dist) * step, (dz / dist) * step);
+          officeCorgi.group.rotation.y = Math.atan2(dx, dz);
+          officeCorgi.legs.forEach((leg, li) => {
+            leg.rotation.x = Math.sin(simElapsed * 16 + li * Math.PI * 0.5) * 0.45;
+          });
+        } else if (!officeCorgi.followPlayer) {
+          officeCorgi.wpIndex = (officeCorgi.wpIndex + 1) % officeCorgi.waypoints.length;
+        }
+        if (officeCorgi.speechTimer > 0) {
+          officeCorgi.speechTimer -= simDt;
+          if (officeCorgi.speechTimer <= 0) officeCorgi.speechEl.style.opacity = '0';
+        }
+        // Project Corgi 2D Tag & Speech Bubble
+        const corgiProj = new THREE.Vector3(cPos.x, 0.85, cPos.z).project(camera);
+        if (corgiProj.z < 1 && state.showTags) {
+          const sx = (corgiProj.x * 0.5 + 0.5) * window.innerWidth;
+          const sy = (-corgiProj.y * 0.5 + 0.5) * window.innerHeight;
+          officeCorgi.tagEl.style.display = 'block';
+          officeCorgi.tagEl.style.transform = `translate(-50%, -100%) translate(${sx}px, ${sy}px)`;
+          officeCorgi.speechEl.style.transform = `translate(-50%, -100%) translate(${sx}px, ${sy - 24}px)`;
+        } else {
+          officeCorgi.tagEl.style.display = 'none';
+        }
+      }
+
+      // Update Colleagues Following Player & Detect Nearest Peer for Key E Social Action
+      const currentLeader = embodiedCharacter || (wasdControlBoss ? officeCharacters[0] : null);
+      if (currentLeader) {
+        let bestPeer = null;
+        let bestDist = 2.2;
+        const lPos = currentLeader.rig.root.position;
+        officeCharacters.forEach(other => {
+          if (other === currentLeader) return;
+          const d = Math.hypot(other.rig.root.position.x - lPos.x, other.rig.root.position.z - lPos.z);
+          if (d < bestDist) {
+            bestDist = d;
+            bestPeer = other;
+          }
+        });
+        nearestPeerChar = bestPeer;
+        const peerBtn = document.getElementById('btn-embody-peer-action');
+        if (peerBtn) {
+          if (bestPeer) {
+            peerBtn.classList.remove('hidden');
+            // Gently turn nearby colleague toward player
+            bestPeer.rig.root.rotation.y = Math.atan2(lPos.x - bestPeer.rig.root.position.x, lPos.z - bestPeer.rig.root.position.z);
+            if (followerCharacters.has(bestPeer)) {
+              peerBtn.textContent = `👋 [Phím E] Cho ${bestPeer.name} dừng đi theo`;
+            } else if (currentLeader === officeCharacters[0]) {
+              peerBtn.textContent = `💰 [Phím E] Thưởng nóng 500k & Gọi ${bestPeer.name} đi theo`;
+            } else {
+              peerBtn.textContent = `🤝 [Phím E] Rủ ${bestPeer.name} đi cùng mình!`;
+            }
+          } else {
+            peerBtn.classList.add('hidden');
+          }
+        }
+
+        // Move Follower Colleagues smoothly behind Leader
+        let followIdx = 0;
+        followerCharacters.forEach(fc => {
+          if (fc === currentLeader) return;
+          followIdx++;
+          const offsetDist = 1.15 + followIdx * 0.85;
+          const lRot = currentLeader.rig.root.rotation.y;
+          const tx = lPos.x - Math.sin(lRot) * offsetDist;
+          const tz = lPos.z - Math.cos(lRot) * offsetDist;
+          const fPos = fc.rig.root.position;
+          const fdx = tx - fPos.x;
+          const fdz = tz - fPos.z;
+          const fDist = Math.hypot(fdx, fdz);
+          if (fDist > 0.35) {
+            const step = Math.min(fDist, 3.3 * simDt);
+            moveBossWithCollision(fPos, (fdx / fDist) * step, (fdz / fDist) * step);
+            fc.rig.root.rotation.y = Math.atan2(fdx, fdz);
+            fc.currentPose = 'walking';
+            fc.activity = `Đang đi theo ${currentLeader.name} 🤝`;
+          } else if (fc.currentPose === 'walking') {
+            fc.currentPose = 'idle';
+          }
+        });
+      }
+
       // Update Live Dynamic Canvas Textures (~12 FPS to stay buttery smooth)
       canvasRedrawTimer += rawDt;
       if (canvasRedrawTimer >= 0.085) {
         canvasRedrawTimer = 0;
+        if (typeof window.drawMiniMapRadar === 'function') {
+          window.drawMiniMapRadar();
+        }
         if (bossScreenObj && !bossScreenSharing) {
           drawBossMonitorCanvas(bossScreenObj.ctx, 512, 256, simElapsed);
           bossScreenObj.tex.needsUpdate = true;
