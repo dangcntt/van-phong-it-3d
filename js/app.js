@@ -5275,6 +5275,8 @@ import * as THREE from 'three';
         window.broadcastRealtimePacket({
           type: 'avatar',
           charIdx: idx,
+          customId: av.customId || null,
+          customCfg: av.customCfg || null,
           name: av.name,
           role: av.role,
           x: Number(p.x.toFixed(3)),
@@ -5337,9 +5339,17 @@ import * as THREE from 'three';
         });
         refreshOnlinePeersUI();
 
-        if (pkt.type === 'avatar' && typeof pkt.charIdx === 'number' && officeCharacters[pkt.charIdx]) {
-          const c = officeCharacters[pkt.charIdx];
-          if (c === embodiedCharacter) return; // Don't overwrite local player's own avatar
+        if (pkt.type === 'avatar') {
+          let c = null;
+          if (pkt.customId) {
+            c = officeCharacters.find(item => item.customId === pkt.customId);
+            if (!c && pkt.customCfg && typeof window.spawnCustomCharacter === 'function') {
+              c = window.spawnCustomCharacter({ ...pkt.customCfg, customId: pkt.customId }, false);
+            }
+          } else if (typeof pkt.charIdx === 'number' && officeCharacters[pkt.charIdx]) {
+            c = officeCharacters[pkt.charIdx];
+          }
+          if (!c || c === embodiedCharacter) return; // Don't overwrite local player's own avatar
           c.remoteOwnerId = pkt.peerId;
           c.remoteLastSeen = now;
           c.remoteTargetX = pkt.x;
@@ -5432,6 +5442,9 @@ import * as THREE from 'three';
         connectBroker(brokers[0]);
 
         window.addEventListener('beforeunload', () => {
+          if (typeof window.saveProgressToStorage === 'function') {
+            window.saveProgressToStorage();
+          }
           if (embodiedCharacter) {
             window.broadcastRealtimePacket({
               type: 'leave_avatar',
@@ -5441,6 +5454,310 @@ import * as THREE from 'three';
         });
       }
       initRealtimeMultiplayer();
+
+      // =======================================================================
+      // 3D CUSTOM CHARACTER CREATOR & LOCALSTORAGE AUTO-SAVE PERSISTENCE
+      // =======================================================================
+      const SAVE_STORAGE_KEY = 'van_phong_it_3d_saved_progress_v2';
+      const customCharactersList = []; // Stores customCfg objects created by local user
+
+      window.spawnCustomCharacter = function(cfg, autoEmbody = true, isRestoring = false) {
+        if (!cfg) return null;
+        const customId = cfg.customId || ('custom_' + Date.now() + '_' + Math.floor(Math.random() * 1000));
+        // Prevent duplicate customId
+        const existing = officeCharacters.find(item => item.customId === customId);
+        if (existing) {
+          if (autoEmbody) startEmbodyCharacter(existing);
+          return existing;
+        }
+
+        const shirtHex = typeof cfg.shirt === 'string' ? parseInt(cfg.shirt, 16) : (cfg.shirt || 0x64748b);
+        const hairHex = typeof cfg.hair === 'string' ? parseInt(cfg.hair, 16) : (cfg.hair || 0x1c1917);
+        const skinHex = typeof cfg.skin === 'string' ? parseInt(cfg.skin, 16) : (cfg.skin || 0xf3c693);
+        const hairStyleNum = parseInt(cfg.hairStyle, 10) || 0;
+        const hasGlasses = cfg.glasses === true || cfg.glasses === 'true';
+        const isBossSuit = cfg.outfitType === 'boss';
+
+        const rig = createHumanoidRig({
+          shirt: shirtHex,
+          hair: hairHex,
+          hairStyle: hairStyleNum,
+          skin: skinHex,
+          glasses: hasGlasses,
+          isBoss: isBossSuit
+        });
+
+        // Determine spawn coordinates based on spawnZone or saved x/z
+        let spawnX = 15.7, spawnZ = 6.0, spawnRotY = Math.PI, initialPose = 'incense';
+        if (typeof cfg.x === 'number' && typeof cfg.z === 'number') {
+          spawnX = cfg.x;
+          spawnZ = cfg.z;
+          spawnRotY = typeof cfg.rotY === 'number' ? cfg.rotY : 0;
+          initialPose = cfg.pose || 'idle';
+        } else if (cfg.spawnZone === 'office') {
+          spawnX = 0.5; spawnZ = 3.2; spawnRotY = 0; initialPose = 'idle';
+        } else if (cfg.spawnZone === 'meeting') {
+          spawnX = -5.2; spawnZ = -4.5; spawnRotY = Math.PI; initialPose = 'idle';
+        } else if (cfg.spawnZone === 'nhau') {
+          spawnX = -2.2; spawnZ = 10.2; spawnRotY = 0; initialPose = 'nhau';
+        } else if (cfg.spawnZone === 'karaoke') {
+          spawnX = 16.05; spawnZ = -2.5; spawnRotY = Math.PI / 2; initialPose = 'sing';
+        } else {
+          // Default: Temple Courtyard holding 3 burning incense sticks!
+          spawnX = 15.7 + (Math.random() - 0.5) * 0.8;
+          spawnZ = 6.05;
+          spawnRotY = Math.PI;
+          initialPose = 'incense';
+        }
+
+        rig.root.position.set(spawnX, 0, spawnZ);
+        rig.root.rotation.y = spawnRotY;
+        scene.add(rig.root);
+
+        const tagsLayer = document.getElementById('character-tags-layer');
+        const speechLayer = document.getElementById('speech-bubbles-layer');
+
+        const tagEl = document.createElement('div');
+        tagEl.className = 'char-tag px-2.5 py-0.5 rounded-full bg-amber-950/90 border border-amber-400/70 text-[10px] font-extrabold text-amber-200 whitespace-nowrap shadow-md';
+        tagEl.textContent = `✨ ${cfg.name} • ${cfg.role}`;
+        tagsLayer.appendChild(tagEl);
+
+        const speechEl = document.createElement('div');
+        speechEl.className = 'speech-bubble px-2.5 py-1 rounded-xl bg-white/95 text-slate-900 text-[11px] font-bold shadow-lg whitespace-nowrap opacity-0';
+        speechLayer.appendChild(speechEl);
+
+        const idx = officeCharacters.length;
+        const normalizedCfg = {
+          customId,
+          name: cfg.name || 'Phật Tử Tâm An',
+          role: cfg.role || 'Phật Tử Đi Lễ Chùa 🙏',
+          shirt: shirtHex,
+          hair: hairHex,
+          hairStyle: hairStyleNum,
+          skin: skinHex,
+          glasses: hasGlasses,
+          outfitType: cfg.outfitType || 'temple',
+          spawnZone: cfg.spawnZone || 'chua'
+        };
+
+        const charData = {
+          id: `char-custom-${idx}`,
+          customId,
+          customCfg: normalizedCfg,
+          name: normalizedCfg.name,
+          role: normalizedCfg.role,
+          rig,
+          homeSeat: null,
+          roamCycle: ['chua', 'coffee', 'relax'],
+          roamIdx: 0,
+          roamWaitTimer: 8,
+          currentPose: initialPose,
+          manualTask: 'arrows',
+          taskQueue: [],
+          queueIndex: 0,
+          holdingCoffee: false,
+          energy: 100,
+          mood: 100,
+          emoji: '🛕',
+          activity: 'Đang thành tâm lễ chùa Cầu Không Bug 🙏',
+          phase: idx * 1.13 + 0.5,
+          tagEl,
+          speechEl,
+          speechTimer: 0
+        };
+        officeCharacters.push(charData);
+
+        registerInteractive(rig.root, {
+          id: charData.id,
+          type: 'character',
+          icon: '✨',
+          zone: charData.role,
+          title: charData.name,
+          desc: 'Nhân vật 3D do người chơi tự thiết kế! Bạn có thể Hóa Thân, đi lễ chùa, thắp nhang, gõ chuông hoặc đi nhậu.',
+          getMetrics: () => `
+            <div class="flex justify-between"><span class="text-slate-400">Hoạt động:</span><span class="text-amber-300 font-semibold text-right ml-2">${charData.activity}</span></div>
+          `,
+          getActions: () => {
+            const isEmbodied = embodiedCharacter === charData;
+            return [
+              {
+                label: isEmbodied ? `⏹ Thoát Hóa Thân (${charData.name})` : `🕹️ Hóa Thân Thành ${charData.name}!`,
+                primary: true,
+                run: () => {
+                  if (isEmbodied) stopEmbodyCharacter();
+                  else startEmbodyCharacter(charData);
+                }
+              },
+              { label: '🛕 Đi Viếng Chùa Thắp Nhang', primary: false, run: () => commandCharacter(charData, 'chua') },
+              { label: '💵 Bỏ Tiền Hòm Công Đức', primary: false, run: () => commandCharacter(charData, 'donate') },
+              { label: '🍻 Đi Nhậu 1-2-3 Dzô', primary: false, run: () => commandCharacter(charData, 'nhau') },
+              { label: '🎤 Vào Phòng Hát Karaoke', primary: false, run: () => commandCharacter(charData, 'karaoke') },
+              { label: '📊 Vào Phòng Họp Video Call', primary: false, run: () => commandCharacter(charData, 'meeting') }
+            ];
+          }
+        });
+
+        populateEmbodySelect();
+
+        if (autoEmbody) {
+          customCharactersList.push(normalizedCfg);
+          startEmbodyCharacter(charData);
+          charData.currentPose = initialPose;
+          if (!isRestoring) {
+            if (cfg.spawnZone === 'chua' || !cfg.spawnZone) {
+              incenseActiveTimer = 35;
+              playTempleBellSound(false);
+              showCharacterSpeech(charData, `Con tên là ${charData.name}, thành tâm dâng hương cầu bình an & 0 Bug! 🙏🕯️`, 6.5);
+            }
+            window.saveProgressToStorage();
+          }
+        }
+        return charData;
+      };
+
+      window.saveProgressToStorage = function() {
+        try {
+          const av = embodiedCharacter;
+          const saveObj = {
+            ts: Date.now(),
+            donationTotal: state.donationTotal,
+            donationCount: state.donationCount,
+            isNightMode: state.isNightMode,
+            masterVolume: state.masterVolume,
+            embodyCamMode,
+            customCharacters: customCharactersList.map(cfg => {
+              const found = officeCharacters.find(c => c.customId === cfg.customId);
+              if (found) {
+                return {
+                  ...cfg,
+                  name: found.name,
+                  role: found.role,
+                  x: Number(found.rig.root.position.x.toFixed(3)),
+                  z: Number(found.rig.root.position.z.toFixed(3)),
+                  rotY: Number(found.rig.root.rotation.y.toFixed(3)),
+                  pose: found.currentPose
+                };
+              }
+              return cfg;
+            }),
+            embodiedState: av ? {
+              customId: av.customId || null,
+              charIdx: officeCharacters.indexOf(av),
+              name: av.name,
+              role: av.role,
+              x: Number(av.rig.root.position.x.toFixed(3)),
+              z: Number(av.rig.root.position.z.toFixed(3)),
+              rotY: Number(av.rig.root.rotation.y.toFixed(3)),
+              pose: av.currentPose,
+              holdingCoffee: !!av.holdingCoffee
+            } : null
+          };
+          localStorage.setItem(SAVE_STORAGE_KEY, JSON.stringify(saveObj));
+        } catch (e) {}
+      };
+
+      window.loadProgressFromStorage = function() {
+        try {
+          const raw = localStorage.getItem(SAVE_STORAGE_KEY);
+          if (!raw) return;
+          const data = JSON.parse(raw);
+          if (!data) return;
+
+          if (typeof data.donationTotal === 'number') state.donationTotal = data.donationTotal;
+          if (typeof data.donationCount === 'number') state.donationCount = data.donationCount;
+          if (typeof data.isNightMode === 'boolean' && data.isNightMode !== state.isNightMode) {
+            setLightingMode(data.isNightMode);
+          }
+
+          // Restore any custom-created characters
+          if (Array.isArray(data.customCharacters)) {
+            data.customCharacters.forEach(cfg => {
+              customCharactersList.push(cfg);
+              window.spawnCustomCharacter(cfg, false, true);
+            });
+          }
+
+          // Restore embodied character & exact position/pose
+          if (data.embodiedState) {
+            const es = data.embodiedState;
+            let target = null;
+            if (es.customId) {
+              target = officeCharacters.find(c => c.customId === es.customId);
+            } else if (typeof es.charIdx === 'number' && officeCharacters[es.charIdx]) {
+              target = officeCharacters[es.charIdx];
+            }
+            if (target) {
+              if (es.name) {
+                target.name = es.name;
+                if (target.tagEl) target.tagEl.textContent = `${target.name} • ${target.role}`;
+              }
+              if (typeof es.x === 'number' && typeof es.z === 'number') {
+                target.rig.root.position.set(es.x, 0, es.z);
+              }
+              if (typeof es.rotY === 'number') {
+                target.rig.root.rotation.y = es.rotY;
+              }
+              target.holdingCoffee = !!es.holdingCoffee;
+              startEmbodyCharacter(target);
+              if (es.pose) target.currentPose = es.pose;
+              if (data.embodyCamMode === 'fps' && embodyCamMode !== 'fps') {
+                toggleEmbodyCamMode();
+              }
+              showToast(`💾 Đã tự động khôi phục nhân vật "${target.name}" & tiến trình lần trước của bạn!`);
+            }
+          }
+        } catch (e) {}
+      };
+
+      // Bind Character Creator Modal UI Events
+      const ccModal = document.getElementById('char-creator-modal');
+      const btnOpenCC = document.getElementById('btn-open-char-creator');
+      const btnEmbodyCreateNew = document.getElementById('btn-embody-create-new');
+      const btnCloseCC = document.getElementById('btn-close-char-creator');
+      const btnSubmitCC = document.getElementById('btn-cc-submit');
+      const btnResetSave = document.getElementById('btn-reset-save');
+
+      const openCharCreatorModal = () => {
+        if (ccModal) ccModal.classList.remove('hidden');
+      };
+      const closeCharCreatorModal = () => {
+        if (ccModal) ccModal.classList.add('hidden');
+      };
+      if (btnOpenCC) btnOpenCC.addEventListener('click', openCharCreatorModal);
+      if (btnEmbodyCreateNew) btnEmbodyCreateNew.addEventListener('click', openCharCreatorModal);
+      if (btnCloseCC) btnCloseCC.addEventListener('click', closeCharCreatorModal);
+      if (btnSubmitCC) {
+        btnSubmitCC.addEventListener('click', () => {
+          const nameVal = (document.getElementById('cc-name')?.value || '').trim() || 'Phật Tử Tâm An';
+          const roleVal = document.getElementById('cc-role')?.value || 'Phật Tử Đi Lễ Chùa 🙏';
+          const hairStyleVal = document.getElementById('cc-hair-style')?.value || '0';
+          const hairColorVal = document.getElementById('cc-hair-color')?.value || '0x1c1917';
+          const outfitTypeVal = document.getElementById('cc-outfit-type')?.value || 'temple';
+          const shirtColorVal = document.getElementById('cc-shirt-color')?.value || '0x64748b';
+          const skinColorVal = document.getElementById('cc-skin-color')?.value || '0xf3c693';
+          const glassesVal = document.getElementById('cc-glasses')?.value === 'true';
+          const spawnZoneVal = document.getElementById('cc-spawn-zone')?.value || 'chua';
+
+          closeCharCreatorModal();
+          window.spawnCustomCharacter({
+            name: nameVal,
+            role: roleVal,
+            hairStyle: parseInt(hairStyleVal, 10),
+            hair: parseInt(hairColorVal, 16),
+            outfitType: outfitTypeVal,
+            shirt: parseInt(shirtColorVal, 16),
+            skin: parseInt(skinColorVal, 16),
+            glasses: glassesVal,
+            spawnZone: spawnZoneVal
+          }, true, false);
+        });
+      }
+      if (btnResetSave) {
+        btnResetSave.addEventListener('click', () => {
+          localStorage.removeItem(SAVE_STORAGE_KEY);
+          showToast('🔄 Đã xóa dữ liệu lưu tiến trình! Tải lại trang sẽ về mặc định ban đầu.');
+        });
+      }
 
       const dispatchMultiplayerChat = (rawText) => {
         const msg = (rawText || '').trim();
@@ -5917,6 +6234,9 @@ import * as THREE from 'three';
 
       setLightingMode(false);
       bindEvents();
+      if (typeof window.loadProgressFromStorage === 'function') {
+        window.loadProgressFromStorage();
+      }
 
       // Fade out Loading Screen
       const loading = document.getElementById('loading-screen');
@@ -6263,6 +6583,9 @@ import * as THREE from 'three';
       presenceSyncTimer += rawDt;
       if (presenceSyncTimer >= 3.0) {
         presenceSyncTimer = 0;
+        if (typeof window.saveProgressToStorage === 'function') {
+          window.saveProgressToStorage();
+        }
         if (typeof window.broadcastRealtimePacket === 'function') {
           window.broadcastRealtimePacket({
             type: 'presence',

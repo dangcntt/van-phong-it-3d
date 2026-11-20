@@ -84,6 +84,9 @@
         </div>
       </div>
       <div class="flex items-center gap-1 shrink-0">
+        <button id="btn-open-char-creator" title="Tự tạo & Custom nhân vật 3D đi lễ chùa / dạo văn phòng" class="px-2 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold transition cursor-pointer text-[10px] shadow-lg shadow-emerald-500/25 flex items-center gap-1 whitespace-nowrap">
+          <span>➕</span><span>Tạo NV</span>
+        </button>
         <button id="btn-open-embody-bar" title="Hóa thân nhập vai vào nhân vật bất kỳ (FPS / TPS)" class="px-2 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-fuchsia-600 hover:from-amber-400 hover:to-fuchsia-500 text-white font-bold transition cursor-pointer text-[10px] shadow-lg shadow-fuchsia-500/25 flex items-center gap-1 whitespace-nowrap">
           <span>🕹️</span><span>Hóa Thân</span>
         </button>
@@ -379,8 +382,14 @@
         <div class="flex items-center gap-1.5">
           <span class="px-2 py-0.5 rounded-lg bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[10px] font-bold whitespace-nowrap">🕹️ HÓA THÂN:</span>
           <select id="embody-char-select" class="px-2 py-1 rounded-xl bg-slate-900/90 border border-white/20 text-white text-[11px] font-bold focus:outline-none focus:border-amber-400 cursor-pointer"></select>
+          <button id="btn-embody-create-new" title="Tự tạo nhân vật 3D mới để đi chùa / dạo văn phòng" class="px-2 py-1 rounded-lg bg-emerald-500/25 hover:bg-emerald-500/40 border border-emerald-400/50 text-emerald-200 text-[10px] font-bold cursor-pointer transition whitespace-nowrap">
+            ➕ Tạo Nhân Vật
+          </button>
           <button id="btn-embody-rename" title="Đổi tên nhân vật đang hóa thân" class="px-2 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200 text-[10px] font-semibold cursor-pointer transition whitespace-nowrap">
             ✏️ Đổi tên
+          </button>
+          <button id="btn-reset-save" title="Xóa tiến trình đã lưu và khôi phục mặc định" class="px-2 py-1 rounded-lg bg-white/10 hover:bg-rose-500/30 text-slate-300 text-[10px] font-semibold cursor-pointer transition whitespace-nowrap">
+            🔄 Reset Lưu
           </button>
         </div>
         <div class="flex items-center gap-1.5">
@@ -520,6 +529,125 @@
       <div id="meeting-video-grid" class="hidden grid grid-cols-2 gap-1.5 max-h-[210px] overflow-y-auto"></div>
       <div class="text-[9px] text-slate-400 leading-tight">
         💡 Hình ảnh Video Call đang chiếu trực tiếp lên <b>Màn hình 98" trong Phòng Họp 3D</b>!
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: 3D Custom Character Creator Studio (Tạo Nhân Vật Đi Chùa / Dạo Văn Phòng) -->
+  <div id="char-creator-modal" class="hidden fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-3">
+    <div class="hud-glass rounded-3xl p-4 sm:p-5 border border-amber-400/50 shadow-2xl w-full max-w-md flex flex-col gap-3 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">🛕</span>
+          <div>
+            <h2 class="text-sm font-extrabold text-amber-300">Tạo Nhân Vật 3D Đi Chùa & Dạo Văn Phòng</h2>
+            <p class="text-[10px] text-slate-300">Tự động lưu tiến trình & đồng bộ trực tuyến với mọi người</p>
+          </div>
+        </div>
+        <button id="btn-close-char-creator" class="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 text-xs cursor-pointer">✕</button>
+      </div>
+
+      <!-- Name & Role -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        <div>
+          <label class="text-[11px] font-bold text-slate-300 block mb-1">👤 Họ Tên Nhân Vật</label>
+          <input id="cc-name" type="text" maxlength="28" placeholder="VD: Minh Đăng, Tâm An..." value="Phật Tử Tâm An" class="w-full px-3 py-1.5 rounded-xl bg-slate-900/90 border border-white/20 text-white text-xs font-bold focus:outline-none focus:border-amber-400" />
+        </div>
+        <div>
+          <label class="text-[11px] font-bold text-slate-300 block mb-1">🏷️ Danh Xưng / Vai Trò</label>
+          <select id="cc-role" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-900/90 border border-white/20 text-white text-xs font-semibold focus:outline-none focus:border-amber-400 cursor-pointer">
+            <option value="Phật Tử Đi Lễ Chùa 🙏">🙏 Phật Tử Đi Lễ Chùa</option>
+            <option value="Trưởng Phòng VIP 👑">👑 Trưởng Phòng VIP</option>
+            <option value="Fullstack Developer 💻">💻 Fullstack Developer</option>
+            <option value="QA Không Bug 🎯">🎯 QA Không Bug</option>
+            <option value="Thiện Nam Tín Nữ 🪷">🪷 Thiện Nam Tín Nữ</option>
+            <option value="Thánh Nhậu IT 🍻">🍻 Thánh Nhậu IT</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Gender / Hairstyle & Hair Color -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        <div>
+          <label class="text-[11px] font-bold text-slate-300 block mb-1">💇 Giới Tính & Kiểu Tóc</label>
+          <select id="cc-hair-style" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-900/90 border border-white/20 text-white text-xs font-semibold focus:outline-none focus:border-amber-400 cursor-pointer">
+            <option value="0">👨 Nam Lịch Lãm (Undercut)</option>
+            <option value="1">👩 Nữ Dịu Dàng (Tóc Bob)</option>
+            <option value="2">👱‍♀️ Nữ Năng Động (Tóc Dài Buộc Cao)</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-[11px] font-bold text-slate-300 block mb-1">🎨 Màu Tóc</label>
+          <select id="cc-hair-color" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-900/90 border border-white/20 text-white text-xs font-semibold focus:outline-none focus:border-amber-400 cursor-pointer">
+            <option value="0x1c1917">⚫ Đen Truyền Thống</option>
+            <option value="0x5c3a21">🟤 Nâu Hạt Dẻ</option>
+            <option value="0xd97706">🟡 Vàng Ánh Kim</option>
+            <option value="0x991b1b">🔴 Đỏ Rượu Vang</option>
+            <option value="0x6b21a8">🟣 Tím Khói Thời Thượng</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Outfit Type & Shirt Color -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        <div>
+          <label class="text-[11px] font-bold text-slate-300 block mb-1">👔 Kiểu Trang Phục</label>
+          <select id="cc-outfit-type" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-900/90 border border-white/20 text-white text-xs font-semibold focus:outline-none focus:border-amber-400 cursor-pointer">
+            <option value="temple">🛕 Áo Lam / Pháp Phục Đi Chùa</option>
+            <option value="boss">👑 Áo Vest Chủ Tịch + Cà Vạt</option>
+            <option value="it">👕 Áo Polo IT (Đeo Thẻ Nhân Viên)</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-[11px] font-bold text-slate-300 block mb-1">🌈 Màu Áo Chủ Đạo</label>
+          <select id="cc-shirt-color" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-900/90 border border-white/20 text-white text-xs font-semibold focus:outline-none focus:border-amber-400 cursor-pointer">
+            <option value="0x64748b">🩶 Lam Phật Tử Thanh Tịnh</option>
+            <option value="0x7c3aed">🟣 Tím Hoàng Gia</option>
+            <option value="0xdc2626">🔴 Đỏ Đại Cát Cầu May</option>
+            <option value="0xd97706">🟠 Vàng Hoàng Kim</option>
+            <option value="0x2563eb">🔵 Xanh Đại Dương</option>
+            <option value="0xec4899">🌸 Hồng Đào</option>
+            <option value="0x059669">🟢 Xanh Ngọc Lục Bảo</option>
+            <option value="0x1e293b">⚫ Đen Lịch Lãm</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Skin Tone & Glasses -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        <div>
+          <label class="text-[11px] font-bold text-slate-300 block mb-1">✨ Tông Màu Da</label>
+          <select id="cc-skin-color" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-900/90 border border-white/20 text-white text-xs font-semibold focus:outline-none focus:border-amber-400 cursor-pointer">
+            <option value="0xfde2c8">🏻 Trắng Hồng Rạng Rỡ</option>
+            <option value="0xf3c693" selected>🏼 Vàng Ấm Châu Á</option>
+            <option value="0xc68642">🏽 Nâu Khỏe Khoắn</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-[11px] font-bold text-slate-300 block mb-1">👓 Phụ Kiện Kính Mắt</label>
+          <select id="cc-glasses" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-900/90 border border-white/20 text-white text-xs font-semibold focus:outline-none focus:border-amber-400 cursor-pointer">
+            <option value="true">👓 Có đeo kính tri thức</option>
+            <option value="false">👀 Không đeo kính</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Starting Destination -->
+      <div>
+        <label class="text-[11px] font-bold text-amber-300 block mb-1">📍 Điểm Xuất Phát Sau Khi Tạo</label>
+        <select id="cc-spawn-zone" class="w-full px-2.5 py-2 rounded-xl bg-amber-950/70 border border-amber-400/50 text-amber-100 text-xs font-bold focus:outline-none focus:border-amber-400 cursor-pointer">
+          <option value="chua" selected>🛕 Ra thẳng Sân Chùa Cầu Không Bug (Cầm 3 nén nhang đi lễ ngay!)</option>
+          <option value="office">🏢 Xuất phát tại Sảnh Chính Văn Phòng IT</option>
+          <option value="meeting">📊 Xuất phát trong Phòng Họp Video Call</option>
+          <option value="nhau">🍻 Xuất phát ngoài Quán Nhậu Vỉa Hè 1-2-3 Dzô</option>
+          <option value="karaoke">🎤 Xuất phát trong Phòng Hát Karaoke VIP</option>
+        </select>
+      </div>
+
+      <div class="flex items-center gap-2 pt-2 border-t border-white/10">
+        <button id="btn-cc-submit" class="flex-1 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-slate-950 text-xs font-extrabold shadow-xl cursor-pointer transition">
+          ✨ Tạo Nhân Vật & Bắt Đầu Hóa Thân Ngay!
+        </button>
       </div>
     </div>
   </div>
