@@ -34,6 +34,7 @@ import * as THREE from 'three';
       donationTotal: 500000,
       donationCount: 3,
       activeEvent: null, // null | 'crash' | 'pizza' | 'disco' | 'nhau' | 'karaoke' | 'chua'
+      isBossUnlocked: false, // Exclusive Boss Minh Đăng RBAC state
       lights: {
         dev: true,
         meeting: true,
@@ -65,6 +66,100 @@ import * as THREE from 'three';
       endTarget: new THREE.Vector3(),
       progress: 0,
       duration: 0.9
+    };
+
+    // =========================================================================
+    // 1.1 EXCLUSIVE BOSS MINH ĐĂNG RBAC & PIN AUTHENTICATION MANAGER
+    // =========================================================================
+    const BOSS_AUTH_STORAGE_KEY = 'van_phong_it_3d_boss_unlocked_v1';
+    const BOSS_PIN_STORAGE_KEY  = 'van_phong_it_3d_boss_pin_v1';
+    const BOSS_NETWORK_SIG      = 'MINHDANG_BOSS_SIG_2026';
+    let pendingBossActionCallback = null;
+
+    function getValidBossPins() {
+      let customPin = '';
+      try { customPin = (localStorage.getItem(BOSS_PIN_STORAGE_KEY) || '').trim().toLowerCase(); } catch (e) {}
+      const valid = new Set(['minhdang', '2026', 'dangcntt']);
+      if (customPin) valid.add(customPin);
+      return valid;
+    }
+
+    function initBossAuthState() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const bossParam = (params.get('boss') || '').trim().toLowerCase();
+        if (bossParam && getValidBossPins().has(bossParam)) {
+          localStorage.setItem(BOSS_AUTH_STORAGE_KEY, 'true');
+          params.delete('boss');
+          const cleanUrl = window.location.pathname + (params.toString() ? `?${params.toString()}` : '') + window.location.hash;
+          window.history.replaceState({}, '', cleanUrl);
+        }
+        state.isBossUnlocked = localStorage.getItem(BOSS_AUTH_STORAGE_KEY) === 'true';
+      } catch (e) {
+        state.isBossUnlocked = false;
+      }
+    }
+    initBossAuthState();
+
+    window.isBossAuthorized = function() {
+      return !!state.isBossUnlocked;
+    };
+
+    window.updateBossAuthUI = function() {
+      const badge = document.getElementById('boss-auth-badge');
+      const btnToggle = document.getElementById('btn-boss-auth-toggle');
+      const btnChangePin = document.getElementById('btn-boss-change-pin');
+      const grid = document.getElementById('boss-events-grid');
+
+      if (state.isBossUnlocked) {
+        if (badge) {
+          badge.className = 'px-1.5 py-0.5 rounded-md bg-amber-500/25 border border-amber-400/60 text-[9px] text-amber-200 font-extrabold';
+          badge.textContent = '👑 Sếp Minh Đăng';
+        }
+        if (btnToggle) {
+          btnToggle.className = 'flex-1 px-2 py-1.5 rounded-xl text-[10px] font-extrabold bg-emerald-500/25 hover:bg-rose-500/30 border border-emerald-400/50 text-emerald-200 transition cursor-pointer flex items-center justify-center gap-1';
+          btnToggle.textContent = '👑 Đã Mở Quyền Sếp (Bấm Để Khóa)';
+        }
+        if (btnChangePin) btnChangePin.classList.remove('hidden');
+        if (grid) grid.classList.remove('opacity-60');
+      } else {
+        if (badge) {
+          badge.className = 'px-1.5 py-0.5 rounded-md bg-rose-500/20 border border-rose-400/40 text-[9px] text-rose-300 font-bold';
+          badge.textContent = '🔒 Chế độ Khách';
+        }
+        if (btnToggle) {
+          btnToggle.className = 'flex-1 px-2 py-1.5 rounded-xl text-[10px] font-extrabold bg-gradient-to-r from-amber-500/25 to-yellow-500/20 hover:from-amber-500/40 hover:to-yellow-500/35 border border-amber-400/50 text-amber-200 transition cursor-pointer flex items-center justify-center gap-1';
+          btnToggle.textContent = '🔑 Mở Khóa Quyền Sếp Đăng';
+        }
+        if (btnChangePin) btnChangePin.classList.add('hidden');
+        if (grid) grid.classList.add('opacity-60');
+      }
+      if (typeof updateInspectorUI === 'function') updateInspectorUI();
+    };
+
+    window.requireBossAuth = function(reasonText, onSuccess) {
+      if (state.isBossUnlocked) {
+        if (typeof onSuccess === 'function') onSuccess();
+        return true;
+      }
+      pendingBossActionCallback = typeof onSuccess === 'function' ? onSuccess : null;
+      const modal = document.getElementById('boss-pin-modal');
+      const reasonEl = document.getElementById('boss-pin-reason');
+      const inputEl = document.getElementById('boss-pin-input');
+      const errEl = document.getElementById('boss-pin-error');
+      if (reasonEl) {
+        reasonEl.textContent = `🔒 Chỉ Trưởng Phòng Minh Đăng mới có quyền: ${reasonText}`;
+      }
+      if (errEl) errEl.classList.add('hidden');
+      if (inputEl) inputEl.value = '';
+      if (modal) {
+        modal.classList.remove('hidden');
+        setTimeout(() => { if (inputEl) inputEl.focus(); }, 60);
+      }
+      if (typeof showToast === 'function') {
+        showToast(`🔒 Chỉ Trưởng Phòng Minh Đăng mới có quyền ${reasonText}!`);
+      }
+      return false;
     };
 
     // Scene & Three.js references
@@ -3716,7 +3811,11 @@ import * as THREE from 'three';
       }
     }
 
-    function triggerOfficeEvent(eventType) {
+    function triggerOfficeEvent(eventType, isInternalCall = false) {
+      if (!isHandlingRemotePacket && !isInternalCall && !window.isBossAuthorized()) {
+        window.requireBossAuth('phát lệnh điều động Sự kiện Toàn Văn Phòng', () => triggerOfficeEvent(eventType, true));
+        return;
+      }
       state.activeEvent = eventType;
       const banner = document.getElementById('event-banner');
       const inner = document.getElementById('event-banner-inner');
@@ -3732,7 +3831,7 @@ import * as THREE from 'three';
 
       if (!eventType) {
         if (!isHandlingRemotePacket && typeof window.broadcastRealtimePacket === 'function') {
-          window.broadcastRealtimePacket({ type: 'office_event', eventType: null });
+          window.broadcastRealtimePacket({ type: 'office_event', eventType: null, bossSig: BOSS_NETWORK_SIG });
         }
         banner.classList.add('opacity-0', 'pointer-events-none', '-translate-y-3');
         openKaraokeYouTubePanel(false);
@@ -3743,7 +3842,7 @@ import * as THREE from 'three';
           c.nhauSeatIdx = null;
           c.taskQueue = [];
           if (c.homeSeat) {
-            commandCharacter(c, 'work');
+            commandCharacter(c, 'work', true);
           } else {
             c.currentPose = 'idle';
             c.emoji = '🚶';
@@ -3756,7 +3855,7 @@ import * as THREE from 'three';
 
       banner.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-3');
       if (!isHandlingRemotePacket && typeof window.broadcastRealtimePacket === 'function') {
-        window.broadcastRealtimePacket({ type: 'office_event', eventType });
+        window.broadcastRealtimePacket({ type: 'office_event', eventType, bossSig: BOSS_NETWORK_SIG });
       }
 
       if (eventType === 'crash') {
@@ -3770,10 +3869,10 @@ import * as THREE from 'three';
 
         officeCharacters.forEach((c, idx) => {
           if (idx === 9 || idx === 10) {
-            commandCharacter(c, 'server');
+            commandCharacter(c, 'server', true);
             showCharacterSpeech(c, 'Toang rồi!! Ai vừa xóa DB Prod?! 😱', 5.0);
           } else if (c.homeSeat && c.homeSeat.zone === 'dev') {
-            commandCharacter(c, 'work');
+            commandCharacter(c, 'work', true);
             showCharacterSpeech(c, 'Đang hotfix gấp!! Rollback mau! 🔥', 5.0);
           } else {
             showCharacterSpeech(c, 'Khách hàng đang gọi cháy máy rồi! 📞', 4.5);
@@ -3793,7 +3892,7 @@ import * as THREE from 'three';
           c.energy = 100;
           c.mood = 100;
           if (idx < 7) {
-            commandCharacter(c, 'pizza');
+            commandCharacter(c, 'pizza', true);
             showCharacterSpeech(c, idx % 2 === 0 ? 'Sếp đãi Pizza kìa anh em ơi! 🍕' : 'Ăn trước fix bug sau! 😋', 4.5);
           }
         });
@@ -3854,7 +3953,7 @@ import * as THREE from 'three';
           c.energy = Math.min(100, c.energy + 20);
           if (idx < availableSeats.length) {
             c.nhauSeatIdx = availableSeats[idx];
-            commandCharacter(c, 'nhau');
+            commandCharacter(c, 'nhau', true);
             showCharacterSpeech(c, nhauLines[idx % nhauLines.length], 5.5);
           } else {
             // Những người còn lại nếu đang ngồi ở ghế nhậu cũ thì quay về văn phòng làm việc để nhường ghế, tuyệt đối không ngồi đè
@@ -3884,7 +3983,7 @@ import * as THREE from 'three';
           c.mood = 100;
           if (idx < 8) {
             c.karaokeSlot = idx;
-            commandCharacter(c, 'karaoke');
+            commandCharacter(c, 'karaoke', true);
             showCharacterSpeech(c, karLines[idx % karLines.length], 5.5);
           } else {
             showCharacterSpeech(c, 'Hát hay quá, vỗ tay!! 👏', 4.0);
@@ -3907,7 +4006,7 @@ import * as THREE from 'three';
           c.mood = 100;
           c.energy = Math.min(100, c.energy + 30);
           c.templeSlot = idx;
-          commandCharacter(c, 'chua');
+          commandCharacter(c, 'chua', true);
           const randPrayer = TEMPLE_PRAYERS[(idx * 3 + Math.floor(Math.random() * TEMPLE_PRAYERS.length)) % TEMPLE_PRAYERS.length];
           showCharacterSpeech(c, randPrayer, 6.5);
         });
@@ -3918,6 +4017,11 @@ import * as THREE from 'three';
     }
 
     function commandCharacter(charData, actionType, silent = false) {
+      // Exclusive Boss RBAC Guard: Only Boss Minh Đăng can dispatch employees!
+      if (!isHandlingRemotePacket && !silent && !window.isBossAuthorized()) {
+        window.requireBossAuth(`điều động nhân sự "${charData.name}"`, () => commandCharacter(charData, actionType, false));
+        return;
+      }
       const pos = charData.rig.root.position;
       charData.manualTask = actionType;
       if (actionType !== 'nhau') charData.nhauSeatIdx = null;
@@ -3941,7 +4045,17 @@ import * as THREE from 'three';
           chua: 'đi Viếng Chùa cầu không Bug 🛕',
           donate: 'ra bỏ tiền Hòm Công Đức 💵'
         };
-        showToast(`Đã điều khiển ${charData.name}: ${labels[actionType] || actionType}`);
+        showToast(`👑 Sếp Minh Đăng đã điều động ${charData.name}: ${labels[actionType] || actionType}`);
+        // Broadcast Boss's individual employee dispatch across MQTT so all online guests see the employee move!
+        if (!isHandlingRemotePacket && typeof window.broadcastRealtimePacket === 'function') {
+          window.broadcastRealtimePacket({
+            type: 'char_command',
+            bossSig: BOSS_NETWORK_SIG,
+            charIdx: officeCharacters.indexOf(charData),
+            customId: charData.customId || null,
+            actionType
+          });
+        }
       }
       updateInspectorUI();
     }
@@ -4044,9 +4158,14 @@ import * as THREE from 'three';
           getActions: () => {
             const isFollowing = state.followCharacter === charData;
             const isEmbodied = embodiedCharacter === charData;
+            const isBossAuth = window.isBossAuthorized();
+            const isBossAvatar = (idx === 0);
+            const lockPrefix = isBossAuth ? '' : '🔒 ';
             const actions = [
               {
-                label: isEmbodied ? `⏹ Thoát Hóa Thân (${charData.name})` : `🕹️ Hóa Thân Thành ${charData.name}!`,
+                label: isEmbodied
+                  ? `⏹ Thoát Hóa Thân (${charData.name})`
+                  : (isBossAvatar && !isBossAuth ? `🔒 Hóa Thân ${charData.name} (Chỉ Chủ Phòng)` : `🕹️ Hóa Thân Thành ${charData.name}!`),
                 primary: true,
                 run: () => {
                   if (isEmbodied) stopEmbodyCharacter();
@@ -4055,16 +4174,16 @@ import * as THREE from 'three';
               }
             ];
             if (charData.homeSeat) {
-              actions.push({ label: '💻 Làm việc', primary: false, run: () => commandCharacter(charData, 'work') });
+              actions.push({ label: `${lockPrefix}💻 Làm việc`, primary: false, run: () => commandCharacter(charData, 'work') });
             }
-            actions.push({ label: '☕ Pha cà phê', primary: false, run: () => commandCharacter(charData, 'coffee') });
-            actions.push({ label: '🍻 Đi nhậu', primary: false, run: () => commandCharacter(charData, 'nhau') });
-            actions.push({ label: '🎤 Hát Karaoke', primary: false, run: () => commandCharacter(charData, 'karaoke') });
-            actions.push({ label: '🛕 Viếng chùa', primary: false, run: () => commandCharacter(charData, 'chua') });
-            actions.push({ label: '💵 Bỏ công đức', primary: false, run: () => commandCharacter(charData, 'donate') });
-            actions.push({ label: '🕹️ Chơi game', primary: false, run: () => commandCharacter(charData, 'arcade') });
-            actions.push({ label: '🛋️ Nghỉ ngơi', primary: false, run: () => commandCharacter(charData, 'relax') });
-            actions.push({ label: '🖥️ Check Server', primary: false, run: () => commandCharacter(charData, 'server') });
+            actions.push({ label: `${lockPrefix}☕ Pha cà phê`, primary: false, run: () => commandCharacter(charData, 'coffee') });
+            actions.push({ label: `${lockPrefix}🍻 Đi nhậu`, primary: false, run: () => commandCharacter(charData, 'nhau') });
+            actions.push({ label: `${lockPrefix}🎤 Hát Karaoke`, primary: false, run: () => commandCharacter(charData, 'karaoke') });
+            actions.push({ label: `${lockPrefix}🛕 Viếng chùa`, primary: false, run: () => commandCharacter(charData, 'chua') });
+            actions.push({ label: `${lockPrefix}💵 Bỏ công đức`, primary: false, run: () => commandCharacter(charData, 'donate') });
+            actions.push({ label: `${lockPrefix}🕹️ Chơi game`, primary: false, run: () => commandCharacter(charData, 'arcade') });
+            actions.push({ label: `${lockPrefix}🛋️ Nghỉ ngơi`, primary: false, run: () => commandCharacter(charData, 'relax') });
+            actions.push({ label: `${lockPrefix}🖥️ Check Server`, primary: false, run: () => commandCharacter(charData, 'server') });
             actions.push({
               label: isFollowing ? '⏹ Dừng bám theo' : '🎥 Bám theo',
               primary: isFollowing,
@@ -5039,7 +5158,7 @@ import * as THREE from 'three';
         });
       }
 
-      // Boss Mode Event Buttons
+      // Boss Mode Event Buttons & Boss PIN Lock Modal Events
       const eventMap = [
         ['btn-event-crash', 'crash'],
         ['btn-event-pizza', 'pizza'],
@@ -5054,6 +5173,79 @@ import * as THREE from 'three';
         const el = document.getElementById(id);
         if (el) el.addEventListener('click', () => triggerOfficeEvent(evt));
       });
+
+      const bossPinModal = document.getElementById('boss-pin-modal');
+      const bossPinInput = document.getElementById('boss-pin-input');
+      const bossPinError = document.getElementById('boss-pin-error');
+      const btnBossToggle = document.getElementById('btn-boss-auth-toggle');
+      const btnBossChangePin = document.getElementById('btn-boss-change-pin');
+      const btnCloseBossPin = document.getElementById('btn-close-boss-pin');
+      const btnCancelBossPin = document.getElementById('btn-cancel-boss-pin');
+      const btnSubmitBossPin = document.getElementById('btn-submit-boss-pin');
+
+      const closeBossPinModal = () => {
+        if (bossPinModal) bossPinModal.classList.add('hidden');
+        pendingBossActionCallback = null;
+      };
+
+      const submitBossPin = () => {
+        if (!bossPinInput) return;
+        const entered = (bossPinInput.value || '').trim().toLowerCase();
+        if (getValidBossPins().has(entered)) {
+          state.isBossUnlocked = true;
+          try { localStorage.setItem(BOSS_AUTH_STORAGE_KEY, 'true'); } catch (e) {}
+          if (bossPinModal) bossPinModal.classList.add('hidden');
+          window.updateBossAuthUI();
+          populateEmbodySelect();
+          playDonationSound();
+          showToast('👑 Đã mở khóa Quyền Trưởng Phòng Nguyễn Minh Đăng! Bạn có toàn quyền điều động nhân sự.');
+          const cb = pendingBossActionCallback;
+          pendingBossActionCallback = null;
+          if (typeof cb === 'function') cb();
+        } else {
+          playSynthTone(200, 0.2, 'sawtooth', 0.14);
+          if (bossPinError) bossPinError.classList.remove('hidden');
+        }
+      };
+
+      if (btnBossToggle) {
+        btnBossToggle.addEventListener('click', () => {
+          if (state.isBossUnlocked) {
+            state.isBossUnlocked = false;
+            try { localStorage.removeItem(BOSS_AUTH_STORAGE_KEY); } catch (e) {}
+            if (embodiedCharacter === officeCharacters[0]) {
+              stopEmbodyCharacter();
+            }
+            window.updateBossAuthUI();
+            populateEmbodySelect();
+            showToast('🔒 Đã khóa lại Quyền Trưởng Phòng (Chuyển về Chế độ Khách).');
+          } else {
+            window.requireBossAuth('mở khóa bảng điều động Trưởng Phòng Minh Đăng');
+          }
+        });
+      }
+      if (btnBossChangePin) {
+        btnBossChangePin.addEventListener('click', () => {
+          if (!state.isBossUnlocked) return;
+          const newPin = window.prompt('🔑 Nhập Mã PIN Trưởng Phòng mới của bạn (ít nhất 3 ký tự):', '');
+          if (newPin && newPin.trim().length >= 3) {
+            try { localStorage.setItem(BOSS_PIN_STORAGE_KEY, newPin.trim().toLowerCase()); } catch (e) {}
+            showToast('✅ Đã lưu Mã PIN Trưởng Phòng mới trên máy của bạn!');
+          }
+        });
+      }
+      if (btnCloseBossPin) btnCloseBossPin.addEventListener('click', closeBossPinModal);
+      if (btnCancelBossPin) btnCancelBossPin.addEventListener('click', closeBossPinModal);
+      if (btnSubmitBossPin) btnSubmitBossPin.addEventListener('click', submitBossPin);
+      if (bossPinInput) {
+        bossPinInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            submitBossPin();
+          }
+        });
+      }
+      window.updateBossAuthUI();
 
       // Bottom Camera Preset Bar
       document.querySelectorAll('.cam-btn').forEach(btn => {
@@ -5181,8 +5373,12 @@ import * as THREE from 'three';
 
       function populateEmbodySelect() {
         if (!embodySelect) return;
+        const isBoss = window.isBossAuthorized();
         embodySelect.innerHTML = officeCharacters
-          .map((c, idx) => `<option value="${idx}">${c.name} • ${c.role}</option>`)
+          .map((c, idx) => {
+            const lockTag = (idx === 0 && !isBoss) ? '🔒 [Chỉ Chủ Phòng] ' : '';
+            return `<option value="${idx}">${lockTag}${c.name} • ${c.role}</option>`;
+          })
           .join('');
         if (embodiedCharacter) {
           const idx = officeCharacters.indexOf(embodiedCharacter);
@@ -5193,6 +5389,12 @@ import * as THREE from 'three';
 
       window.startEmbodyCharacter = function(charObj) {
         if (!charObj) return;
+        // Exclusive Boss Avatar Protection: Guests cannot hijack Minh Đăng 👑 (officeCharacters[0])!
+        if (charObj === officeCharacters[0] && !window.isBossAuthorized()) {
+          window.requireBossAuth('Hóa thân vào nhân vật Trưởng Phòng Minh Đăng 👑', () => window.startEmbodyCharacter(officeCharacters[0]));
+          populateEmbodySelect();
+          return;
+        }
         // Restore head visibility of previous embodied character if in FPS
         if (embodiedCharacter && embodiedCharacter.rig && embodiedCharacter.rig.headGroup) {
           embodiedCharacter.rig.headGroup.visible = true;
@@ -5399,14 +5601,25 @@ import * as THREE from 'three';
         };
       };
 
+      function getDefaultAvatarForLocalUser() {
+        if (window.isBossAuthorized()) return officeCharacters[0];
+        // For guests: prefer their own custom character if created, otherwise Minh Quân (index 1)
+        const customChar = officeCharacters.find(c => !!c.customId);
+        return customChar || officeCharacters[1] || officeCharacters[0];
+      }
+
       if (btnOpenEmbody) {
         btnOpenEmbody.addEventListener('click', () => {
           if (embodiedCharacter) {
             stopEmbodyCharacter();
           } else {
-            const targetChar = (state.selectedObject && state.selectedObject.type === 'character')
-              ? officeCharacters.find(c => c.id === state.selectedObject.id) || officeCharacters[0]
-              : officeCharacters[0];
+            const defaultAv = getDefaultAvatarForLocalUser();
+            const selectedChar = (state.selectedObject && state.selectedObject.type === 'character')
+              ? officeCharacters.find(c => c.id === state.selectedObject.id)
+              : null;
+            const targetChar = (selectedChar && !(selectedChar === officeCharacters[0] && !window.isBossAuthorized()))
+              ? selectedChar
+              : defaultAv;
             startEmbodyCharacter(targetChar);
           }
         });
@@ -5667,10 +5880,22 @@ import * as THREE from 'three';
           }
           playSynthTone(880, 0.08, 'sine', 0.12);
           appendOnlineChatLog(pkt.senderName || (c ? c.name : 'Online'), pkt.role || '', pkt.text, false);
-        } else if (pkt.type === 'office_event') {
+        } else if (pkt.type === 'office_event' && pkt.bossSig === BOSS_NETWORK_SIG) {
           isHandlingRemotePacket = true;
-          triggerOfficeEvent(pkt.eventType);
+          triggerOfficeEvent(pkt.eventType, true);
           isHandlingRemotePacket = false;
+        } else if (pkt.type === 'char_command' && pkt.bossSig === BOSS_NETWORK_SIG) {
+          let targetChar = null;
+          if (pkt.customId) {
+            targetChar = officeCharacters.find(item => item.customId === pkt.customId);
+          } else if (typeof pkt.charIdx === 'number' && officeCharacters[pkt.charIdx]) {
+            targetChar = officeCharacters[pkt.charIdx];
+          }
+          if (targetChar && targetChar !== embodiedCharacter) {
+            isHandlingRemotePacket = true;
+            commandCharacter(targetChar, pkt.actionType, false);
+            isHandlingRemotePacket = false;
+          }
         }
       }
 
@@ -6109,12 +6334,21 @@ import * as THREE from 'three';
 
       const btnEmbodyPeer = document.getElementById('btn-embody-peer-action');
       window.runPeerSocialAction = function() {
-        const actor = embodiedCharacter || officeCharacters[0];
+        const actor = embodiedCharacter || getDefaultAvatarForLocalUser();
         if (!actor || !nearestPeerChar) return;
         const peer = nearestPeerChar;
         // Face each other
         actor.rig.root.rotation.y = Math.atan2(peer.rig.root.position.x - actor.rig.root.position.x, peer.rig.root.position.z - actor.rig.root.position.z);
         peer.rig.root.rotation.y = Math.atan2(actor.rig.root.position.x - peer.rig.root.position.x, actor.rig.root.position.z - peer.rig.root.position.z);
+
+        if (!window.isBossAuthorized()) {
+          // Guests can only greet colleagues politely, NOT dispatch/recruit them to follow!
+          playSynthTone(740, 0.08, 'triangle', 0.12);
+          showCharacterSpeech(actor, `Chào ${peer.name} nhé! Chúc hôm nay code mượt 0 Bug! 👋`, 4.5);
+          showCharacterSpeech(peer, `Chào ${actor.name}! Em đang trực vị trí, chỉ Trưởng Phòng Minh Đăng mới điều động em đi theo được thôi ạ! 😊`, 5.0);
+          showToast(`🔒 Đã chào ${peer.name}! (Chỉ Trưởng Phòng Minh Đăng mới có quyền điều động nhân viên đi theo)`);
+          return;
+        }
 
         if (actor === officeCharacters[0] && !followerCharacters.has(peer)) {
           // Boss Minh Đăng rewards colleague + invites them along!
@@ -6234,10 +6468,10 @@ import * as THREE from 'three';
             }
           }
 
-          if (!embodiedCharacter && officeCharacters[0]) {
-            startEmbodyCharacter(officeCharacters[0]);
+          if (!embodiedCharacter) {
+            startEmbodyCharacter(getDefaultAvatarForLocalUser());
           }
-          const targetChar = embodiedCharacter || officeCharacters[0];
+          const targetChar = embodiedCharacter || getDefaultAvatarForLocalUser();
           if (targetChar) {
             const pos = targetChar.rig.root.position;
             const dx = wx - pos.x;
@@ -6357,8 +6591,8 @@ import * as THREE from 'three';
         if (k === 'arrowup' || k === 'arrowdown' || k === 'arrowleft' || k === 'arrowright') {
           e.preventDefault();
           keysPressed[k] = true;
-          if (!embodiedCharacter && officeCharacters[0]) {
-            startEmbodyCharacter(officeCharacters[0]);
+          if (!embodiedCharacter) {
+            startEmbodyCharacter(getDefaultAvatarForLocalUser());
           }
         } else if (embodiedCharacter) {
           if (k === 'v') {
