@@ -2527,15 +2527,20 @@ import * as THREE from 'three';
       // 6. SYMMETRIC PRAJNA DRUM TOWER (Lầu Trống Bát Nhã 2 Tầng Mái đối xứng bên phải tại X=35.8, Z=3.8)
       const drumTowerGroup = new THREE.Group();
       drumTowerGroup.position.set(35.8, 0, 3.8);
-      const drumPod = bellPod.clone();
+      const drumPod = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.25, 2.3), stoneMat);
+      drumPod.position.y = 0.125;
       drumTowerGroup.add(drumPod);
       [[-0.82, -0.82], [0.82, -0.82], [-0.82, 0.82], [0.82, 0.82]].forEach(([bx, bz]) => {
         const dPost = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.12, 3.2, 12), redWoodMat);
         dPost.position.set(bx, 1.72, bz);
         drumTowerGroup.add(dPost);
       });
-      const dRoof1 = bRoof1.clone();
-      const dRoof2 = bRoof2.clone();
+      const dRoof1 = new THREE.Mesh(new THREE.ConeGeometry(1.85, 0.72, 4), roofTileMat);
+      dRoof1.rotation.y = Math.PI / 4;
+      dRoof1.position.set(0, 3.55, 0);
+      const dRoof2 = new THREE.Mesh(new THREE.ConeGeometry(1.2, 0.58, 4), roofTileMat);
+      dRoof2.rotation.y = Math.PI / 4;
+      dRoof2.position.set(0, 4.15, 0);
       const bigDrum = new THREE.Mesh(new THREE.CylinderGeometry(0.48, 0.48, 0.68, 20), redWoodMat);
       bigDrum.rotation.x = Math.PI / 2;
       bigDrum.position.set(0, 2.25, 0);
