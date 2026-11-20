@@ -6202,6 +6202,10 @@ import * as THREE from 'three';
               target = officeCharacters[es.charIdx];
             }
             if (target) {
+              // Do not auto-embody Boss Minh Đăng (index 0) on page load if user is in Guest mode
+              if (target === officeCharacters[0] && !window.isBossAuthorized()) {
+                return;
+              }
               if (es.name) {
                 target.name = es.name;
                 if (target.tagEl) target.tagEl.textContent = `${target.name} • ${target.role}`;
@@ -6764,15 +6768,18 @@ import * as THREE from 'three';
 
       setLightingMode(false);
       bindEvents();
-      if (typeof window.loadProgressFromStorage === 'function') {
-        window.loadProgressFromStorage();
-      }
+      try {
+        if (typeof window.loadProgressFromStorage === 'function') {
+          window.loadProgressFromStorage();
+        }
+      } catch (e) {}
 
-      // Fade out Loading Screen
+      // Fade out Loading Screen immediately
       const loading = document.getElementById('loading-screen');
       if (loading) {
         loading.style.opacity = '0';
-        setTimeout(() => loading.remove(), 500);
+        loading.style.pointerEvents = 'none';
+        setTimeout(() => { try { loading.remove(); } catch (e) {} }, 400);
       }
 
       animate();
@@ -7350,8 +7357,21 @@ import * as THREE from 'three';
       renderer.render(scene, camera);
     }
 
-    if (document.readyState === 'complete') {
-      init();
+    // Execute init() immediately once DOM is parsed (do not wait for slow window.onload external assets!)
+    let hasInitialized3D = false;
+    function safeStartInit() {
+      if (hasInitialized3D) return;
+      hasInitialized3D = true;
+      try {
+        init();
+      } catch (err) {
+        console.error('Init error:', err);
+        const loading = document.getElementById('loading-screen');
+        if (loading) loading.remove();
+      }
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', safeStartInit);
     } else {
-      window.addEventListener('load', init);
+      safeStartInit();
     }
